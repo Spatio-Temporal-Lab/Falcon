@@ -1,0 +1,10 @@
+includedir=/usr/local/include/sz
+libdir=/usr/local/lib
+
+Name: SZ
+Description: The SZ Error Bounded Lossy Compressor
+Version: 
+URL: https://github.com/disheng222/SZ
+Cflags: -I${includedir}
+Libs: -L${libdir} -lSZ
+

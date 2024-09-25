@@ -1,0 +1,5 @@
+if(EXISTS "/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/PerformanceProgram[1]_tests.cmake")
+  include("/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/PerformanceProgram[1]_tests.cmake")
+else()
+  add_test(PerformanceProgram_NOT_BUILT PerformanceProgram_NOT_BUILT)
+endif()
