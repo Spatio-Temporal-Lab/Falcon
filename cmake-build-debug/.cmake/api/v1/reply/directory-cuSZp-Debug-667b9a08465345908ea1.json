@@ -1,0 +1,113 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install",
+			"include"
+		],
+		"files" : 
+		[
+			"cuSZp/cmake/Installing.cmake",
+			"cuSZp/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 77,
+				"parent" : 0
+			},
+			{
+				"file" : 0,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 26,
+				"parent" : 2
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 38,
+				"parent" : 2
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 58,
+				"parent" : 2
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 3,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"cuSZp/libcuSZpd.a"
+			],
+			"targetId" : "cuSZp::@9e70d6677e8e8782f5c0",
+			"targetIndex" : 9,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Unspecified",
+			"destination" : "include/cuSZp",
+			"paths" : 
+			[
+				"cuSZp/include/cuSZp_f32.h",
+				"cuSZp/include/cuSZp_f64.h",
+				"cuSZp/include/cuSZp_utility.h",
+				"cuSZp/include/cuSZp_timer.h",
+				"cuSZp/include/cuSZp_entry_f32.h",
+				"cuSZp/include/cuSZp_entry_f64.h"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "Unspecified",
+			"destination" : "cmake",
+			"exportName" : "cuSZpTargets",
+			"exportTargets" : 
+			[
+				{
+					"id" : "cuSZp::@9e70d6677e8e8782f5c0",
+					"index" : 9
+				}
+			],
+			"paths" : 
+			[
+				"cuSZp/CMakeFiles/Export/272ceadb8458515b2ae4b5630a6029cc/cuSZpTargets.cmake"
+			],
+			"type" : "export"
+		},
+		{
+			"backtrace" : 5,
+			"component" : "Unspecified",
+			"destination" : "cmake",
+			"paths" : 
+			[
+				"cmake-build-debug/cuSZp/cuSZpConfig.cmake",
+				"cmake-build-debug/cuSZp/cuSZpConfigVersion.cmake"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "cuSZp",
+		"source" : "cuSZp"
+	}
+}

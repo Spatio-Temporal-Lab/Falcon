@@ -1,0 +1,72 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"Serf/test/baselines/zstd/build/cmake/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 180,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 185,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/zstd",
+			"exportName" : "zstdExports",
+			"exportTargets" : 
+			[
+				{
+					"id" : "libzstd_shared::@0c826baba0245b826360",
+					"index" : 27
+				},
+				{
+					"id" : "libzstd_static::@0c826baba0245b826360",
+					"index" : 28
+				}
+			],
+			"paths" : 
+			[
+				"Serf/test/baselines/zstd/build/cmake/CMakeFiles/Export/24b5c28278294f635c8f75e4f2508fe8/zstdTargets.cmake"
+			],
+			"type" : "export"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/zstd",
+			"paths" : 
+			[
+				"Serf/test/baselines/zstd/build/cmake/zstdConfig.cmake",
+				"cmake-build-debug/Serf/test/baselines/zstd/build/cmake/zstdConfigVersion.cmake"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "Serf/test/baselines/zstd/build/cmake",
+		"source" : "Serf/test/baselines/zstd/build/cmake"
+	}
+}

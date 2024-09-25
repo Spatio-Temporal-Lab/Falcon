@@ -1,0 +1,5 @@
+if(EXISTS "/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/serf_test[1]_tests.cmake")
+  include("/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/serf_test[1]_tests.cmake")
+else()
+  add_test(serf_test_NOT_BUILT serf_test_NOT_BUILT)
+endif()

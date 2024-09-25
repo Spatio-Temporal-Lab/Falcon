@@ -1,0 +1,1094 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						3
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "cuSZp",
+					"childIndexes" : 
+					[
+						2
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-cuSZp-Debug-667b9a08465345908ea1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.21"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "cuSZp",
+					"targetIndexes" : 
+					[
+						9
+					]
+				},
+				{
+					"build" : "cuSZp/examples",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-cuSZp.examples-Debug-50adbbe23792f46ad57b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.21"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "cuSZp/examples",
+					"targetIndexes" : 
+					[
+						10,
+						11,
+						12,
+						13,
+						14
+					]
+				},
+				{
+					"build" : "Serf",
+					"childIndexes" : 
+					[
+						4,
+						5
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Serf-Debug-3a69d2175cb3f03eff1e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "Serf"
+				},
+				{
+					"build" : "Serf/src",
+					"jsonFile" : "directory-Serf.src-Debug-a940161fda4260cf2089.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 3,
+					"source" : "Serf/src",
+					"targetIndexes" : 
+					[
+						35
+					]
+				},
+				{
+					"build" : "Serf/test",
+					"childIndexes" : 
+					[
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						17,
+						18,
+						19,
+						21,
+						22
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Serf.test-Debug-65e5fbea7b363f349323.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 4,
+					"source" : "Serf/test",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						5,
+						7,
+						16,
+						18,
+						20,
+						24,
+						30,
+						32,
+						34,
+						36,
+						38
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/deflate",
+					"jsonFile" : "directory-Serf.test.baselines.deflate-Debug-53a1b10ca71d1d1b5cea.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 5,
+					"source" : "Serf/test/baselines/deflate",
+					"targetIndexes" : 
+					[
+						15
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/fpc",
+					"jsonFile" : "directory-Serf.test.baselines.fpc-Debug-7fffa1fe53c35b013cd3.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 6,
+					"source" : "Serf/test/baselines/fpc",
+					"targetIndexes" : 
+					[
+						19
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/lz4",
+					"jsonFile" : "directory-Serf.test.baselines.lz4-Debug-f7b7d2750cba4c7706e4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 7,
+					"source" : "Serf/test/baselines/lz4",
+					"targetIndexes" : 
+					[
+						29
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/chimp128",
+					"jsonFile" : "directory-Serf.test.baselines.chimp128-Debug-d9616d082b50bf3b29a6.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 8,
+					"source" : "Serf/test/baselines/chimp128",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/gorilla",
+					"jsonFile" : "directory-Serf.test.baselines.gorilla-Debug-f9519d46c0d22041b1d3.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 9,
+					"source" : "Serf/test/baselines/gorilla",
+					"targetIndexes" : 
+					[
+						23
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/elf",
+					"jsonFile" : "directory-Serf.test.baselines.elf-Debug-6f6e8d253f832c14f5f4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 10,
+					"source" : "Serf/test/baselines/elf",
+					"targetIndexes" : 
+					[
+						17
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/machete",
+					"jsonFile" : "directory-Serf.test.baselines.machete-Debug-548b5c587e83a8a656dd.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 11,
+					"source" : "Serf/test/baselines/machete",
+					"targetIndexes" : 
+					[
+						33
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/lz77",
+					"jsonFile" : "directory-Serf.test.baselines.lz77-Debug-54e74befaba5ca0a36a7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 12,
+					"source" : "Serf/test/baselines/lz77",
+					"targetIndexes" : 
+					[
+						31
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/sz2",
+					"childIndexes" : 
+					[
+						15,
+						16
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Serf.test.baselines.sz2-Debug-fe809691431829ac75e0.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.2"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 13,
+					"source" : "Serf/test/baselines/sz2"
+				},
+				{
+					"build" : "Serf/test/baselines/sz2/zstd",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Serf.test.baselines.sz2.zstd-Debug-8371f12133a2efdfb026.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.2"
+					},
+					"parentIndex" : 14,
+					"projectIndex" : 13,
+					"source" : "Serf/test/baselines/sz2/zstd",
+					"targetIndexes" : 
+					[
+						42
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/sz2/sz",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Serf.test.baselines.sz2.sz-Debug-602a2e5d25d5ea9ecc7c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.2"
+					},
+					"parentIndex" : 14,
+					"projectIndex" : 13,
+					"source" : "Serf/test/baselines/sz2/sz",
+					"targetIndexes" : 
+					[
+						40
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/buff",
+					"jsonFile" : "directory-Serf.test.baselines.buff-Debug-7810d032c12ae680c224.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 14,
+					"source" : "Serf/test/baselines/buff",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/snappy",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Serf.test.baselines.snappy-Debug-f6b47de0a72dac07e339.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.1"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 15,
+					"source" : "Serf/test/baselines/snappy",
+					"targetIndexes" : 
+					[
+						39
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/zstd/build/cmake",
+					"childIndexes" : 
+					[
+						20
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Serf.test.baselines.zstd.build.cmake-Debug-5285ec7f7a1401e858dd.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 16,
+					"source" : "Serf/test/baselines/zstd/build/cmake",
+					"targetIndexes" : 
+					[
+						8
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/zstd/build/cmake/lib",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Serf.test.baselines.zstd.build.cmake.lib-Debug-7279867683d5e9008291.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 19,
+					"projectIndex" : 17,
+					"source" : "Serf/test/baselines/zstd/build/cmake/lib",
+					"targetIndexes" : 
+					[
+						27,
+						28,
+						41
+					]
+				},
+				{
+					"build" : "Serf/test/baselines/sim_piece",
+					"jsonFile" : "directory-Serf.test.baselines.sim_piece-Debug-4fbc799ab36266aa3991.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 18,
+					"source" : "Serf/test/baselines/sim_piece",
+					"targetIndexes" : 
+					[
+						37
+					]
+				},
+				{
+					"build" : "_deps/googletest-build",
+					"childIndexes" : 
+					[
+						23
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.googletest-build-Debug-fa1b18db30f420365ea4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 19,
+					"source" : "cmake-build-debug/_deps/googletest-src"
+				},
+				{
+					"build" : "_deps/googletest-build/googlemock",
+					"childIndexes" : 
+					[
+						24
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.googletest-build.googlemock-Debug-9512a26df203bad84fd5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 22,
+					"projectIndex" : 20,
+					"source" : "cmake-build-debug/_deps/googletest-src/googlemock",
+					"targetIndexes" : 
+					[
+						21,
+						22
+					]
+				},
+				{
+					"build" : "_deps/googletest-build/googletest",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.googletest-build.googletest-Debug-de0a9b9587f8031df0ba.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 23,
+					"projectIndex" : 21,
+					"source" : "cmake-build-debug/_deps/googletest-src/googletest",
+					"targetIndexes" : 
+					[
+						25,
+						26
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "cuCompressor",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1,
+						2
+					],
+					"name" : "cuSZp",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						9,
+						10,
+						11,
+						12,
+						13,
+						14
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						3,
+						4
+					],
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "Serf-All",
+					"parentIndex" : 0
+				},
+				{
+					"directoryIndexes" : 
+					[
+						4
+					],
+					"name" : "Serf",
+					"parentIndex" : 2,
+					"targetIndexes" : 
+					[
+						35
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						18,
+						19
+					],
+					"directoryIndexes" : 
+					[
+						5
+					],
+					"name" : "PerfTest",
+					"parentIndex" : 2,
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						5,
+						7,
+						16,
+						18,
+						20,
+						24,
+						30,
+						32,
+						34,
+						36,
+						38
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						6
+					],
+					"name" : "Deflate",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						15
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						7
+					],
+					"name" : "FPC",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						19
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						8
+					],
+					"name" : "LZ4",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						29
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						9
+					],
+					"name" : "Chimp128",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						10
+					],
+					"name" : "Gorilla",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						23
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						11
+					],
+					"name" : "Elf",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						17
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						12
+					],
+					"name" : "Buff",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						33
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						13
+					],
+					"name" : "LZ77",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						31
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						14,
+						15,
+						16
+					],
+					"name" : "sz",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						40,
+						42
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						17
+					],
+					"name" : "Buff",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						18
+					],
+					"name" : "Snappy",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						39
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						17
+					],
+					"directoryIndexes" : 
+					[
+						19
+					],
+					"name" : "zstd",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						8
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						20
+					],
+					"name" : "libzstd",
+					"parentIndex" : 16,
+					"targetIndexes" : 
+					[
+						27,
+						28,
+						41
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						21
+					],
+					"name" : "Sim-Piece",
+					"parentIndex" : 4,
+					"targetIndexes" : 
+					[
+						37
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						20
+					],
+					"directoryIndexes" : 
+					[
+						22
+					],
+					"name" : "googletest-distribution",
+					"parentIndex" : 4
+				},
+				{
+					"childIndexes" : 
+					[
+						21
+					],
+					"directoryIndexes" : 
+					[
+						23
+					],
+					"name" : "gmock",
+					"parentIndex" : 19,
+					"targetIndexes" : 
+					[
+						21,
+						22
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						24
+					],
+					"name" : "gtest",
+					"parentIndex" : 20,
+					"targetIndexes" : 
+					[
+						25,
+						26
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 5,
+					"id" : "PerformanceProgram::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-PerformanceProgram-Debug-4eacef81d3d19010b059.json",
+					"name" : "PerformanceProgram",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "TransClient::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-TransClient-Debug-59b1f04a12ef17bb0292.json",
+					"name" : "TransClient",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "TransServer::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-TransServer-Debug-e5d07dff3a527f1a0a17.json",
+					"name" : "TransServer",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "benchmark::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-benchmark-Debug-ec7aa8bc21e30173f42b.json",
+					"name" : "benchmark",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 17,
+					"id" : "buff::@5ce44b4854b80877c053",
+					"jsonFile" : "target-buff-Debug-b34ea3e151384bf6b427.json",
+					"name" : "buff",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "buff_test::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-buff_test-Debug-87567ba39c558a2b3795.json",
+					"name" : "buff_test",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "chimp::@ef8fe9e20e130a23f5c4",
+					"jsonFile" : "target-chimp-Debug-97adcb17096d7ee95a5c.json",
+					"name" : "chimp",
+					"projectIndex" : 8
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "chimp_test::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-chimp_test-Debug-c65b1983f063be68d4bc.json",
+					"name" : "chimp_test",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 19,
+					"id" : "clean-all::@30a0484f2d8d988ffff1",
+					"jsonFile" : "target-clean-all-Debug-3660ec45693659fd1add.json",
+					"name" : "clean-all",
+					"projectIndex" : 16
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "cuSZp::@9e70d6677e8e8782f5c0",
+					"jsonFile" : "target-cuSZp-Debug-40857a69e38f956bedc0.json",
+					"name" : "cuSZp",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "cuSZp_cpu_f32_api::@5cff0d289393bf92e9e6",
+					"jsonFile" : "target-cuSZp_cpu_f32_api-Debug-010ff771cc4e8ea607b3.json",
+					"name" : "cuSZp_cpu_f32_api",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "cuSZp_cpu_f64_api::@5cff0d289393bf92e9e6",
+					"jsonFile" : "target-cuSZp_cpu_f64_api-Debug-5d228f05d24b14ff85ff.json",
+					"name" : "cuSZp_cpu_f64_api",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "cuSZp_gpu_f32_api::@5cff0d289393bf92e9e6",
+					"jsonFile" : "target-cuSZp_gpu_f32_api-Debug-41a78cf604fa5de172b1.json",
+					"name" : "cuSZp_gpu_f32_api",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "cuSZp_gpu_f64_api::@5cff0d289393bf92e9e6",
+					"jsonFile" : "target-cuSZp_gpu_f64_api-Debug-02bc7e8f1386a8da9fec.json",
+					"name" : "cuSZp_gpu_f64_api",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "cuSZp_libs::@5cff0d289393bf92e9e6",
+					"jsonFile" : "target-cuSZp_libs-Debug-247665b798eca1eb59e0.json",
+					"name" : "cuSZp_libs",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "deflate::@005f30aa7521b803c4bd",
+					"jsonFile" : "target-deflate-Debug-d0156a5436da96a82b20.json",
+					"name" : "deflate",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "deflate_test::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-deflate_test-Debug-2d0c507a8f122a462f28.json",
+					"name" : "deflate_test",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 11,
+					"id" : "elf::@ac42847beef4bb65bed9",
+					"jsonFile" : "target-elf-Debug-b889822e72bc929c794b.json",
+					"name" : "elf",
+					"projectIndex" : 10
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "elf_test::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-elf_test-Debug-3fbfd84614db7ea98346.json",
+					"name" : "elf_test",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "fpc::@aca2e7d185eb548e34df",
+					"jsonFile" : "target-fpc-Debug-dd263b6c8907e7477e9a.json",
+					"name" : "fpc",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "fpc_test::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-fpc_test-Debug-a02e26fdef115a876dc6.json",
+					"name" : "fpc_test",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 23,
+					"id" : "gmock::@0f7bb11d64f3678238c7",
+					"jsonFile" : "target-gmock-Debug-e8cacb3bfd20388edd35.json",
+					"name" : "gmock",
+					"projectIndex" : 20
+				},
+				{
+					"directoryIndex" : 23,
+					"id" : "gmock_main::@0f7bb11d64f3678238c7",
+					"jsonFile" : "target-gmock_main-Debug-5fd201649935e03e60ca.json",
+					"name" : "gmock_main",
+					"projectIndex" : 20
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "gorilla::@f173a29c3415dcf63bb3",
+					"jsonFile" : "target-gorilla-Debug-af593d0ec29b6b49c4fb.json",
+					"name" : "gorilla",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "gorilla_test::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-gorilla_test-Debug-d03394eb3b40ebfa8c01.json",
+					"name" : "gorilla_test",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 24,
+					"id" : "gtest::@1ea2dfc0605fe3ab2a3f",
+					"jsonFile" : "target-gtest-Debug-f60c9a55f9d3ed3e3176.json",
+					"name" : "gtest",
+					"projectIndex" : 21
+				},
+				{
+					"directoryIndex" : 24,
+					"id" : "gtest_main::@1ea2dfc0605fe3ab2a3f",
+					"jsonFile" : "target-gtest_main-Debug-cfa832d7b4719441ea54.json",
+					"name" : "gtest_main",
+					"projectIndex" : 21
+				},
+				{
+					"directoryIndex" : 20,
+					"id" : "libzstd_shared::@0c826baba0245b826360",
+					"jsonFile" : "target-libzstd_shared-Debug-464389e8c3c09d95213b.json",
+					"name" : "libzstd_shared",
+					"projectIndex" : 17
+				},
+				{
+					"directoryIndex" : 20,
+					"id" : "libzstd_static::@0c826baba0245b826360",
+					"jsonFile" : "target-libzstd_static-Debug-e11ac1316adf11783c61.json",
+					"name" : "libzstd_static",
+					"projectIndex" : 17
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "lz4::@5f9a6c02a002940d6a7e",
+					"jsonFile" : "target-lz4-Debug-79a16008206fc5513b34.json",
+					"name" : "lz4",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "lz4_test::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-lz4_test-Debug-9c75aeba9747199b7311.json",
+					"name" : "lz4_test",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "lz77::@28d581fc192013de27f1",
+					"jsonFile" : "target-lz77-Debug-6c50dd7b22e964d16345.json",
+					"name" : "lz77",
+					"projectIndex" : 12
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "lz77_test::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-lz77_test-Debug-704ecd9b83595b486f14.json",
+					"name" : "lz77_test",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "machete::@41a8ef07c9890d77433e",
+					"jsonFile" : "target-machete-Debug-221301e0516678b7def8.json",
+					"name" : "machete",
+					"projectIndex" : 11
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "machete_test::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-machete_test-Debug-d9322a190728da0ab955.json",
+					"name" : "machete_test",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "serf::@1332954cbd44c783a753",
+					"jsonFile" : "target-serf-Debug-e5b4e71a13ff97124623.json",
+					"name" : "serf",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "serf_test::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-serf_test-Debug-eafa3456e2f2eb834b26.json",
+					"name" : "serf_test",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 21,
+					"id" : "sim_piece::@421efff32ba7a03335ac",
+					"jsonFile" : "target-sim_piece-Debug-f6ecbc4d7852851c117f.json",
+					"name" : "sim_piece",
+					"projectIndex" : 18
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "sim_piece_test::@eeb65769c74e99b84be8",
+					"jsonFile" : "target-sim_piece_test-Debug-9fdea87760c4ef867929.json",
+					"name" : "sim_piece_test",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 18,
+					"id" : "snappy::@0491e5b462c2aa9744c8",
+					"jsonFile" : "target-snappy-Debug-a7a18acb85318139b77f.json",
+					"name" : "snappy",
+					"projectIndex" : 15
+				},
+				{
+					"directoryIndex" : 16,
+					"id" : "sz::@4f1efe2ed009a57b4e0e",
+					"jsonFile" : "target-sz-Debug-8070f59294d713d1bf39.json",
+					"name" : "sz",
+					"projectIndex" : 13
+				},
+				{
+					"directoryIndex" : 20,
+					"id" : "uninstall::@0c826baba0245b826360",
+					"jsonFile" : "target-uninstall-Debug-577e4ebb74e5d9ee61df.json",
+					"name" : "uninstall",
+					"projectIndex" : 17
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "zstd::@bb90fd013d54dccab854",
+					"jsonFile" : "target-zstd-Debug-115502ca0c8d3892030a.json",
+					"name" : "zstd",
+					"projectIndex" : 13
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/lz/workspace/cuCompressor/cmake-build-debug",
+		"source" : "/home/lz/workspace/cuCompressor"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}
