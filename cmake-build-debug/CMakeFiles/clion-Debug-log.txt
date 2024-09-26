@@ -34,15 +34,14 @@ CMake Deprecation Warning at Serf/test/baselines/zstd/build/cmake/CMakeLists.txt
 -- ZSTD_MULTITHREAD_SUPPORT is enabled
 -- [SelfCheck] Loading GoogleTest module
 -- [SelfCheck] Loaded GoogleTest module
+CMake Error at src/CMakeLists.txt:16 (add_library):
+  add_library cannot create target "serf" because another target with the
+  same name already exists.  The existing target is a shared library created
+  in source directory "/home/lz/workspace/cuCompressor/Serf/src".  See
+  documentation for policy CMP0002 for more details.
+
+
 CMake Error at CMakeLists.txt:14 (add_subdirectory):
-  The source directory
-
-    /home/lz/workspace/cuCompressor/src/gpu
-
-  does not contain a CMakeLists.txt file.
-
-
-CMake Error at CMakeLists.txt:16 (add_subdirectory):
   The source directory
 
     /home/lz/workspace/cuCompressor/test

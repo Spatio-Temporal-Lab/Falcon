@@ -11,7 +11,7 @@
 # =============================================================================
 
 # =============================================================================
-# Project: cuCompressor
+# Project: cuCompressor-all
 # Configurations: Debug
 # =============================================================================
 
@@ -51,7 +51,7 @@ build cmake_object_order_depends_target_benchmark: phony || cmake_object_order_d
 
 build CMakeFiles/benchmark.dir/benchmark.cpp.o: CXX_COMPILER__benchmark_unscanned_Debug /home/lz/workspace/cuCompressor/benchmark.cpp || cmake_object_order_depends_target_benchmark
   DEP_FILE = CMakeFiles/benchmark.dir/benchmark.cpp.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles/benchmark.dir
   OBJECT_FILE_DIR = CMakeFiles/benchmark.dir
 
@@ -997,7 +997,7 @@ build cmake_object_order_depends_target_buff_test: phony || cmake_object_order_d
 build Serf/test/CMakeFiles/buff_test.dir/unit_test/buff_test.cc.o: CXX_COMPILER__buff_test_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/unit_test/buff_test.cc || cmake_object_order_depends_target_buff_test
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/buff_test.dir/unit_test/buff_test.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = Serf/test/CMakeFiles/buff_test.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/buff_test.dir/unit_test
@@ -1032,7 +1032,7 @@ build cmake_object_order_depends_target_chimp_test: phony || cmake_object_order_
 build Serf/test/CMakeFiles/chimp_test.dir/unit_test/chimp_test.cc.o: CXX_COMPILER__chimp_test_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/unit_test/chimp_test.cc || cmake_object_order_depends_target_chimp_test
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/chimp_test.dir/unit_test/chimp_test.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = Serf/test/CMakeFiles/chimp_test.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/chimp_test.dir/unit_test
@@ -1067,7 +1067,7 @@ build cmake_object_order_depends_target_deflate_test: phony || cmake_object_orde
 build Serf/test/CMakeFiles/deflate_test.dir/unit_test/deflate_test.cc.o: CXX_COMPILER__deflate_test_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/unit_test/deflate_test.cc || cmake_object_order_depends_target_deflate_test
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/deflate_test.dir/unit_test/deflate_test.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = Serf/test/CMakeFiles/deflate_test.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/deflate_test.dir/unit_test
@@ -1102,7 +1102,7 @@ build cmake_object_order_depends_target_elf_test: phony || cmake_object_order_de
 build Serf/test/CMakeFiles/elf_test.dir/unit_test/elf_test.cc.o: CXX_COMPILER__elf_test_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/unit_test/elf_test.cc || cmake_object_order_depends_target_elf_test
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/elf_test.dir/unit_test/elf_test.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = Serf/test/CMakeFiles/elf_test.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/elf_test.dir/unit_test
@@ -1137,7 +1137,7 @@ build cmake_object_order_depends_target_fpc_test: phony || cmake_object_order_de
 build Serf/test/CMakeFiles/fpc_test.dir/unit_test/fpc_test.cc.o: CXX_COMPILER__fpc_test_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/unit_test/fpc_test.cc || cmake_object_order_depends_target_fpc_test
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/fpc_test.dir/unit_test/fpc_test.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = Serf/test/CMakeFiles/fpc_test.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/fpc_test.dir/unit_test
@@ -1172,7 +1172,7 @@ build cmake_object_order_depends_target_gorilla_test: phony || cmake_object_orde
 build Serf/test/CMakeFiles/gorilla_test.dir/unit_test/gorilla_test.cc.o: CXX_COMPILER__gorilla_test_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/unit_test/gorilla_test.cc || cmake_object_order_depends_target_gorilla_test
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/gorilla_test.dir/unit_test/gorilla_test.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = Serf/test/CMakeFiles/gorilla_test.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/gorilla_test.dir/unit_test
@@ -1207,7 +1207,7 @@ build cmake_object_order_depends_target_lz4_test: phony || cmake_object_order_de
 build Serf/test/CMakeFiles/lz4_test.dir/unit_test/lz4_test.cc.o: CXX_COMPILER__lz4_test_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/unit_test/lz4_test.cc || cmake_object_order_depends_target_lz4_test
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/lz4_test.dir/unit_test/lz4_test.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = Serf/test/CMakeFiles/lz4_test.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/lz4_test.dir/unit_test
@@ -1242,7 +1242,7 @@ build cmake_object_order_depends_target_lz77_test: phony || cmake_object_order_d
 build Serf/test/CMakeFiles/lz77_test.dir/unit_test/lz77_test.cc.o: CXX_COMPILER__lz77_test_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/unit_test/lz77_test.cc || cmake_object_order_depends_target_lz77_test
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/lz77_test.dir/unit_test/lz77_test.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = Serf/test/CMakeFiles/lz77_test.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/lz77_test.dir/unit_test
@@ -1277,7 +1277,7 @@ build cmake_object_order_depends_target_machete_test: phony || cmake_object_orde
 build Serf/test/CMakeFiles/machete_test.dir/unit_test/machete_test.cc.o: CXX_COMPILER__machete_test_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/unit_test/machete_test.cc || cmake_object_order_depends_target_machete_test
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/machete_test.dir/unit_test/machete_test.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = Serf/test/CMakeFiles/machete_test.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/machete_test.dir/unit_test
@@ -1312,7 +1312,7 @@ build cmake_object_order_depends_target_serf_test: phony || cmake_object_order_d
 build Serf/test/CMakeFiles/serf_test.dir/unit_test/serf_test.cc.o: CXX_COMPILER__serf_test_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/unit_test/serf_test.cc || cmake_object_order_depends_target_serf_test
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/serf_test.dir/unit_test/serf_test.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = Serf/test/CMakeFiles/serf_test.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/serf_test.dir/unit_test
@@ -1347,7 +1347,7 @@ build cmake_object_order_depends_target_sim_piece_test: phony || cmake_object_or
 build Serf/test/CMakeFiles/sim_piece_test.dir/unit_test/sim_piece_test.cc.o: CXX_COMPILER__sim_piece_test_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/unit_test/sim_piece_test.cc || cmake_object_order_depends_target_sim_piece_test
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/sim_piece_test.dir/unit_test/sim_piece_test.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = Serf/test/CMakeFiles/sim_piece_test.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/sim_piece_test.dir/unit_test
@@ -1382,7 +1382,7 @@ build cmake_object_order_depends_target_PerformanceProgram: phony || cmake_objec
 build Serf/test/CMakeFiles/PerformanceProgram.dir/Perf.cc.o: CXX_COMPILER__PerformanceProgram_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/Perf.cc || cmake_object_order_depends_target_PerformanceProgram
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/PerformanceProgram.dir/Perf.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -I/home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/sz/include -I/home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/zstd -I/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/baselines/snappy -I/home/lz/workspace/cuCompressor/Serf/test/baselines/snappy -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = Serf/test/CMakeFiles/PerformanceProgram.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/PerformanceProgram.dir
@@ -1417,7 +1417,7 @@ build cmake_object_order_depends_target_TransClient: phony || cmake_object_order
 build Serf/test/CMakeFiles/TransClient.dir/transmission/prog/client.cc.o: CXX_COMPILER__TransClient_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/transmission/prog/client.cc || cmake_object_order_depends_target_TransClient
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/TransClient.dir/transmission/prog/client.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test
   OBJECT_DIR = Serf/test/CMakeFiles/TransClient.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/TransClient.dir/transmission/prog
@@ -1451,7 +1451,7 @@ build cmake_object_order_depends_target_TransServer: phony || cmake_object_order
 build Serf/test/CMakeFiles/TransServer.dir/transmission/prog/server.cc.o: CXX_COMPILER__TransServer_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/transmission/prog/server.cc || cmake_object_order_depends_target_TransServer
   DEFINES = -DLINUX -DUNIX
   DEP_FILE = Serf/test/CMakeFiles/TransServer.dir/transmission/prog/server.cc.o.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test
   OBJECT_DIR = Serf/test/CMakeFiles/TransServer.dir
   OBJECT_FILE_DIR = Serf/test/CMakeFiles/TransServer.dir/transmission/prog
@@ -3831,7 +3831,7 @@ build cmake_object_order_depends_target_snappy: phony || .
 build Serf/test/baselines/snappy/CMakeFiles/snappy.dir/snappy-c.cc.o: CXX_COMPILER__snappy_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/snappy-c.cc || cmake_object_order_depends_target_snappy
   DEFINES = -DHAVE_CONFIG_H -DLINUX -DUNIX -Dsnappy_EXPORTS
   DEP_FILE = Serf/test/baselines/snappy/CMakeFiles/snappy.dir/snappy-c.cc.o.d
-  FLAGS = -Wall -Wextra -Wno-sign-compare -fno-exceptions -fno-rtti -g -std=c++11 -fPIC -fdiagnostics-color=always
+  FLAGS = -Wall -Wextra -Wno-sign-compare -fno-exceptions -fno-rtti -g -std=gnu++17 -fPIC -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/baselines/snappy -I/home/lz/workspace/cuCompressor/Serf/test/baselines/snappy
   OBJECT_DIR = Serf/test/baselines/snappy/CMakeFiles/snappy.dir
   OBJECT_FILE_DIR = Serf/test/baselines/snappy/CMakeFiles/snappy.dir
@@ -3839,7 +3839,7 @@ build Serf/test/baselines/snappy/CMakeFiles/snappy.dir/snappy-c.cc.o: CXX_COMPIL
 build Serf/test/baselines/snappy/CMakeFiles/snappy.dir/snappy-sinksource.cc.o: CXX_COMPILER__snappy_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/snappy-sinksource.cc || cmake_object_order_depends_target_snappy
   DEFINES = -DHAVE_CONFIG_H -DLINUX -DUNIX -Dsnappy_EXPORTS
   DEP_FILE = Serf/test/baselines/snappy/CMakeFiles/snappy.dir/snappy-sinksource.cc.o.d
-  FLAGS = -Wall -Wextra -Wno-sign-compare -fno-exceptions -fno-rtti -g -std=c++11 -fPIC -fdiagnostics-color=always
+  FLAGS = -Wall -Wextra -Wno-sign-compare -fno-exceptions -fno-rtti -g -std=gnu++17 -fPIC -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/baselines/snappy -I/home/lz/workspace/cuCompressor/Serf/test/baselines/snappy
   OBJECT_DIR = Serf/test/baselines/snappy/CMakeFiles/snappy.dir
   OBJECT_FILE_DIR = Serf/test/baselines/snappy/CMakeFiles/snappy.dir
@@ -3847,7 +3847,7 @@ build Serf/test/baselines/snappy/CMakeFiles/snappy.dir/snappy-sinksource.cc.o: C
 build Serf/test/baselines/snappy/CMakeFiles/snappy.dir/snappy-stubs-internal.cc.o: CXX_COMPILER__snappy_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/snappy-stubs-internal.cc || cmake_object_order_depends_target_snappy
   DEFINES = -DHAVE_CONFIG_H -DLINUX -DUNIX -Dsnappy_EXPORTS
   DEP_FILE = Serf/test/baselines/snappy/CMakeFiles/snappy.dir/snappy-stubs-internal.cc.o.d
-  FLAGS = -Wall -Wextra -Wno-sign-compare -fno-exceptions -fno-rtti -g -std=c++11 -fPIC -fdiagnostics-color=always
+  FLAGS = -Wall -Wextra -Wno-sign-compare -fno-exceptions -fno-rtti -g -std=gnu++17 -fPIC -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/baselines/snappy -I/home/lz/workspace/cuCompressor/Serf/test/baselines/snappy
   OBJECT_DIR = Serf/test/baselines/snappy/CMakeFiles/snappy.dir
   OBJECT_FILE_DIR = Serf/test/baselines/snappy/CMakeFiles/snappy.dir
@@ -3855,7 +3855,7 @@ build Serf/test/baselines/snappy/CMakeFiles/snappy.dir/snappy-stubs-internal.cc.
 build Serf/test/baselines/snappy/CMakeFiles/snappy.dir/snappy.cc.o: CXX_COMPILER__snappy_unscanned_Debug /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/snappy.cc || cmake_object_order_depends_target_snappy
   DEFINES = -DHAVE_CONFIG_H -DLINUX -DUNIX -Dsnappy_EXPORTS
   DEP_FILE = Serf/test/baselines/snappy/CMakeFiles/snappy.dir/snappy.cc.o.d
-  FLAGS = -Wall -Wextra -Wno-sign-compare -fno-exceptions -fno-rtti -g -std=c++11 -fPIC -fdiagnostics-color=always
+  FLAGS = -Wall -Wextra -Wno-sign-compare -fno-exceptions -fno-rtti -g -std=gnu++17 -fPIC -fdiagnostics-color=always
   INCLUDES = -I/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/baselines/snappy -I/home/lz/workspace/cuCompressor/Serf/test/baselines/snappy
   OBJECT_DIR = Serf/test/baselines/snappy/CMakeFiles/snappy.dir
   OBJECT_FILE_DIR = Serf/test/baselines/snappy/CMakeFiles/snappy.dir
@@ -4994,7 +4994,7 @@ build cmake_object_order_depends_target_gmock: phony || cmake_object_order_depen
 build _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o: CXX_COMPILER__gmock_unscanned_Debug /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googlemock/src/gmock-all.cc || cmake_object_order_depends_target_gmock
   DEFINES = -DGTEST_CREATE_SHARED_LIBRARY=1 -DLINUX -DUNIX -Dgmock_EXPORTS
   DEP_FILE = _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o.d
-  FLAGS = -g -fPIC -fdiagnostics-color=always -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
+  FLAGS = -g -std=c++17 -fPIC -fdiagnostics-color=always -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -I/home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googlemock/include -I/home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googlemock -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = _deps/googletest-build/googlemock/CMakeFiles/gmock.dir
   OBJECT_FILE_DIR = _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src
@@ -5039,7 +5039,7 @@ build cmake_object_order_depends_target_gmock_main: phony || cmake_object_order_
 build _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o: CXX_COMPILER__gmock_main_unscanned_Debug /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googlemock/src/gmock_main.cc || cmake_object_order_depends_target_gmock_main
   DEFINES = -DGTEST_CREATE_SHARED_LIBRARY=1 -DLINUX -DUNIX -Dgmock_main_EXPORTS
   DEP_FILE = _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o.d
-  FLAGS = -g -fPIC -fdiagnostics-color=always -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
+  FLAGS = -g -std=c++17 -fPIC -fdiagnostics-color=always -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googlemock/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googlemock -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir
   OBJECT_FILE_DIR = _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src
@@ -5154,7 +5154,7 @@ build cmake_object_order_depends_target_gtest: phony || .
 build _deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o: CXX_COMPILER__gtest_unscanned_Debug /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/src/gtest-all.cc || cmake_object_order_depends_target_gtest
   DEFINES = -DGTEST_CREATE_SHARED_LIBRARY=1 -DLINUX -DUNIX -Dgtest_EXPORTS
   DEP_FILE = _deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o.d
-  FLAGS = -g -fPIC -fdiagnostics-color=always -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
+  FLAGS = -g -std=c++17 -fPIC -fdiagnostics-color=always -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -I/home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -I/home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = _deps/googletest-build/googletest/CMakeFiles/gtest.dir
   OBJECT_FILE_DIR = _deps/googletest-build/googletest/CMakeFiles/gtest.dir/src
@@ -5198,7 +5198,7 @@ build cmake_object_order_depends_target_gtest_main: phony || cmake_object_order_
 build _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o: CXX_COMPILER__gtest_main_unscanned_Debug /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/src/gtest_main.cc || cmake_object_order_depends_target_gtest_main
   DEFINES = -DGTEST_CREATE_SHARED_LIBRARY=1 -DLINUX -DUNIX -Dgtest_main_EXPORTS
   DEP_FILE = _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o.d
-  FLAGS = -g -fPIC -fdiagnostics-color=always -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
+  FLAGS = -g -std=c++17 -fPIC -fdiagnostics-color=always -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
   INCLUDES = -I/home/lz/workspace/cuCompressor/src -I/home/lz/workspace/cuCompressor/Serf/test -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest/include -isystem /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-src/googletest
   OBJECT_DIR = _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir
   OBJECT_FILE_DIR = _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src
@@ -5297,6 +5297,177 @@ build _deps/googletest-build/googletest/CMakeFiles/install/strip.util: CUSTOM_CO
 build _deps/googletest-build/googletest/install/strip: phony _deps/googletest-build/googletest/CMakeFiles/install/strip.util
 
 # =============================================================================
+# Write statements declared in CMakeLists.txt:
+# /home/lz/workspace/cuCompressor/CMakeLists.txt
+# =============================================================================
+
+
+#############################################
+# Utility command for edit_cache
+
+build src/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /home/lz/workspace/cuCompressor/cmake-build-debug/src && /snap/clion/296/bin/cmake/linux/x64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  DESC = No interactive CMake dialog available...
+  restat = 1
+
+build src/edit_cache: phony src/CMakeFiles/edit_cache.util
+
+
+#############################################
+# Utility command for rebuild_cache
+
+build src/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /home/lz/workspace/cuCompressor/cmake-build-debug/src && /snap/clion/296/bin/cmake/linux/x64/bin/cmake --regenerate-during-build -S/home/lz/workspace/cuCompressor -B/home/lz/workspace/cuCompressor/cmake-build-debug
+  DESC = Running CMake to regenerate build system...
+  pool = console
+  restat = 1
+
+build src/rebuild_cache: phony src/CMakeFiles/rebuild_cache.util
+
+
+#############################################
+# Utility command for list_install_components
+
+build src/list_install_components: phony
+
+
+#############################################
+# Utility command for install
+
+build src/CMakeFiles/install.util: CUSTOM_COMMAND src/all
+  COMMAND = cd /home/lz/workspace/cuCompressor/cmake-build-debug/src && /snap/clion/296/bin/cmake/linux/x64/bin/cmake -P cmake_install.cmake
+  DESC = Install the project...
+  pool = console
+  restat = 1
+
+build src/install: phony src/CMakeFiles/install.util
+
+
+#############################################
+# Utility command for install/local
+
+build src/CMakeFiles/install/local.util: CUSTOM_COMMAND src/all
+  COMMAND = cd /home/lz/workspace/cuCompressor/cmake-build-debug/src && /snap/clion/296/bin/cmake/linux/x64/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+  DESC = Installing only the local directory...
+  pool = console
+  restat = 1
+
+build src/install/local: phony src/CMakeFiles/install/local.util
+
+
+#############################################
+# Utility command for install/strip
+
+build src/CMakeFiles/install/strip.util: CUSTOM_COMMAND src/all
+  COMMAND = cd /home/lz/workspace/cuCompressor/cmake-build-debug/src && /snap/clion/296/bin/cmake/linux/x64/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+  DESC = Installing the project stripped...
+  pool = console
+  restat = 1
+
+build src/install/strip: phony src/CMakeFiles/install/strip.util
+
+# =============================================================================
+# Write statements declared in CMakeLists.txt:
+# /home/lz/workspace/cuCompressor/CMakeLists.txt
+# =============================================================================
+
+# =============================================================================
+# Object build statements for EXECUTABLE target compression_tests
+
+
+#############################################
+# Order-only phony target for compression_tests
+
+build cmake_object_order_depends_target_compression_tests: phony || .
+
+build test/CMakeFiles/compression_tests.dir/test_compression.cpp.o: CXX_COMPILER__compression_tests_unscanned_Debug /home/lz/workspace/cuCompressor/test/test_compression.cpp || cmake_object_order_depends_target_compression_tests
+  DEP_FILE = test/CMakeFiles/compression_tests.dir/test_compression.cpp.o.d
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
+  OBJECT_DIR = test/CMakeFiles/compression_tests.dir
+  OBJECT_FILE_DIR = test/CMakeFiles/compression_tests.dir
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target compression_tests
+
+
+#############################################
+# Link the executable test/compression_tests
+
+build test/compression_tests: CXX_EXECUTABLE_LINKER__compression_tests_Debug test/CMakeFiles/compression_tests.dir/test_compression.cpp.o
+  FLAGS = -g
+  OBJECT_DIR = test/CMakeFiles/compression_tests.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = test/compression_tests
+  TARGET_PDB = compression_tests.dbg
+
+
+#############################################
+# Utility command for edit_cache
+
+build test/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /home/lz/workspace/cuCompressor/cmake-build-debug/test && /snap/clion/296/bin/cmake/linux/x64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  DESC = No interactive CMake dialog available...
+  restat = 1
+
+build test/edit_cache: phony test/CMakeFiles/edit_cache.util
+
+
+#############################################
+# Utility command for rebuild_cache
+
+build test/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /home/lz/workspace/cuCompressor/cmake-build-debug/test && /snap/clion/296/bin/cmake/linux/x64/bin/cmake --regenerate-during-build -S/home/lz/workspace/cuCompressor -B/home/lz/workspace/cuCompressor/cmake-build-debug
+  DESC = Running CMake to regenerate build system...
+  pool = console
+  restat = 1
+
+build test/rebuild_cache: phony test/CMakeFiles/rebuild_cache.util
+
+
+#############################################
+# Utility command for list_install_components
+
+build test/list_install_components: phony
+
+
+#############################################
+# Utility command for install
+
+build test/CMakeFiles/install.util: CUSTOM_COMMAND test/all
+  COMMAND = cd /home/lz/workspace/cuCompressor/cmake-build-debug/test && /snap/clion/296/bin/cmake/linux/x64/bin/cmake -P cmake_install.cmake
+  DESC = Install the project...
+  pool = console
+  restat = 1
+
+build test/install: phony test/CMakeFiles/install.util
+
+
+#############################################
+# Utility command for install/local
+
+build test/CMakeFiles/install/local.util: CUSTOM_COMMAND test/all
+  COMMAND = cd /home/lz/workspace/cuCompressor/cmake-build-debug/test && /snap/clion/296/bin/cmake/linux/x64/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+  DESC = Installing only the local directory...
+  pool = console
+  restat = 1
+
+build test/install/local: phony test/CMakeFiles/install/local.util
+
+
+#############################################
+# Utility command for install/strip
+
+build test/CMakeFiles/install/strip.util: CUSTOM_COMMAND test/all
+  COMMAND = cd /home/lz/workspace/cuCompressor/cmake-build-debug/test && /snap/clion/296/bin/cmake/linux/x64/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+  DESC = Installing the project stripped...
+  pool = console
+  restat = 1
+
+build test/install/strip: phony test/CMakeFiles/install/strip.util
+
+# =============================================================================
 # Target aliases.
 
 build PerformanceProgram: phony Serf/test/PerformanceProgram
@@ -5314,6 +5485,8 @@ build chimp: phony Serf/test/baselines/chimp128/libchimp.so
 build chimp_test: phony Serf/test/chimp_test
 
 build clean-all: phony Serf/test/baselines/zstd/build/cmake/clean-all
+
+build compression_tests: phony test/compression_tests
 
 build cuSZp: phony cuSZp/libcuSZpd.a
 
@@ -5433,7 +5606,7 @@ build zstd: phony Serf/test/baselines/sz2/zstd/libzstd.so
 #############################################
 # Folder: /home/lz/workspace/cuCompressor/cmake-build-debug
 
-build all: phony benchmark cuSZp/all Serf/all
+build all: phony benchmark cuSZp/all Serf/all src/all test/all
 
 # =============================================================================
 
@@ -5604,20 +5777,34 @@ build cuSZp/all: phony cuSZp/libcuSZpd.a cuSZp/examples/all
 build cuSZp/examples/all: phony cuSZp/examples/libcuSZp_libs.a cuSZp/examples/bin/cuSZp_gpu_f32_api cuSZp/examples/bin/cuSZp_cpu_f32_api cuSZp/examples/bin/cuSZp_gpu_f64_api cuSZp/examples/bin/cuSZp_cpu_f64_api
 
 # =============================================================================
+
+#############################################
+# Folder: /home/lz/workspace/cuCompressor/cmake-build-debug/src
+
+build src/all: phony
+
+# =============================================================================
+
+#############################################
+# Folder: /home/lz/workspace/cuCompressor/cmake-build-debug/test
+
+build test/all: phony test/compression_tests
+
+# =============================================================================
 # Built-in targets
 
 
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | /home/lz/workspace/cuCompressor/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/src/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/buff/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/chimp128/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/deflate/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/elf/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/fpc/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/gorilla/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/lz4/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/lz77/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/machete/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/sim_piece/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/cmake/SnappyConfig.cmake.in /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/cmake/config.h.in /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/snappy-stubs-public.h.in /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/config.h.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/sz.pc.in /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/sz/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/zstd/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeModules/AddZstdCompilationFlags.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeModules/GetZstdLibraryVersion.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeModules/JoinPaths.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/lib/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/lib/cmake_uninstall.cmake.in /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/zstdConfig.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/lib/libzstd.pc.in /home/lz/workspace/cuCompressor/cuSZp/CMakeLists.txt /home/lz/workspace/cuCompressor/cuSZp/Config.cmake.in /home/lz/workspace/cuCompressor/cuSZp/cmake/Installing.cmake /home/lz/workspace/cuCompressor/cuSZp/examples/CMakeLists.txt /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/BasicConfigVersion-SameMajorVersion.cmake.in /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeASMInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCUDAInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCXXInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCommonLanguageInclude.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeDependentOption.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeGenericSystem.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeInitializeConfigs.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeLanguageInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakePackageConfigHelpers.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeParseImplicitLinkInfo.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeSystemSpecificInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeSystemSpecificInitialize.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCCompilerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCSourceCompiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCXXCompilerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCXXSourceCompiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckFunctionExists.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckIncludeFile.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckIncludeFileCXX.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckIncludeFiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckLibraryExists.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckLinkerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckSymbolExists.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckTypeSize.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/CMakeCommonCompilerMacros.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU-ASM.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU-C.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU-CXX.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/NVIDIA-CUDA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/NVIDIA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/ExternalProject/shared_internal_commands.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FetchContent.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FetchContent/CMakeLists.cmake.in /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDA/run_nvcc.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDA/select_compute_arch.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDAToolkit.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindOpenMP.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPackageHandleStandardArgs.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPackageMessage.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPkgConfig.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPython/Support.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPython3.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindThreads.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindZLIB.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/GNUInstallDirs.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/GoogleTest.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckCompilerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckFlagCommonConfig.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckLinkerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-GNU-C.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-GNU-CXX.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-GNU.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-Initialize.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-NVIDIA-CUDA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/UnixPaths.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/SelectLibraryConfigurations.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/TestBigEndian.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/WriteBasicConfigVersionFile.cmake CMakeCache.txt CMakeFiles/3.29.6/CMakeASMCompiler.cmake CMakeFiles/3.29.6/CMakeCCompiler.cmake CMakeFiles/3.29.6/CMakeCUDACompiler.cmake CMakeFiles/3.29.6/CMakeCXXCompiler.cmake CMakeFiles/3.29.6/CMakeSystem.cmake _deps/googletest-src/CMakeLists.txt _deps/googletest-src/googlemock/CMakeLists.txt _deps/googletest-src/googlemock/cmake/gmock.pc.in _deps/googletest-src/googlemock/cmake/gmock_main.pc.in _deps/googletest-src/googletest/CMakeLists.txt _deps/googletest-src/googletest/cmake/Config.cmake.in _deps/googletest-src/googletest/cmake/gtest.pc.in _deps/googletest-src/googletest/cmake/gtest_main.pc.in _deps/googletest-src/googletest/cmake/internal_utils.cmake cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f32.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f32.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f64.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f64.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f32.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f32.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f64.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f64.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_timer.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_timer.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_utility.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_utility.cu.o.depend
+build build.ninja: RERUN_CMAKE | /home/lz/workspace/cuCompressor/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/src/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/buff/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/chimp128/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/deflate/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/elf/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/fpc/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/gorilla/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/lz4/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/lz77/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/machete/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/sim_piece/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/cmake/SnappyConfig.cmake.in /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/cmake/config.h.in /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/snappy-stubs-public.h.in /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/config.h.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/sz.pc.in /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/sz/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/zstd/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeModules/AddZstdCompilationFlags.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeModules/GetZstdLibraryVersion.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeModules/JoinPaths.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/lib/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/lib/cmake_uninstall.cmake.in /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/zstdConfig.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/lib/libzstd.pc.in /home/lz/workspace/cuCompressor/cuSZp/CMakeLists.txt /home/lz/workspace/cuCompressor/cuSZp/Config.cmake.in /home/lz/workspace/cuCompressor/cuSZp/cmake/Installing.cmake /home/lz/workspace/cuCompressor/cuSZp/examples/CMakeLists.txt /home/lz/workspace/cuCompressor/src/CMakeLists.txt /home/lz/workspace/cuCompressor/test/CMakeLists.txt /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/BasicConfigVersion-SameMajorVersion.cmake.in /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeASMInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCUDAInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCXXInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCommonLanguageInclude.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeDependentOption.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeGenericSystem.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeInitializeConfigs.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeLanguageInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakePackageConfigHelpers.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeParseImplicitLinkInfo.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeSystemSpecificInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeSystemSpecificInitialize.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCCompilerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCSourceCompiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCXXCompilerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCXXSourceCompiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckFunctionExists.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckIncludeFile.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckIncludeFileCXX.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckIncludeFiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckLibraryExists.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckLinkerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckSymbolExists.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckTypeSize.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/CMakeCommonCompilerMacros.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU-ASM.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU-C.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU-CXX.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/NVIDIA-CUDA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/NVIDIA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/ExternalProject/shared_internal_commands.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FetchContent.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FetchContent/CMakeLists.cmake.in /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDA/run_nvcc.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDA/select_compute_arch.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDAToolkit.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindOpenMP.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPackageHandleStandardArgs.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPackageMessage.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPkgConfig.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPython/Support.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPython3.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindThreads.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindZLIB.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/GNUInstallDirs.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/GoogleTest.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckCompilerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckFlagCommonConfig.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckLinkerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-GNU-C.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-GNU-CXX.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-GNU.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-Initialize.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-NVIDIA-CUDA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/UnixPaths.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/SelectLibraryConfigurations.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/TestBigEndian.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/WriteBasicConfigVersionFile.cmake CMakeCache.txt CMakeFiles/3.29.6/CMakeASMCompiler.cmake CMakeFiles/3.29.6/CMakeCCompiler.cmake CMakeFiles/3.29.6/CMakeCUDACompiler.cmake CMakeFiles/3.29.6/CMakeCXXCompiler.cmake CMakeFiles/3.29.6/CMakeSystem.cmake _deps/googletest-src/CMakeLists.txt _deps/googletest-src/googlemock/CMakeLists.txt _deps/googletest-src/googlemock/cmake/gmock.pc.in _deps/googletest-src/googlemock/cmake/gmock_main.pc.in _deps/googletest-src/googletest/CMakeLists.txt _deps/googletest-src/googletest/cmake/Config.cmake.in _deps/googletest-src/googletest/cmake/gtest.pc.in _deps/googletest-src/googletest/cmake/gtest_main.pc.in _deps/googletest-src/googletest/cmake/internal_utils.cmake cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f32.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f32.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f64.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f64.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f32.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f32.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f64.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f64.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_timer.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_timer.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_utility.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_utility.cu.o.depend
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build /home/lz/workspace/cuCompressor/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/src/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/buff/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/chimp128/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/deflate/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/elf/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/fpc/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/gorilla/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/lz4/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/lz77/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/machete/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/sim_piece/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/cmake/SnappyConfig.cmake.in /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/cmake/config.h.in /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/snappy-stubs-public.h.in /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/config.h.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/sz.pc.in /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/sz/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/zstd/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeModules/AddZstdCompilationFlags.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeModules/GetZstdLibraryVersion.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeModules/JoinPaths.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/lib/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/lib/cmake_uninstall.cmake.in /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/zstdConfig.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/lib/libzstd.pc.in /home/lz/workspace/cuCompressor/cuSZp/CMakeLists.txt /home/lz/workspace/cuCompressor/cuSZp/Config.cmake.in /home/lz/workspace/cuCompressor/cuSZp/cmake/Installing.cmake /home/lz/workspace/cuCompressor/cuSZp/examples/CMakeLists.txt /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/BasicConfigVersion-SameMajorVersion.cmake.in /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeASMInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCUDAInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCXXInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCommonLanguageInclude.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeDependentOption.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeGenericSystem.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeInitializeConfigs.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeLanguageInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakePackageConfigHelpers.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeParseImplicitLinkInfo.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeSystemSpecificInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeSystemSpecificInitialize.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCCompilerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCSourceCompiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCXXCompilerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCXXSourceCompiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckFunctionExists.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckIncludeFile.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckIncludeFileCXX.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckIncludeFiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckLibraryExists.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckLinkerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckSymbolExists.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckTypeSize.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/CMakeCommonCompilerMacros.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU-ASM.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU-C.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU-CXX.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/NVIDIA-CUDA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/NVIDIA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/ExternalProject/shared_internal_commands.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FetchContent.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FetchContent/CMakeLists.cmake.in /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDA/run_nvcc.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDA/select_compute_arch.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDAToolkit.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindOpenMP.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPackageHandleStandardArgs.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPackageMessage.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPkgConfig.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPython/Support.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPython3.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindThreads.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindZLIB.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/GNUInstallDirs.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/GoogleTest.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckCompilerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckFlagCommonConfig.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckLinkerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-GNU-C.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-GNU-CXX.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-GNU.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-Initialize.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-NVIDIA-CUDA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/UnixPaths.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/SelectLibraryConfigurations.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/TestBigEndian.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/WriteBasicConfigVersionFile.cmake CMakeCache.txt CMakeFiles/3.29.6/CMakeASMCompiler.cmake CMakeFiles/3.29.6/CMakeCCompiler.cmake CMakeFiles/3.29.6/CMakeCUDACompiler.cmake CMakeFiles/3.29.6/CMakeCXXCompiler.cmake CMakeFiles/3.29.6/CMakeSystem.cmake _deps/googletest-src/CMakeLists.txt _deps/googletest-src/googlemock/CMakeLists.txt _deps/googletest-src/googlemock/cmake/gmock.pc.in _deps/googletest-src/googlemock/cmake/gmock_main.pc.in _deps/googletest-src/googletest/CMakeLists.txt _deps/googletest-src/googletest/cmake/Config.cmake.in _deps/googletest-src/googletest/cmake/gtest.pc.in _deps/googletest-src/googletest/cmake/gtest_main.pc.in _deps/googletest-src/googletest/cmake/internal_utils.cmake cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f32.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f32.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f64.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f64.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f32.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f32.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f64.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f64.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_timer.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_timer.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_utility.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_utility.cu.o.depend: phony
+build /home/lz/workspace/cuCompressor/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/src/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/buff/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/chimp128/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/deflate/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/elf/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/fpc/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/gorilla/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/lz4/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/lz77/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/machete/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/sim_piece/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/cmake/SnappyConfig.cmake.in /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/cmake/config.h.in /home/lz/workspace/cuCompressor/Serf/test/baselines/snappy/snappy-stubs-public.h.in /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/config.h.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/sz.pc.in /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/sz/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/sz2/zstd/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeModules/AddZstdCompilationFlags.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeModules/GetZstdLibraryVersion.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/CMakeModules/JoinPaths.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/lib/CMakeLists.txt /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/lib/cmake_uninstall.cmake.in /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/build/cmake/zstdConfig.cmake /home/lz/workspace/cuCompressor/Serf/test/baselines/zstd/lib/libzstd.pc.in /home/lz/workspace/cuCompressor/cuSZp/CMakeLists.txt /home/lz/workspace/cuCompressor/cuSZp/Config.cmake.in /home/lz/workspace/cuCompressor/cuSZp/cmake/Installing.cmake /home/lz/workspace/cuCompressor/cuSZp/examples/CMakeLists.txt /home/lz/workspace/cuCompressor/src/CMakeLists.txt /home/lz/workspace/cuCompressor/test/CMakeLists.txt /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/BasicConfigVersion-SameMajorVersion.cmake.in /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeASMInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCUDAInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCXXInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeCommonLanguageInclude.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeDependentOption.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeGenericSystem.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeInitializeConfigs.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeLanguageInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakePackageConfigHelpers.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeParseImplicitLinkInfo.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeSystemSpecificInformation.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CMakeSystemSpecificInitialize.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCCompilerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCSourceCompiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCXXCompilerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckCXXSourceCompiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckFunctionExists.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckIncludeFile.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckIncludeFileCXX.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckIncludeFiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckLibraryExists.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckLinkerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckSymbolExists.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/CheckTypeSize.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/CMakeCommonCompilerMacros.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU-ASM.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU-C.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU-CXX.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/GNU.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/NVIDIA-CUDA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Compiler/NVIDIA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/ExternalProject/shared_internal_commands.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FetchContent.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FetchContent/CMakeLists.cmake.in /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDA/run_nvcc.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDA/select_compute_arch.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindCUDAToolkit.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindOpenMP.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPackageHandleStandardArgs.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPackageMessage.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPkgConfig.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPython/Support.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindPython3.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindThreads.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/FindZLIB.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/GNUInstallDirs.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/GoogleTest.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckCompilerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckFlagCommonConfig.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckLinkerFlag.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-GNU-C.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-GNU-CXX.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-GNU.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-Initialize.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux-NVIDIA-CUDA.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/Linux.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/Platform/UnixPaths.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/SelectLibraryConfigurations.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/TestBigEndian.cmake /snap/clion/296/bin/cmake/linux/x64/share/cmake-3.29/Modules/WriteBasicConfigVersionFile.cmake CMakeCache.txt CMakeFiles/3.29.6/CMakeASMCompiler.cmake CMakeFiles/3.29.6/CMakeCCompiler.cmake CMakeFiles/3.29.6/CMakeCUDACompiler.cmake CMakeFiles/3.29.6/CMakeCXXCompiler.cmake CMakeFiles/3.29.6/CMakeSystem.cmake _deps/googletest-src/CMakeLists.txt _deps/googletest-src/googlemock/CMakeLists.txt _deps/googletest-src/googlemock/cmake/gmock.pc.in _deps/googletest-src/googlemock/cmake/gmock_main.pc.in _deps/googletest-src/googletest/CMakeLists.txt _deps/googletest-src/googletest/cmake/Config.cmake.in _deps/googletest-src/googletest/cmake/gtest.pc.in _deps/googletest-src/googletest/cmake/gtest_main.pc.in _deps/googletest-src/googletest/cmake/internal_utils.cmake cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f32.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f32.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f64.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_entry_f64.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f32.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f32.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f64.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_f64.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_timer.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_timer.cu.o.depend cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_utility.cu.o.cmake.pre-gen cuSZp/examples/CMakeFiles/cuSZp_libs.dir/__/src/cuSZp_libs_generated_cuSZp_utility.cu.o.depend: phony
 
 
 #############################################
