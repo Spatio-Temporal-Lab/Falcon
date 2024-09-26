@@ -9,20 +9,7 @@ CMake Warning (dev) at cuSZp/examples/CMakeLists.txt:2 (find_package):
 This warning is for project developers.  Use -Wno-dev to suppress it.
 
 -- [SelfCheck] Host System: Linux/Unix/*nix
--- Looking for include file unistd.h
--- Looking for include file unistd.h - found
--- Looking for include file sys/time.h
--- Looking for include file sys/time.h - found
--- Looking for gettimeofday
--- Looking for gettimeofday - found
--- Looking for clock_gettime
--- Looking for clock_gettime - found
--- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.2")
 -- Checking for one of the modules 'libzstd'
--- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version "1.2.11")
--- Found OpenMP_C: -fopenmp (found version "4.5")
--- Found OpenMP_CXX: -fopenmp (found version "4.5")
--- Found OpenMP: TRUE (found version "4.5")
 -- GCC detected, adding compile flags
 CMake Deprecation Warning at Serf/test/baselines/snappy/CMakeLists.txt:29 (cmake_minimum_required):
   Compatibility with CMake < 3.5 will be removed from a future version of
@@ -32,54 +19,6 @@ CMake Deprecation Warning at Serf/test/baselines/snappy/CMakeLists.txt:29 (cmake
   CMake that the project does not need compatibility with older versions.
 
 
--- Looking for sys/mman.h
--- Looking for sys/mman.h - found
--- Looking for sys/resource.h
--- Looking for sys/resource.h - found
--- Looking for sys/uio.h
--- Looking for sys/uio.h - found
--- Looking for windows.h
--- Looking for windows.h - not found
--- Looking for zlibVersion in z
--- Looking for zlibVersion in z - found
--- Looking for lzo1x_1_15_compress in lzo2
--- Looking for lzo1x_1_15_compress in lzo2 - not found
--- Looking for LZ4_compress_default in lz4
--- Looking for LZ4_compress_default in lz4 - not found
--- Performing Test HAVE_VISUAL_STUDIO_ARCH_AVX
--- Performing Test HAVE_VISUAL_STUDIO_ARCH_AVX - Failed
--- Performing Test HAVE_VISUAL_STUDIO_ARCH_AVX2
--- Performing Test HAVE_VISUAL_STUDIO_ARCH_AVX2 - Failed
--- Performing Test HAVE_CLANG_MAVX
--- Performing Test HAVE_CLANG_MAVX - Success
--- Performing Test HAVE_CLANG_MBMI2
--- Performing Test HAVE_CLANG_MBMI2 - Success
--- Performing Test SNAPPY_HAVE_NO_MISSING_FIELD_INITIALIZERS
--- Performing Test SNAPPY_HAVE_NO_MISSING_FIELD_INITIALIZERS - Success
--- Performing Test SNAPPY_HAVE_NO_IMPLICIT_INT_FLOAT_CONVERSION
--- Performing Test SNAPPY_HAVE_NO_IMPLICIT_INT_FLOAT_CONVERSION - Success
--- Performing Test HAVE_BUILTIN_EXPECT
--- Performing Test HAVE_BUILTIN_EXPECT - Success
--- Performing Test HAVE_BUILTIN_CTZ
--- Performing Test HAVE_BUILTIN_CTZ - Success
--- Performing Test HAVE_BUILTIN_PREFETCH
--- Performing Test HAVE_BUILTIN_PREFETCH - Success
--- Performing Test HAVE_ATTRIBUTE_ALWAYS_INLINE
--- Performing Test HAVE_ATTRIBUTE_ALWAYS_INLINE - Success
--- Performing Test SNAPPY_HAVE_SSSE3
--- Performing Test SNAPPY_HAVE_SSSE3 - Failed
--- Performing Test SNAPPY_HAVE_X86_CRC32
--- Performing Test SNAPPY_HAVE_X86_CRC32 - Failed
--- Performing Test SNAPPY_HAVE_NEON_CRC32
--- Performing Test SNAPPY_HAVE_NEON_CRC32 - Failed
--- Performing Test SNAPPY_HAVE_BMI2
--- Performing Test SNAPPY_HAVE_BMI2 - Failed
--- Performing Test SNAPPY_HAVE_NEON
--- Performing Test SNAPPY_HAVE_NEON - Failed
--- Looking for mmap
--- Looking for mmap - found
--- Looking for sysconf
--- Looking for sysconf - found
 CMake Deprecation Warning at Serf/test/baselines/zstd/build/cmake/CMakeLists.txt:10 (cmake_minimum_required):
   Compatibility with CMake < 3.5 will be removed from a future version of
   CMake.
@@ -88,56 +27,27 @@ CMake Deprecation Warning at Serf/test/baselines/zstd/build/cmake/CMakeLists.txt
   CMake that the project does not need compatibility with older versions.
 
 
--- The ASM compiler identification is GNU
--- Found assembler: /usr/bin/gcc
 -- ZSTD VERSION: 1.5.5
--- Performing Test C_FLAG_WALL
--- Performing Test C_FLAG_WALL - Success
--- Performing Test CXX_FLAG_WALL
--- Performing Test CXX_FLAG_WALL - Success
--- Performing Test C_FLAG_WEXTRA
--- Performing Test C_FLAG_WEXTRA - Success
--- Performing Test CXX_FLAG_WEXTRA
--- Performing Test CXX_FLAG_WEXTRA - Success
--- Performing Test C_FLAG_WUNDEF
--- Performing Test C_FLAG_WUNDEF - Success
--- Performing Test CXX_FLAG_WUNDEF
--- Performing Test CXX_FLAG_WUNDEF - Success
--- Performing Test C_FLAG_WSHADOW
--- Performing Test C_FLAG_WSHADOW - Success
--- Performing Test CXX_FLAG_WSHADOW
--- Performing Test CXX_FLAG_WSHADOW - Success
--- Performing Test C_FLAG_WCAST_ALIGN
--- Performing Test C_FLAG_WCAST_ALIGN - Success
--- Performing Test CXX_FLAG_WCAST_ALIGN
--- Performing Test CXX_FLAG_WCAST_ALIGN - Success
--- Performing Test C_FLAG_WCAST_QUAL
--- Performing Test C_FLAG_WCAST_QUAL - Success
--- Performing Test CXX_FLAG_WCAST_QUAL
--- Performing Test CXX_FLAG_WCAST_QUAL - Success
--- Performing Test C_FLAG_WSTRICT_PROTOTYPES
--- Performing Test C_FLAG_WSTRICT_PROTOTYPES - Success
--- Performing Test C_FLAG_DDEBUGLEVEL_1
--- Performing Test C_FLAG_DDEBUGLEVEL_1 - Success
--- Performing Test CXX_FLAG_DDEBUGLEVEL_1
--- Performing Test CXX_FLAG_DDEBUGLEVEL_1 - Success
--- Performing Test LD_FLAG_Z_NOEXECSTACK
--- Performing Test LD_FLAG_Z_NOEXECSTACK - Success
--- Performing Test C_FLAG_QUNUSED_ARGUMENTS
--- Performing Test C_FLAG_QUNUSED_ARGUMENTS - Failed
--- Performing Test CXX_FLAG_QUNUSED_ARGUMENTS
--- Performing Test CXX_FLAG_QUNUSED_ARGUMENTS - Failed
--- Performing Test C_FLAG_WA_NOEXECSTACK
--- Performing Test C_FLAG_WA_NOEXECSTACK - Success
--- Performing Test CXX_FLAG_WA_NOEXECSTACK
--- Performing Test CXX_FLAG_WA_NOEXECSTACK - Success
 -- CMAKE_INSTALL_PREFIX: /usr/local
 -- CMAKE_INSTALL_LIBDIR: lib
 -- ZSTD_LEGACY_SUPPORT defined!
 -- ZSTD_MULTITHREAD_SUPPORT is enabled
 -- [SelfCheck] Loading GoogleTest module
--- Found Python3: /usr/bin/python3.10 (found version "3.10.12") found components: Interpreter
 -- [SelfCheck] Loaded GoogleTest module
--- Configuring done (4.9s)
--- Generating done (0.0s)
--- Build files have been written to: /home/lz/workspace/cuCompressor/cmake-build-debug
+CMake Error at CMakeLists.txt:14 (add_subdirectory):
+  The source directory
+
+    /home/lz/workspace/cuCompressor/src/gpu
+
+  does not contain a CMakeLists.txt file.
+
+
+CMake Error at CMakeLists.txt:16 (add_subdirectory):
+  The source directory
+
+    /home/lz/workspace/cuCompressor/test
+
+  does not contain a CMakeLists.txt file.
+
+
+-- Configuring incomplete, errors occurred!
