@@ -294,7 +294,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=cuCompressor
+CMAKE_PROJECT_NAME:STATIC=cuCompressor-all
 
 //Value Computed by CMake
 CMAKE_PROJECT_VERSION:STATIC=0.0.2
@@ -687,6 +687,15 @@ Chimp128_IS_TOP_LEVEL:STATIC=OFF
 Chimp128_SOURCE_DIR:STATIC=/home/lz/workspace/cuCompressor/Serf/test/baselines/chimp128
 
 //Value Computed by CMake
+CompressionTests_BINARY_DIR:STATIC=/home/lz/workspace/cuCompressor/cmake-build-debug/test
+
+//Value Computed by CMake
+CompressionTests_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+CompressionTests_SOURCE_DIR:STATIC=/home/lz/workspace/cuCompressor/test
+
+//Value Computed by CMake
 CpuCompressor_BINARY_DIR:STATIC=/home/lz/workspace/cuCompressor/cmake-build-debug/src/cpu
 
 //Value Computed by CMake
@@ -742,9 +751,39 @@ FPC_IS_TOP_LEVEL:STATIC=OFF
 //Value Computed by CMake
 FPC_SOURCE_DIR:STATIC=/home/lz/workspace/cuCompressor/Serf/test/baselines/fpc
 
+//Path to a library.
+GMOCK_LIBRARY:FILEPATH=GMOCK_LIBRARY-NOTFOUND
+
+//Path to a library.
+GMOCK_LIBRARY_DEBUG:FILEPATH=GMOCK_LIBRARY_DEBUG-NOTFOUND
+
+//Path to a library.
+GMOCK_MAIN_LIBRARY:FILEPATH=GMOCK_MAIN_LIBRARY-NOTFOUND
+
+//Path to a library.
+GMOCK_MAIN_LIBRARY_DEBUG:FILEPATH=GMOCK_MAIN_LIBRARY_DEBUG-NOTFOUND
+
 //Use Abseil and RE2. Requires Abseil and RE2 to be separately
 // added to the build.
 GTEST_HAS_ABSL:BOOL=OFF
+
+//Path to a file.
+GTEST_INCLUDE_DIR:PATH=GTEST_INCLUDE_DIR-NOTFOUND
+
+//Path to a library.
+GTEST_LIBRARY:FILEPATH=GTEST_LIBRARY-NOTFOUND
+
+//Path to a library.
+GTEST_LIBRARY_DEBUG:FILEPATH=GTEST_LIBRARY_DEBUG-NOTFOUND
+
+//Path to a library.
+GTEST_MAIN_LIBRARY:FILEPATH=GTEST_MAIN_LIBRARY-NOTFOUND
+
+//Path to a library.
+GTEST_MAIN_LIBRARY_DEBUG:FILEPATH=GTEST_MAIN_LIBRARY_DEBUG-NOTFOUND
+
+//The directory containing a CMake configuration file for GTest.
+GTest_DIR:PATH=GTest_DIR-NOTFOUND
 
 //Value Computed by CMake
 Gorilla_BINARY_DIR:STATIC=/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/baselines/gorilla
@@ -903,13 +942,22 @@ ZSTD_MULTITHREAD_SUPPORT:BOOL=ON
 ZSTD_PROGRAMS_LINK_SHARED:BOOL=OFF
 
 //Value Computed by CMake
-cuCompressor_BINARY_DIR:STATIC=/home/lz/workspace/cuCompressor/cmake-build-debug
+cuCompressor-all_BINARY_DIR:STATIC=/home/lz/workspace/cuCompressor/cmake-build-debug
 
 //Value Computed by CMake
-cuCompressor_IS_TOP_LEVEL:STATIC=ON
+cuCompressor-all_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
-cuCompressor_SOURCE_DIR:STATIC=/home/lz/workspace/cuCompressor
+cuCompressor-all_SOURCE_DIR:STATIC=/home/lz/workspace/cuCompressor
+
+//Value Computed by CMake
+cuCompressor_BINARY_DIR:STATIC=/home/lz/workspace/cuCompressor/cmake-build-debug/src
+
+//Value Computed by CMake
+cuCompressor_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+cuCompressor_SOURCE_DIR:STATIC=/home/lz/workspace/cuCompressor/src
 
 //Value Computed by CMake
 cuSZp_BINARY_DIR:STATIC=/home/lz/workspace/cuCompressor/cmake-build-debug/cuSZp
@@ -1158,7 +1206,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=25
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=27
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -1463,6 +1511,24 @@ FIND_PACKAGE_MESSAGE_DETAILS_Python3:INTERNAL=[/usr/bin/python3.10][cfound compo
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding ZLIB
 FIND_PACKAGE_MESSAGE_DETAILS_ZLIB:INTERNAL=[/usr/lib/x86_64-linux-gnu/libz.so][/usr/include][c ][v1.2.11()]
+//ADVANCED property for variable: GMOCK_LIBRARY
+GMOCK_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GMOCK_LIBRARY_DEBUG
+GMOCK_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GMOCK_MAIN_LIBRARY
+GMOCK_MAIN_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GMOCK_MAIN_LIBRARY_DEBUG
+GMOCK_MAIN_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GTEST_INCLUDE_DIR
+GTEST_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GTEST_LIBRARY
+GTEST_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GTEST_LIBRARY_DEBUG
+GTEST_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GTEST_MAIN_LIBRARY
+GTEST_MAIN_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GTEST_MAIN_LIBRARY_DEBUG
+GTEST_MAIN_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
 //Test HAVE_ATTRIBUTE_ALWAYS_INLINE
 HAVE_ATTRIBUTE_ALWAYS_INLINE:INTERNAL=1
 //Test HAVE_BUILTIN_CTZ

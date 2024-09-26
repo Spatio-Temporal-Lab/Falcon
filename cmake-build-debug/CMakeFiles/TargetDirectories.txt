@@ -191,3 +191,16 @@
 /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-build/googletest/CMakeFiles/install.dir
 /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-build/googletest/CMakeFiles/install/local.dir
 /home/lz/workspace/cuCompressor/cmake-build-debug/_deps/googletest-build/googletest/CMakeFiles/install/strip.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/src/CMakeFiles/edit_cache.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/src/CMakeFiles/rebuild_cache.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/src/CMakeFiles/list_install_components.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/src/CMakeFiles/install.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/src/CMakeFiles/install/local.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/src/CMakeFiles/install/strip.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/test/CMakeFiles/compression_tests.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/test/CMakeFiles/edit_cache.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/test/CMakeFiles/rebuild_cache.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/test/CMakeFiles/list_install_components.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/test/CMakeFiles/install.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/test/CMakeFiles/install/local.dir
+/home/lz/workspace/cuCompressor/cmake-build-debug/test/CMakeFiles/install/strip.dir
