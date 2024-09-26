@@ -687,6 +687,15 @@ Chimp128_IS_TOP_LEVEL:STATIC=OFF
 Chimp128_SOURCE_DIR:STATIC=/home/lz/workspace/cuCompressor/Serf/test/baselines/chimp128
 
 //Value Computed by CMake
+CpuCompressor_BINARY_DIR:STATIC=/home/lz/workspace/cuCompressor/cmake-build-debug/src/cpu
+
+//Value Computed by CMake
+CpuCompressor_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+CpuCompressor_SOURCE_DIR:STATIC=/home/lz/workspace/cuCompressor/src/cpu
+
+//Value Computed by CMake
 Deflate_BINARY_DIR:STATIC=/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/baselines/deflate
 
 //Value Computed by CMake

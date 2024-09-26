@@ -47,7 +47,7 @@ cmake_ninja_workdir = /home/lz/workspace/cuCompressor/cmake-build-debug/
 #############################################
 # Order-only phony target for benchmark
 
-build cmake_object_order_depends_target_benchmark: phony || cmake_object_order_depends_target_cuSZp_libs cmake_object_order_depends_target_gorilla
+build cmake_object_order_depends_target_benchmark: phony || cmake_object_order_depends_target_cuSZp_libs cmake_object_order_depends_target_elf cmake_object_order_depends_target_gorilla
 
 build CMakeFiles/benchmark.dir/benchmark.cpp.o: CXX_COMPILER__benchmark_unscanned_Debug /home/lz/workspace/cuCompressor/benchmark.cpp || cmake_object_order_depends_target_benchmark
   DEP_FILE = CMakeFiles/benchmark.dir/benchmark.cpp.o.d
@@ -63,9 +63,9 @@ build CMakeFiles/benchmark.dir/benchmark.cpp.o: CXX_COMPILER__benchmark_unscanne
 #############################################
 # Link the executable benchmark
 
-build benchmark: CXX_EXECUTABLE_LINKER__benchmark_Debug CMakeFiles/benchmark.dir/benchmark.cpp.o | cuSZp/examples/libcuSZp_libs.a Serf/test/baselines/gorilla/libgorilla.so /usr/local/cuda-12.5/targets/x86_64-linux/lib/libcudart_static.a /usr/lib/x86_64-linux-gnu/librt.a || Serf/test/baselines/gorilla/libgorilla.so cuSZp/examples/libcuSZp_libs.a
+build benchmark: CXX_EXECUTABLE_LINKER__benchmark_Debug CMakeFiles/benchmark.dir/benchmark.cpp.o | cuSZp/examples/libcuSZp_libs.a Serf/test/baselines/gorilla/libgorilla.so Serf/test/baselines/elf/libelf.so /usr/local/cuda-12.5/targets/x86_64-linux/lib/libcudart_static.a /usr/lib/x86_64-linux-gnu/librt.a || Serf/test/baselines/elf/libelf.so Serf/test/baselines/gorilla/libgorilla.so cuSZp/examples/libcuSZp_libs.a
   FLAGS = -g
-  LINK_LIBRARIES = -Wl,-rpath,/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/baselines/gorilla  cuSZp/examples/libcuSZp_libs.a  Serf/test/baselines/gorilla/libgorilla.so  /usr/local/cuda-12.5/targets/x86_64-linux/lib/libcudart_static.a  -ldl  /usr/lib/x86_64-linux-gnu/librt.a
+  LINK_LIBRARIES = -Wl,-rpath,/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/baselines/gorilla:/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/baselines/elf  cuSZp/examples/libcuSZp_libs.a  Serf/test/baselines/gorilla/libgorilla.so  Serf/test/baselines/elf/libelf.so  /usr/local/cuda-12.5/targets/x86_64-linux/lib/libcudart_static.a  -ldl  /usr/lib/x86_64-linux-gnu/librt.a
   OBJECT_DIR = CMakeFiles/benchmark.dir
   POST_BUILD = :
   PRE_LINK = :
