@@ -21,9 +21,6 @@ long zigzag_decode(unsigned long value);
 
 
 // 解压缩函数：将压缩数据解码还原为原始数据
-void CDFDecompressor(const std::vector<unsigned char>& cmpData,
-                     const std::vector<unsigned int>& cmpOffset,
-                     std::vector<long>& decompressedData,
-                     int bit_rate, size_t nbEle);
+void CDFDecompressor(const std::vector<unsigned char>& input, std::vector<double>& output);
 
 #endif // CDF_COMPRESSOR_H
