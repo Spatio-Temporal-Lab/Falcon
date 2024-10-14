@@ -4,15 +4,29 @@ project(cuCompressor-all)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_subdirectory(cuSZp)
+# CUDA 设置
+find_package(CUDA REQUIRED)
+set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -O3)
 
-add_subdirectory(Serf)
+# 包含目录
+include_directories(include)
+include_directories(Serf/src/utils)
 
-add_subdirectory(src)
+# 源文件
+set(SRC_CPU
+        src/cpu/CDFCompressor.cpp
+        src/cpu/CDFDecompressor.cpp
+        src/utils/output_bit_stream.cc
+)
 
-add_subdirectory(test)
+set(SRC_GPU
+        src/gpu/GDFCompressor.cu
+        src/gpu/GDFDecompressor.cu
+)
 
+# 添加可执行目标
+add_executable(test_cpu test/CDF_test.cpp ${SRC_CPU})
+add_executable(test_gpu test/GDF_test.cpp ${SRC_GPU})
 
-add_executable(benchmark benchmark.cpp)
-
-target_link_libraries(benchmark cuSZp_libs gorilla elf)
+# 链接 CUDA 库
+target_link_libraries(test_gpu ${CUDA_LIBRARIES})
