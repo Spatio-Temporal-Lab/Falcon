@@ -5,7 +5,7 @@
 #include <cuda.h>
 #include <cstdlib> // for rand()
 #include <ctime>   // for time()
-
+#include "getin.h" 
 
 //@
 //
@@ -88,85 +88,88 @@ void forCompressGPU2(const std::vector<int>& data, std::vector<int>& compressedD
     cudaFree(d_compressedData);
 }
 
-//@-y
-//
-//GPU常量内存
-__constant__ int d_referenceValue; // 常量内存，用于存储参考值
+// //@-y
+// //
+// //GPU常量内存
+// __constant__ int d_referenceValue; // 常量内存，用于存储参考值
 
-__global__ void forCompressKernel3(int* data, int* compressedData, int size) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x; // 计算全局线程索引
-    if (idx < size) {
-        compressedData[idx] = data[idx] - d_referenceValue; // 计算差值
-    }
-}
+// __global__ void forCompressKernel3(int* data, int* compressedData, int size) {
+//     int idx = blockIdx.x * blockDim.x + threadIdx.x; // 计算全局线程索引
+//     if (idx < size) {
+//         compressedData[idx] = data[idx] - d_referenceValue; // 计算差值
+//     }
+// }
 
-void forCompressGPU3(const std::vector<int>& data, std::vector<int>& compressedData, int& referenceValue) {
-    int size = data.size();
-    referenceValue = data[0];
+// void forCompressGPU3(const std::vector<int>& data, std::vector<int>& compressedData, int& referenceValue) {
+//     int size = data.size();
+//     referenceValue = data[0];
 
-    // 将参考值复制到常量内存
-    cudaMemcpyToSymbol(d_referenceValue, &referenceValue, sizeof(int));
+//     // 将参考值复制到常量内存
+//     cudaMemcpyToSymbol(d_referenceValue, &referenceValue, sizeof(int));
 
-    int* d_data, * d_compressedData;
-    cudaMalloc(&d_data, size * sizeof(int));
-    cudaMalloc(&d_compressedData, size * sizeof(int));
+//     int* d_data, * d_compressedData;
+//     cudaMalloc(&d_data, size * sizeof(int));
+//     cudaMalloc(&d_compressedData, size * sizeof(int));
 
-    cudaMemcpy(d_data, data.data(), size * sizeof(int), cudaMemcpyHostToDevice);
+//     cudaMemcpy(d_data, data.data(), size * sizeof(int), cudaMemcpyHostToDevice);
 
-    int blockSize = 256; // 每个块的线程数
-    int numBlocks = (size + blockSize - 1) / blockSize;
-    forCompressKernel3<<<numBlocks, blockSize>>>(d_data, d_compressedData, size); 
+//     int blockSize = 256; // 每个块的线程数
+//     int numBlocks = (size + blockSize - 1) / blockSize;
+//     forCompressKernel3<<<numBlocks, blockSize>>>(d_data, d_compressedData, size); 
 
-    cudaMemcpy(compressedData.data(), d_compressedData, size * sizeof(int), cudaMemcpyDeviceToHost);
+//     cudaMemcpy(compressedData.data(), d_compressedData, size * sizeof(int), cudaMemcpyDeviceToHost);
 
-    cudaFree(d_data);
-    cudaFree(d_compressedData);
-}
+//     cudaFree(d_data);
+//     cudaFree(d_compressedData);
+// }
 
-//@-z
-//
-//流+异步复制
-__global__ void forCompressKernel4(int* data, int* compressedData, int referenceValue, int size) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < size) {
-        compressedData[idx] = data[idx] - referenceValue;
-    }
-}
+// //@-z
+// //
+// //流+异步复制
+// __global__ void forCompressKernel4(int* data, int* compressedData, int referenceValue, int size) {
+//     int idx = blockIdx.x * blockDim.x + threadIdx.x;
+//     if (idx < size) {
+//         compressedData[idx] = data[idx] - referenceValue;
+//     }
+// }
 
-void forCompressGPU4(const std::vector<int>& data, std::vector<int>& compressedData, int& referenceValue) {
-    int size = data.size();
-    referenceValue = data[0];
+// void forCompressGPU4(const std::vector<int>& data, std::vector<int>& compressedData, int& referenceValue) {
+//     int size = data.size();
+//     referenceValue = data[0];
 
-    int* d_data, * d_compressedData;
-    cudaMalloc(&d_data, size * sizeof(int));
-    cudaMalloc(&d_compressedData, size * sizeof(int));
+//     int* d_data, * d_compressedData;
+//     cudaMalloc(&d_data, size * sizeof(int));
+//     cudaMalloc(&d_compressedData, size * sizeof(int));
 
-    cudaStream_t stream;
-    cudaStreamCreate(&stream);
+//     cudaStream_t stream;
+//     cudaStreamCreate(&stream);
 
-    // 异步复制数据到设备
-    cudaMemcpyAsync(d_data, data.data(), size * sizeof(int), cudaMemcpyHostToDevice, stream);
+//     // 异步复制数据到设备
+//     cudaMemcpyAsync(d_data, data.data(), size * sizeof(int), cudaMemcpyHostToDevice, stream);
 
-    int blockSize = 256;
-    int numBlocks = (size + blockSize - 1) / blockSize;
-    // 在流中启动核函数
-    forCompressKernel4<<<numBlocks, blockSize, 0, stream>>>(d_data, d_compressedData, referenceValue, size);
+//     int blockSize = 256;
+//     int numBlocks = (size + blockSize - 1) / blockSize;
+//     // 在流中启动核函数
+//     forCompressKernel4<<<numBlocks, blockSize, 0, stream>>>(d_data, d_compressedData, referenceValue, size);
 
-    // 异步复制结果回主机
-    cudaMemcpyAsync(compressedData.data(), d_compressedData, size * sizeof(int), cudaMemcpyDeviceToHost, stream);
+//     // 异步复制结果回主机
+//     cudaMemcpyAsync(compressedData.data(), d_compressedData, size * sizeof(int), cudaMemcpyDeviceToHost, stream);
 
-    // 等待流中的所有操作完成
-    cudaStreamSynchronize(stream);
+//     // 等待流中的所有操作完成
+//     cudaStreamSynchronize(stream);
 
-    // 释放设备内存和流
-    cudaFree(d_data);
-    cudaFree(d_compressedData);
-    cudaStreamDestroy(stream);
-}
+//     // 释放设备内存和流
+//     cudaFree(d_data);
+//     cudaFree(d_compressedData);
+//     cudaStreamDestroy(stream);
+// }
 
 
 int main() {
-    const size_t dataSize = 100000; // 设置数据集数量，边界值10万，2亿
+
+    // std::vector<int> originalData= read_csv(); // 创建原始数据向量
+    // const size_t dataSize =originalData.size(); // 设置数据集数量，边界值10万，2亿
+    const size_t dataSize = 100000; // 数据集大小设置为2亿
     std::vector<int> originalData(dataSize); // 创建原始数据向量
     std::srand(static_cast<unsigned>(std::time(0))); // 设置随机数种子
 
@@ -174,7 +177,6 @@ int main() {
     for (size_t i = 0; i < dataSize; ++i) {
         originalData[i] = std::rand() % dataSize; // 生成范围在0到dataSize之间的随机数
     }
-
     int referenceValue; // 存储参考值
     std::vector<int> compressedData(originalData.size()); // 创建压缩数据向量
 
@@ -187,6 +189,11 @@ int main() {
     // 输出CPU压缩结果
     std::cout << "CPU Reference Value: " << referenceValue << std::endl;
     std::cout << "CPU Compression Time: " << cpuDuration.count() << " seconds" << std::endl;
+
+
+// cudaEvent_t start; 
+// cudaEventCreate(&start);
+
 
     // GPU压缩
     compressedData.assign(originalData.size(), 0); // 清空压缩数据向量
@@ -209,27 +216,29 @@ int main() {
     std::cout << "GPU-x Reference Value: " << referenceValue << std::endl;
     std::cout << "GPU-x Compression Time: " << gpuDuration2.count() << " seconds" << std::endl;
 
-    // GPU压缩优化-y
-    compressedData.assign(originalData.size(), 0); // 清空压缩数据向量
-    auto startGPU3 = std::chrono::high_resolution_clock::now(); // 记录开始时间
-    forCompressGPU3(originalData, compressedData, referenceValue); // 调用GPU压缩
-    auto endGPU3 = std::chrono::high_resolution_clock::now(); // 记录结束时间
-    std::chrono::duration<double> gpuDuration3 = endGPU3 - startGPU3; // 计算GPU压缩所需时间
+/*    
+    // // GPU压缩优化-y
+    // compressedData.assign(originalData.size(), 0); // 清空压缩数据向量
+    // auto startGPU3 = std::chrono::high_resolution_clock::now(); // 记录开始时间
+    // forCompressGPU3(originalData, compressedData, referenceValue); // 调用GPU压缩
+    // auto endGPU3 = std::chrono::high_resolution_clock::now(); // 记录结束时间
+    // std::chrono::duration<double> gpuDuration3 = endGPU3 - startGPU3; // 计算GPU压缩所需时间
 
-    // 输出GPU压缩结果
-    std::cout << "GPU-y Reference Value: " << referenceValue << std::endl;
-    std::cout << "GPU-y Compression Time: " << gpuDuration3.count() << " seconds" << std::endl;
+    // // 输出GPU压缩结果
+    // std::cout << "GPU-y Reference Value: " << referenceValue << std::endl;
+    // std::cout << "GPU-y Compression Time: " << gpuDuration3.count() << " seconds" << std::endl;
 
-    // GPU压缩优化-z
-    compressedData.assign(originalData.size(), 0); // 清空压缩数据向量
-    auto startGPU4 = std::chrono::high_resolution_clock::now(); // 记录开始时间
-    forCompressGPU4(originalData, compressedData, referenceValue); // 调用GPU压缩
-    auto endGPU4 = std::chrono::high_resolution_clock::now(); // 记录结束时间
-    std::chrono::duration<double> gpuDuration4 = endGPU4 - startGPU4; // 计算GPU压缩所需时间
+    // // GPU压缩优化-z
+    // compressedData.assign(originalData.size(), 0); // 清空压缩数据向量
+    // auto startGPU4 = std::chrono::high_resolution_clock::now(); // 记录开始时间
+    // forCompressGPU4(originalData, compressedData, referenceValue); // 调用GPU压缩
+    // auto endGPU4 = std::chrono::high_resolution_clock::now(); // 记录结束时间
+    // std::chrono::duration<double> gpuDuration4 = endGPU4 - startGPU4; // 计算GPU压缩所需时间
 
-    // 
-    std::cout << "GPU-z Reference Value: " << referenceValue << std::endl;
-    std::cout << "GPU-z Compression Time: " << gpuDuration4.count() << " seconds" << std::endl;
+    // // 
+    // std::cout << "GPU-z Reference Value: " << referenceValue << std::endl;
+    // std::cout << "GPU-z Compression Time: " << gpuDuration4.count() << " seconds" << std::endl;
+*/
 
 
 
