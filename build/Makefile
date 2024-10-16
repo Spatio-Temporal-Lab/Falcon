@@ -177,6 +177,30 @@ src/cpu/CDFDecompressor.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/cpu/CDFDecompressor.cpp.s
 .PHONY : src/cpu/CDFDecompressor.cpp.s
 
+src/utils/input_bit_stream.o: src/utils/input_bit_stream.cc.o
+.PHONY : src/utils/input_bit_stream.o
+
+# target to build an object file
+src/utils/input_bit_stream.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/utils/input_bit_stream.cc.o
+.PHONY : src/utils/input_bit_stream.cc.o
+
+src/utils/input_bit_stream.i: src/utils/input_bit_stream.cc.i
+.PHONY : src/utils/input_bit_stream.i
+
+# target to preprocess a source file
+src/utils/input_bit_stream.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/utils/input_bit_stream.cc.i
+.PHONY : src/utils/input_bit_stream.cc.i
+
+src/utils/input_bit_stream.s: src/utils/input_bit_stream.cc.s
+.PHONY : src/utils/input_bit_stream.s
+
+# target to generate assembly for a file
+src/utils/input_bit_stream.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/utils/input_bit_stream.cc.s
+.PHONY : src/utils/input_bit_stream.cc.s
+
 src/utils/output_bit_stream.o: src/utils/output_bit_stream.cc.o
 .PHONY : src/utils/output_bit_stream.o
 
@@ -240,6 +264,9 @@ help:
 	@echo "... src/cpu/CDFDecompressor.o"
 	@echo "... src/cpu/CDFDecompressor.i"
 	@echo "... src/cpu/CDFDecompressor.s"
+	@echo "... src/utils/input_bit_stream.o"
+	@echo "... src/utils/input_bit_stream.i"
+	@echo "... src/utils/input_bit_stream.s"
 	@echo "... src/utils/output_bit_stream.o"
 	@echo "... src/utils/output_bit_stream.i"
 	@echo "... src/utils/output_bit_stream.s"
