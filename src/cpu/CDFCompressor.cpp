@@ -20,7 +20,7 @@ void CDFCompressor::compress(const std::vector<double>& input, std::vector<unsig
 
 
     // 对数据进行分块压缩
-    {
+    for (size_t i = 0; i < input.size(); i += BLOCK_SIZE) {
         int perBitSize = 0;
         size_t currentBlockSize = std::min(BLOCK_SIZE, input.size() - i);
         std::vector<double> block(input.begin() + i, input.begin() + i + currentBlockSize);
