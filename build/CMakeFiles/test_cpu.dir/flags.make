@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/mnt/e/start/gpu/CUDA/cuCompressor/include -I/mnt/e/start/gpu/CUDA/cuCompressor/src/utils
 
-CXX_FLAGS = -DGTEST_HAS_PTHREAD=1
+CXX_FLAGS = -g -DGTEST_HAS_PTHREAD=1
 
