@@ -1,0 +1,3 @@
+/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles/test_cpu.dir
+/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles/edit_cache.dir
+/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles/rebuild_cache.dir

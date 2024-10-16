@@ -2,7 +2,12 @@
 // Created by lz on 24-9-26.
 //
 
+#include <cmath>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
 #include "CDFCompressor.h"
+
 
 #include <iostream>
 

@@ -5,6 +5,11 @@
 
 #include "array.h"
 
+//@输出bit流
+//  data_：存储编码后的数据块
+//  cursor_: 当前写入位置的光标
+//  bit_in_buffer_: 当前缓冲区中已写入的位数
+//  buffer_: 临时缓冲区，用于逐位写入
 class OutputBitStream {
  public:
     explicit OutputBitStream(uint32_t buffer_size);
@@ -23,11 +28,14 @@ class OutputBitStream {
 
     void Refresh();
 
+   uint32_t GetBufferSize() const {
+    return cursor_;
+   }
  private:
-    Array<uint32_t> data_;
-    uint32_t cursor_;
-    uint32_t bit_in_buffer_;
-    uint64_t buffer_;
+    Array<uint32_t> data_;    // 存储编码后的数据块
+    uint32_t cursor_;         // data中当前写入位置的光标，
+    uint32_t bit_in_buffer_;  // 当前缓冲区中已写入的位数
+    uint64_t buffer_;         // 临时缓冲区，用于逐位写入
 };
 
 #endif  // SERF_OUTPUT_BIT_STREAM_H
