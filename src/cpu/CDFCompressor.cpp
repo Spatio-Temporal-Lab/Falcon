@@ -7,6 +7,8 @@
 #include <iomanip>
 #include <sstream>
 #include "CDFCompressor.h"
+
+
 // Zigzag 编码，将带符号整数转为无符号整数
 unsigned long CDFCompressor::zigzag_encode(long value) {
     return (value << 1) ^ (value >> 63);
@@ -24,7 +26,7 @@ void CDFCompressor::flushBits(std::vector<unsigned char>& output, OutputBitStrea
     }
 }
 
-// 计算给定值的小数点后位数
+//计算给定值的小数点后位数
 int CDFCompressor::getDecimalPlaces(double value) {
     std::ostringstream oss;
     oss << std::fixed << std::setprecision(16) << value;  // 限制高精度小数
@@ -39,6 +41,18 @@ int CDFCompressor::getDecimalPlaces(double value) {
 
     return str.length() - dotPosition - 1;  // 返回有效的小数位数
 }
+// int CDFCompressor::getDecimalPlaces(double value)
+// {
+//     int i=0;
+//     int decimalPlaces = 0;
+//     while (value != static_cast<int>(value)&&i++<64)
+//     {
+
+//         value *= 10;
+//         decimalPlaces++;
+//     }
+//     return decimalPlaces;
+// }
 
 
 // 压缩数据块
@@ -47,12 +61,13 @@ void CDFCompressor::compressBlock(const std::vector<long>& block, OutputBitStrea
 
     // 处理第一个元素
     bitStream.Write(static_cast<uint64_t>(block[0]), 64);
+    std::cout<<"第一个元素："<<block[0]<<std::endl;
     totalBitsWritten += 64;
 
     for (size_t i = 1; i < block.size(); ++i) {
         long delta = block[i] - block[i - 1];
         long encodedDelta = zigzag_encode(delta);
-        bitStream.WriteLong(encodedDelta, 64);
+        bitStream.WriteLong(encodedDelta, 64);//64位
         totalBitsWritten += 64;
     }
 }
