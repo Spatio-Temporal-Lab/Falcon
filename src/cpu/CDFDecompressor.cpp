@@ -38,7 +38,7 @@ void CDFDecompressor::decompressBlock(InputBitStream& bitStream, std::vector<lon
     std::cout << "Before reading first integer: bits_in_buffer_ = " << bitStream.bits_in_buffer_ << std::endl;
 
     // 读取第一个整数
-    if (bitStream.isEnd()) {
+    if (bitStream.isEnd() || totalBitsRead + 64 > bitStream.data_.size() * 8) {
         throw std::runtime_error("Unexpected end of input stream before reading first integer.");
     }
     integers[0] = bitStream.ReadLong(64);
@@ -49,9 +49,9 @@ void CDFDecompressor::decompressBlock(InputBitStream& bitStream, std::vector<lon
 
     // 读取后续 Delta 编码值
     for (size_t i = 1; i < blockSize; ++i) {
-        if (bitStream.isEnd()) {
-            throw std::runtime_error("Unexpected end of input stream.");
-        }
+        // if (bitStream.isEnd() || totalBitsRead + 64 > bitStream.data_.size() * 8) {
+        //     throw std::runtime_error("Unexpected end of input stream.");
+        // }
 
         long encodedDelta = bitStream.ReadLong(64);
         integers[i] = encodedDelta;
@@ -107,4 +107,5 @@ void CDFDecompressor::decompress(const std::vector<unsigned char>& input, std::v
         }
     }
 }
+
 
