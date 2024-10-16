@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/test_cpu.dir/src/cpu/CDFCompressor.cpp.o"
   "CMakeFiles/test_cpu.dir/src/cpu/CDFCompressor.cpp.o.d"
+  "CMakeFiles/test_cpu.dir/src/cpu/CDFDecompressor.cpp.o"
+  "CMakeFiles/test_cpu.dir/src/cpu/CDFDecompressor.cpp.o.d"
   "CMakeFiles/test_cpu.dir/src/utils/output_bit_stream.cc.o"
   "CMakeFiles/test_cpu.dir/src/utils/output_bit_stream.cc.o.d"
   "CMakeFiles/test_cpu.dir/test/CDF_test.cpp.o"
