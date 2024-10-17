@@ -16,6 +16,7 @@ public:
     // 压缩给定输入数据
     void compress(const std::vector<double>& input, std::vector<unsigned char>& output);
 
+    int get_max(){return bitWight;}
 private:
     // 压缩数据块
     void compressBlock(const std::vector<long>& block, OutputBitStream& bitStream, int& totalBitsWritten);
@@ -30,6 +31,8 @@ private:
 
     // Zigzag 编码，将带符号整数转为无符号整数
     unsigned long zigzag_encode(long value);
+
+    int bitWight;
 };
 
 #endif // CDF_COMPRESSOR_H

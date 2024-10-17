@@ -11,8 +11,8 @@ public:
 
 private:
     long zigzag_decode(unsigned long value);
-    void deltaDecode(const std::vector<long>& encoded, std::vector<long>& decoded);
-    void decompressBlock(InputBitStream& bitStream, std::vector<long>& integers, int& totalBitsRead);
+    // void deltaDecode(const std::vector<long>& encoded, std::vector<long>& decoded);
+    void decompressBlock(InputBitStream& bitStream, std::vector<long>& integers, int& totalBitsRead,size_t blockSize);
 };
 
 #endif // CDF_DECOMPRESSOR_H
