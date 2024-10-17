@@ -137,7 +137,6 @@ void CDFCompressor::compress(const std::vector<double> &input, std::vector<unsig
         {
 
             overallMaxDecimalPlaces = std::max(overallMaxDecimalPlaces, getDecimalPlaces(value));
-
         }
 
         std::cout << overallMaxDecimalPlaces << ":最大小数位数\n";
