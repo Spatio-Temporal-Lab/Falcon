@@ -8,8 +8,6 @@
 #include <sstream>
 #include "CDFCompressor.h"
 
-
-<<<<<<< HEAD
 // Zigzag 编码，将带符号整数转为无符号整数
 unsigned long CDFCompressor::zigzag_encode(long value) {
     return (value << 1) ^ (value >> 63);
