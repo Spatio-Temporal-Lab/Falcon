@@ -1,52 +1,12 @@
 /snap/clion/296/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/snap/clion/296/bin/ninja/linux/x64/ninja -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_CXX_COMPILER=/usr/bin/g++ -G Ninja -S /home/lz/workspace/cuCompressor -B /home/lz/workspace/cuCompressor/cmake-build-debug
--- CMAKE_INSTALL_PREFIX was already set
-Current value: /usr/local
-CMake Warning (dev) at cuSZp/examples/CMakeLists.txt:2 (find_package):
+CMake Warning (dev) at CMakeLists.txt:9 (find_package):
   Policy CMP0146 is not set: The FindCUDA module is removed.  Run "cmake
   --help-policy CMP0146" for policy details.  Use the cmake_policy command to
   set the policy and suppress this warning.
 
 This warning is for project developers.  Use -Wno-dev to suppress it.
 
--- [SelfCheck] Host System: Linux/Unix/*nix
--- Checking for one of the modules 'libzstd'
--- GCC detected, adding compile flags
-CMake Deprecation Warning at Serf/test/baselines/snappy/CMakeLists.txt:29 (cmake_minimum_required):
-  Compatibility with CMake < 3.5 will be removed from a future version of
-  CMake.
-
-  Update the VERSION argument <min> value or use a ...<max> suffix to tell
-  CMake that the project does not need compatibility with older versions.
-
-
-CMake Deprecation Warning at Serf/test/baselines/zstd/build/cmake/CMakeLists.txt:10 (cmake_minimum_required):
-  Compatibility with CMake < 3.5 will be removed from a future version of
-  CMake.
-
-  Update the VERSION argument <min> value or use a ...<max> suffix to tell
-  CMake that the project does not need compatibility with older versions.
-
-
--- ZSTD VERSION: 1.5.5
--- CMAKE_INSTALL_PREFIX: /usr/local
--- CMAKE_INSTALL_LIBDIR: lib
--- ZSTD_LEGACY_SUPPORT defined!
--- ZSTD_MULTITHREAD_SUPPORT is enabled
--- [SelfCheck] Loading GoogleTest module
--- [SelfCheck] Loaded GoogleTest module
-CMake Error at src/CMakeLists.txt:16 (add_library):
-  add_library cannot create target "serf" because another target with the
-  same name already exists.  The existing target is a shared library created
-  in source directory "/home/lz/workspace/cuCompressor/Serf/src".  See
-  documentation for policy CMP0002 for more details.
-
-
-CMake Error at CMakeLists.txt:14 (add_subdirectory):
-  The source directory
-
-    /home/lz/workspace/cuCompressor/test
-
-  does not contain a CMakeLists.txt file.
-
-
--- Configuring incomplete, errors occurred!
+-- Found GTest: /usr/lib/x86_64-linux-gnu/cmake/GTest/GTestConfig.cmake (found version "1.11.0")
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/lz/workspace/cuCompressor/cmake-build-debug

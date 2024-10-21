@@ -11,7 +11,9 @@
 
 class CDFCompressor {
 public:
-    CDFCompressor() {}
+    CDFCompressor();
+
+    size_t BLOCK_SIZE = 1024;
 
     // 压缩给定输入数据
     void compress(const std::vector<double>& input, std::vector<unsigned char>& output);
@@ -19,10 +21,11 @@ public:
     int get_max(){return bitWight;}
 private:
     // 压缩数据块
-    void compressBlock(const std::vector<long>& block, OutputBitStream& bitStream, int& totalBitsWritten);
+    void compressBlock(const std::vector<double>& block, OutputBitStream& bitStream, int& totalBitsWritten);
 
     // 对数据块进行采样，获取最大的小数位数
-    void sampleBlock(const std::vector<double>& block, std::vector<long>& integers, int& maxDecimalPlaces);
+    void sampleBlock(const std::vector<double>& block, std::vector<long>& longs, long& firstValue,
+                                int& maxDecimalPlaces);
     // 计算给定值的小数点后位数
     int getDecimalPlaces(double value);
 

@@ -68,45 +68,45 @@ long CDFDecompressor::zigzag_decode(unsigned long value)
 // }
 //
 
-void CDFDecompressor::decompressBlock(InputBitStream &bitStream, std::vector<long> &integers, int &totalBitsRead ,size_t blockSize)
+void CDFDecompressor::decompressBlock(InputBitStream& bitStream, std::vector<long>& integers, int& totalBitsRead,
+                                      size_t blockSize, int& maxDecimalPlaces)
 {
-
-
+    int blocksRead = 0;
+    // 读取第一个整数
+    long firstValue = bitStream.ReadLong(64);
+    blocksRead += 128;
+    std::cout << "First integer read (hex): " << firstValue << std::endl;
     // 读取每个数据的最大位数
-    int bitWight = static_cast<int>(bitStream.Read(8));
-    totalBitsRead += 8;
+    maxDecimalPlaces = static_cast<int>(bitStream.ReadInt(8));
+    std::cout << "解压缩：最大小数位数 = " << maxDecimalPlaces << std::endl;
+    blocksRead += 16;
+    int bitWight = static_cast<int>(bitStream.ReadInt(8));
+
     std::cout << "解压缩：最大数据位数 " << bitWight << std::endl;
 
-    // 读取第一个整数
-    long firstValue = static_cast<long>(bitStream.Read(bitWight));
-
-
-    integers.push_back( zigzag_decode(firstValue));
-    totalBitsRead += bitWight;
-
-    std::cout << "First integer read (hex): " << std::hex << firstValue << " " << integers[0] << std::endl;
-
+    integers.push_back(firstValue);
     // 读取后续的Delta编码数据
     for (size_t i = 1; i < blockSize; i++)
     {
-        if (bitStream.isEnd() || (bitStream.cursor_ * 8) + bitStream.bits_in_buffer_ < bitWight)
-        {
-            throw std::runtime_error("Unexpected end of input stream.");
-        }
+        // if (bitStream.isEnd() || (bitStream.cursor_ * 8) + bitStream.bits_in_buffer_ < bitWight)
+        // {
+        //     throw std::runtime_error("Unexpected end of input stream.");
+        // }
         long encodedDelta = bitStream.ReadLong(bitWight);
+        std::cout << encodedDelta<<" ";
         long delta = zigzag_decode(encodedDelta);
         integers.push_back(integers[i - 1] + delta);
 
-        totalBitsRead += bitWight;
+        blocksRead += bitWight;
         //std::cout<< integers[i] << " int : " << i <<std::endl;
-        // 检查是否有足够的位可以读取
-        if ((bitStream.data_.size() - bitStream.cursor_) * 8 + bitStream.bits_in_buffer_ < bitWight)
-        {
-            std::cout<< (bitStream.data_.size() - bitStream.cursor_) * 8 + bitStream.bits_in_buffer_ << " < " << bitWight <<std::endl;
-            //throw std::runtime_error("Not enough bits to read.");
-            bitStream.bits_in_buffer_ = 0;
-            return;
-        }
+        // // 检查是否有足够的位可以读取
+        // if ((bitStream.data_.size() - bitStream.cursor_) * 8 + bitStream.bits_in_buffer_ < bitWight)
+        // {
+        //     std::cout<< (bitStream.data_.size() - bitStream.cursor_) * 8 + bitStream.bits_in_buffer_ << " < " << bitWight <<std::endl;
+        //     //throw std::runtime_error("Not enough bits to read.");
+        //     bitStream.bits_in_buffer_ = 0;
+        //     return;
+        // }
 
         // if (bitStream.bits_in_buffer_ + bitStream.data_.size() - bitStream.cursor_ < bitWight)
         // {
@@ -115,10 +115,11 @@ void CDFDecompressor::decompressBlock(InputBitStream &bitStream, std::vector<lon
         //     return;
         // }
     }
+    std::cout << blocksRead << std::endl;
 }
 
 // 解压缩数据主函数
-void CDFDecompressor::decompress(const std::vector<unsigned char> &input, std::vector<double> &output)
+void CDFDecompressor::decompress(const std::vector<unsigned char>& input, std::vector<double>& output)
 {
     if (input.empty())
     {
@@ -126,23 +127,21 @@ void CDFDecompressor::decompress(const std::vector<unsigned char> &input, std::v
         return;
     }
 
-    InputBitStream bitStream(input);
+    InputBitStream bitStream;
+    bitStream.SetBuffer(input);
+    long totalValues = bitStream.ReadLong(64);
 
-    int totalBitsRead = 0;
-
-    long total = bitStream.data_.size()*8;
-    std::cout << "总大小 = " << input.size() << " " << total << std::endl;
+    std::cout << "总大小 " << totalValues << std::endl;
     size_t blockSize = 1024;
-
     int i = 0;
     // 解压缩数据块
-    while (!(bitStream.isEnd()))
+    while (output.size() < totalValues)
     {
-        if (bitStream.bits_in_buffer_ + bitStream.data_.size() - bitStream.cursor_ < 8)
-        {
-            std::cerr << "Error: Not enough bits to read." << std::endl;
-            break; // 退出循环
-        }
+        // if (bitStream.bits_in_buffer_ + bitStream.data_.size() - bitStream.cursor_ < 8)
+        // {
+        //     std::cerr << "Error: Not enough bits to read." << std::endl;
+        //     break; // 退出循环
+        // }
         // if (total > blockSize)
         // {
         //     total -= blockSize;
@@ -152,24 +151,19 @@ void CDFDecompressor::decompress(const std::vector<unsigned char> &input, std::v
         //     blockSize = total;
         // }
         std::vector<long> integers; // 为块大小分配内存
-
-        // 读取块数据
-        int maxDecimalPlaces = static_cast<int>(bitStream.Read(8));
-        totalBitsRead += 8;
-        std::cout << "解压缩：最大小数位数 = " << maxDecimalPlaces << std::endl;
-
+        int totalBitsRead = bitStream.ReadLong(64);
+        std::cout << "总大小 " << totalBitsRead << std::endl;
+        int maxDecimalPlaces = 0;
         // 定义块大小
-        decompressBlock(bitStream, integers, totalBitsRead, blockSize);
-
-        std::cout << i << " Cursor: " << bitStream.cursor_ << ", Bits in buffer: " << bitStream.bits_in_buffer_ << std::endl;
+        decompressBlock(bitStream, integers, totalBitsRead, blockSize, maxDecimalPlaces);
         // 将解压后的整数转换为浮点数
-        long  po=std::pow(10, maxDecimalPlaces);
+        long po = std::pow(10, maxDecimalPlaces);
         for (long intValue : integers)
         {
             double value = static_cast<double>(intValue) / po;
-            std::cout << " " << value; 
+            std::cout << " " << value;
             output.push_back(value);
         }
-        std::cout << "\n size :" << integers.size()<<std::endl;   
+        std::cout << "\n size :" << integers.size() << std::endl;
     }
 }
