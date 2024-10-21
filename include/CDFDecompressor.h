@@ -12,7 +12,7 @@ public:
 private:
     long zigzag_decode(unsigned long value);
     // void deltaDecode(const std::vector<long>& encoded, std::vector<long>& decoded);
-    void decompressBlock(InputBitStream& bitStream, std::vector<long>& integers, int& totalBitsRead,size_t blockSize);
+    void decompressBlock(InputBitStream& bitStream, std::vector<long>& integers, int& totalBitsRead,size_t blockSize,int& maxDecimalPlaces);
 };
 
 #endif // CDF_DECOMPRESSOR_H

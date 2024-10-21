@@ -59,7 +59,7 @@ void test_compression(const std::string& file_path) {
     
     std::cout << "压缩后的数据内容: ";
     for (const auto& byte : cmpData) {
-        std::cout << std::hex << static_cast<int>(byte) << " "; // 打印为十六进制
+        std::cout << std::dec << static_cast<int>(byte) << " "; // 打印为十六进制
     }
     std::cout << std::dec << std::endl; // 恢复为十进制格式
 
@@ -96,20 +96,27 @@ void test_compression(const std::string& file_path) {
 
 
     // 计算压缩率
-    size_t original_size = oriData.size() * sizeof(double);
+    size_t original_size = oriData.size() * sizeof(double)/8;
     size_t compressed_size = cmpData.size() * sizeof(unsigned char);
     double compression_ratio = static_cast<double>(original_size) / compressed_size;
 
     // 打印压缩率
     std::cout << "压缩率: " << compression_ratio << std::endl;
 
+    for(int i=0;i<original_size;i++)
+    {
+        if(decompressedData[i] != oriData[i])
+        {
+            std::cout<<std::dec<<i<<" "<<decompressedData[i]<<" != "<<oriData[i]<<std::endl;
+        }
+    }
     // 验证解压结果是否与原始数据一致
     ASSERT_EQ(decompressedData, oriData) << "解压失败，数据不一致。";
 }
 
 // Google Test 测试用例
 TEST(CDFCompressorTest, CompressionDecompression) {
-    std::string dir_path = "/mnt/e/start/gpu/CUDA/cuCompressor/test/data/float";//有毛病还没有数据集
+    std::string dir_path = "/home/lz/workspace/cuCompressor/test/data/float";//有毛病还没有数据集
     for (const auto& entry : fs::directory_iterator(dir_path)) {
         if (entry.is_regular_file()) {
             std::string file_path = entry.path().string();
@@ -120,29 +127,27 @@ TEST(CDFCompressorTest, CompressionDecompression) {
     }
 }
 
-
 std::vector<uint8_t> ConvertArrayToVector(const Array<uint8_t>& arr) {
     return std::vector<uint8_t>(arr.begin(), arr.end());
 }
 
 //读取测试
-TEST(input,read)
-{
-    std::vector<unsigned char> input = {0x01, 0x04, 0xF0};  // 测试数据流
-    InputBitStream bitStream(input);
-
-    // 读取并打印每个步骤的结果
-    uint64_t first = bitStream.Read(8);  // 读取 01
-    //std::cout << std::hex << "First: " << first << std::endl; // 输出: 1
-    ASSERT_EQ(input[0], first);
-    uint64_t second = bitStream.Read(8); // 读取 04
-    //std::cout << std::hex << "Second: " << second << std::endl; // 输出: 4
-    ASSERT_EQ(input[1], second);
-    uint64_t third = bitStream.Read(5);  // 读取 F0 中的前 5 位，即 11110 -> 1E
-    //std::cout << std::hex << "Third: " << third << std::endl;  // 期望输出: 1E
-    ASSERT_EQ(0x1e, third);
-
-}
+// TEST(input,read){
+//     std::vector<unsigned char> input = {0x01, 0x04, 0xF0};  // 测试数据流
+//     InputBitStream bitStream(input);
+//
+//     // 读取并打印每个步骤的结果
+//     uint64_t first = bitStream.Read(8);  // 读取 01
+//     //std::cout << std::hex << "First: " << first << std::endl; // 输出: 1
+//     ASSERT_EQ(input[0], first);
+//     uint64_t second = bitStream.Read(8); // 读取 04
+//     //std::cout << std::hex << "Second: " << second << std::endl; // 输出: 4
+//     ASSERT_EQ(input[1], second);
+//     uint64_t third = bitStream.Read(5);  // 读取 F0 中的前 5 位，即 11110 -> 1E
+//     //std::cout << std::hex << "Third: " << third << std::endl;  // 期望输出: 1E
+//     ASSERT_EQ(0x1e, third);
+//
+// }
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

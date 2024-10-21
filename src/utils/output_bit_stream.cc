@@ -90,13 +90,10 @@ Array<uint8_t> OutputBitStream::GetBuffer(uint32_t len) {
 //@存储并清空buffer
 //
 void OutputBitStream::Flush() {
-        if (bit_in_buffer_ > 0) {
-//         // 将缓冲区剩余位补充到32位
-//         buffer_ <<= (32 - bit_in_buffer_);
-        // 写入剩余位
-        data_[cursor_++] = buffer_; // 确保 cursor_ 不超出
-        buffer_ = 0; // 清空缓冲区
-        bit_in_buffer_ = 0; // 重置位数
+    if (bit_in_buffer_) {
+        data_[cursor_++] = buffer_ >> 32;
+        buffer_ = 0;
+        bit_in_buffer_ = 0;
     }
 }
 //@清空刷新
