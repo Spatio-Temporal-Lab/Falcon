@@ -34,12 +34,12 @@ void CDFCompressor::compress(const std::vector<double>& input, std::vector<unsig
         size_t currentBlockSize = std::min(BLOCK_SIZE, input.size() - i);
         std::vector<double> block(input.begin() + i, input.begin() + i + currentBlockSize);
         compressBlock(block, bitStream, perBitSize);
-        std::cout << std::endl << "Block size: " << block.size() << std::endl;
+        // std::cout << std::endl << "Block size: " << block.size() << std::endl;
 
         // 将位流中的数据更新到输出缓冲区中
         bitStream.Flush();
-        std::cout << "perBitSize " << perBitSize << std::endl;
-        std::cout << "perBitSize " << (perBitSize + 31) / 32 * 4 << std::endl;
+        // std::cout << "perBitSize " << perBitSize << std::endl;
+        // std::cout << "perBitSize " << (perBitSize + 31) / 32 * 4 << std::endl;
         Array<uint8_t> buffer = bitStream.GetBuffer((perBitSize + 31) / 32 * 4);
 
         // 将压缩数据复制到输出
@@ -47,7 +47,8 @@ void CDFCompressor::compress(const std::vector<double>& input, std::vector<unsig
         {
             output.push_back(static_cast<unsigned char>(buffer[j])); // 确保类型转换
         }
-        std::cout << std::endl << "Block size: " << block.size() << std::endl;
+        // std::cout << output.size() << std::endl;
+        // std::cout << std::endl << "Block size: " << block.size() << std::endl;
         bitStream.Refresh();
     }
 }
@@ -59,7 +60,7 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     long firstValue;
     int maxDecimalPlaces = 0;
     sampleBlock(block, longs, firstValue, maxDecimalPlaces);
-    std::cout << std::endl << "sample " << block.size() << std::endl;
+    // std::cout << std::endl << "sample " << block.size() << std::endl;
 
 
     long lastValue = firstValue;
@@ -77,19 +78,19 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
 
     // 计算所有差值，并找出所需的最大 bit 位数
     int bitCount = 0;
-    std::cout << " maxDelta " << maxDelta << std::endl;
+    // std::cout << " maxDelta " << maxDelta << std::endl;
     while (maxDelta > 0)
     {
         maxDelta >>= 1;
         bitCount++;
     }
 
-    std::cout << bitCount << std::endl;
+    // std::cout << bitCount << std::endl;
 
     // 将 bit 位数写入输出
     // 将firstValue和位数写入输出
     bitSize = 64 + 64 + 8 + 8 + (block.size() - 1) * bitCount;
-    std::cout << " bitSize " << bitSize << std::endl;
+    // std::cout << " bitSize " << bitSize << std::endl;
     bitStream.WriteLong(bitSize, 64);
     bitStream.WriteLong(firstValue, 64);
     bitStream.WriteInt(maxDecimalPlaces, 8);
@@ -100,7 +101,7 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
         bitStream.WriteLong(delta, bitCount);
     }
 
-    std::cout << "deltasize "<<deltaList.size() << std::endl;
+    // std::cout << "deltasize "<<deltaList.size() << std::endl;
 }
 
 void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<long>& longs, long& firstValue,
@@ -117,7 +118,7 @@ void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<lo
             maxDecimalPlaces = decimalPlaces;
         }
     }
-    std::cout << std::dec << "maxDecimalPlaces " << maxDecimalPlaces << std::endl;
+    // std::cout << std::dec << "maxDecimalPlaces " << maxDecimalPlaces << std::endl;
 
     //感觉可以优化计算方法
     firstValue = static_cast<long>(block[0] * std::pow(10, maxDecimalPlaces));

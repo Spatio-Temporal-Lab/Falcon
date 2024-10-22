@@ -75,14 +75,14 @@ void CDFDecompressor::decompressBlock(InputBitStream& bitStream, std::vector<lon
     // 读取第一个整数
     long firstValue = bitStream.ReadLong(64);
     blocksRead += 128;
-    std::cout << "First integer read (hex): " << firstValue << std::endl;
+    // std::cout << "First integer read (hex): " << firstValue << std::endl;
     // 读取每个数据的最大位数
     maxDecimalPlaces = static_cast<int>(bitStream.ReadInt(8));
-    std::cout << "解压缩：最大小数位数 = " << maxDecimalPlaces << std::endl;
+    // std::cout << "解压缩：最大小数位数 = " << maxDecimalPlaces << std::endl;
     blocksRead += 16;
     int bitWight = static_cast<int>(bitStream.ReadInt(8));
 
-    std::cout << "解压缩：最大数据位数 " << bitWight << std::endl;
+    // std::cout << "解压缩：最大数据位数 " << bitWight << std::endl;
 
     integers.push_back(firstValue);
     // 读取后续的Delta编码数据
@@ -115,7 +115,7 @@ void CDFDecompressor::decompressBlock(InputBitStream& bitStream, std::vector<lon
         //     return;
         // }
     }
-    std::cout << blocksRead << std::endl;
+    // std::cout << blocksRead << std::endl;
 }
 
 // 解压缩数据主函数
@@ -131,11 +131,12 @@ void CDFDecompressor::decompress(const std::vector<unsigned char>& input, std::v
     bitStream.SetBuffer(input);
     long totalValues = bitStream.ReadLong(64);
 
-    std::cout << "总大小 " << totalValues << std::endl;
+    // std::cout << "总大小 " << totalValues << std::endl;
     size_t blockSize = 1024;
     int i = 0;
     // 解压缩数据块
-    while (output.size() < totalValues)
+    size_t numBlocks = (totalValues + blockSize - 1) / blockSize;
+    for (size_t i = 0; i < numBlocks; ++i)
     {
         // if (bitStream.bits_in_buffer_ + bitStream.data_.size() - bitStream.cursor_ < 8)
         // {
@@ -150,22 +151,23 @@ void CDFDecompressor::decompress(const std::vector<unsigned char>& input, std::v
         // {
         //     blockSize = total;
         // }
+        size_t currentBlock = std::min(blockSize, totalValues - i * blockSize);
         std::vector<long> integers; // 为块大小分配内存
         int totalBitsRead = bitStream.ReadLong(64);
-        std::cout << "总大小 " << totalBitsRead << std::endl;
+        // std::cout << "总大小 " << totalBitsRead << std::endl;
         int maxDecimalPlaces = 0;
         // 定义块大小
-        decompressBlock(bitStream, integers, totalBitsRead, blockSize, maxDecimalPlaces);
+        decompressBlock(bitStream, integers, totalBitsRead, currentBlock, maxDecimalPlaces);
         // 将解压后的整数转换为浮点数
         long po = std::pow(10, maxDecimalPlaces);
         for (long intValue : integers)
         {
             double value = static_cast<double>(intValue) / po;
-            std::cout << " " << value;
+            // std::cout << " " << value;
             output.push_back(value);
         }
-        std::cout << "\n size :" << integers.size() << std::endl;
-        bitStream.ReadLong((totalBitsRead+31)/32*32-totalBitsRead);
-        std::cout << "kongbai "<<(totalBitsRead+31)/32*32-totalBitsRead;
+        // std::cout << "\n size :" << integers.size() << std::endl;
+        bitStream.ReadLong((totalBitsRead + 31) / 32 * 32 - totalBitsRead);
+        // std::cout << "kongbai "<<(totalBitsRead+31)/32*32-totalBitsRead;
     }
 }
