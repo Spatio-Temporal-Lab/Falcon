@@ -93,7 +93,7 @@ void CDFDecompressor::decompressBlock(InputBitStream& bitStream, std::vector<lon
         //     throw std::runtime_error("Unexpected end of input stream.");
         // }
         long encodedDelta = bitStream.ReadLong(bitWight);
-        std::cout << encodedDelta<<" ";
+        // std::cout << encodedDelta<<" ";
         long delta = zigzag_decode(encodedDelta);
         integers.push_back(integers[i - 1] + delta);
 
@@ -165,5 +165,7 @@ void CDFDecompressor::decompress(const std::vector<unsigned char>& input, std::v
             output.push_back(value);
         }
         std::cout << "\n size :" << integers.size() << std::endl;
+        bitStream.ReadLong((totalBitsRead+31)/32*32-totalBitsRead);
+        std::cout << "kongbai "<<(totalBitsRead+31)/32*32-totalBitsRead;
     }
 }
