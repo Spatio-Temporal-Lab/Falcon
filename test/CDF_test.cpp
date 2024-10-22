@@ -102,16 +102,14 @@ void test_compression(const std::string& file_path) {
 
     // 打印压缩率
     std::cout << "压缩率: " << compression_ratio << std::endl;
-
+    ASSERT_EQ(decompressedData.size() , oriData.size()) << "解压失败，数据不一致。";
     for(int i=0;i<original_size;i++)
     {
-        if(decompressedData[i] != oriData[i])
-        {
-            std::cout<<std::dec<<i<<" "<<decompressedData[i]<<" != "<<oriData[i]<<std::endl;
-        }
+        // 验证解压结果是否与原始数据一致
+        ASSERT_EQ(decompressedData[i] , oriData[i]) << "解压失败，数据不一致。";
+
     }
-    // 验证解压结果是否与原始数据一致
-    ASSERT_EQ(decompressedData, oriData) << "解压失败，数据不一致。";
+
 }
 
 // Google Test 测试用例
