@@ -57,10 +57,10 @@ void test_compression(const std::string& file_path) {
     // 打印压缩时间
     std::cout << "压缩时间: " << compress_duration.count() << " 秒" << std::endl;
     
-    std::cout << "压缩后的数据内容: ";
-    for (const auto& byte : cmpData) {
-        std::cout << std::dec << static_cast<int>(byte) << " "; // 打印为十六进制
-    }
+    // std::cout << "压缩后的数据内容: ";
+    // for (const auto& byte : cmpData) {
+    //     std::cout << std::dec << static_cast<int>(byte) << " "; // 打印为十六进制
+    // }
     std::cout << std::dec << std::endl; // 恢复为十进制格式
 
     // std::cout << "压缩后的数据内容（以二进制格式）: ";
