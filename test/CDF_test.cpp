@@ -24,12 +24,21 @@ std::vector<double> read_data(const std::string& file_path) {
         std::cerr << "无法打开文件: " << file_path << std::endl;
         return data;
     }
-    double value;
-    while (file >> value) {
-        //data.push_back(static_cast<double>(std::round(value))); 四舍五入  
-        data.push_back(static_cast<double>(value));  
+    // double value;
+    // while (file >> value) {
+    //     //data.push_back(static_cast<double>(std::round(value))); 四舍五入
+    //     // std::cout << std::fixed << std::setprecision(10); // 设置精度为10位小数
+    //     // std::cout << "value : " <<value<<std::endl;
+    //     data.push_back(static_cast<double>(value));
+    // }
+    std::string line;
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        double value;
+        if (ss >> value) { // 从字符串流读取 double
+            data.push_back(value);
+        }
     }
-    //std::cout<<"read:"<<data[0]<<std::endl;
     return data;
 }
 
@@ -61,7 +70,7 @@ void test_compression(const std::string& file_path) {
     // for (const auto& byte : cmpData) {
     //     std::cout << std::dec << static_cast<int>(byte) << " "; // 打印为十六进制
     // }
-    std::cout << std::dec << std::endl; // 恢复为十进制格式
+    // std::cout << std::dec << std::endl; // 恢复为十进制格式
 
     // std::cout << "压缩后的数据内容（以二进制格式）: ";
     // for (const auto& byte : cmpData) {
@@ -96,17 +105,18 @@ void test_compression(const std::string& file_path) {
 
 
     // 计算压缩率
-    size_t original_size = oriData.size() * sizeof(double)/8;
+    size_t original_size = oriData.size() * sizeof(double);
     size_t compressed_size = cmpData.size() * sizeof(unsigned char);
-    double compression_ratio = static_cast<double>(original_size) / compressed_size;
+    double compression_ratio = compressed_size/ static_cast<double>(original_size);
 
     // 打印压缩率
     std::cout << "压缩率: " << compression_ratio << std::endl;
     ASSERT_EQ(decompressedData.size() , oriData.size()) << "解压失败，数据不一致。";
-    for(int i=0;i<original_size;i++)
+    for(int i=0;i<oriData[i];i++)
     {
         // 验证解压结果是否与原始数据一致
-        ASSERT_EQ(decompressedData[i] , oriData[i]) << "解压失败，数据不一致。";
+        // std::cout << std::fixed << std::setprecision(10)<<decompressedData[i]<<" "<<oriData[i]<<std::endl;
+        ASSERT_EQ(decompressedData[i] , oriData[i]) <<i<< "解压失败，数据不一致。";
 
     }
 
