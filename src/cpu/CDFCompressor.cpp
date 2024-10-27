@@ -7,6 +7,8 @@
 #include <iomanip>
 #include <sstream>
 #include "CDFCompressor.h"
+#include <cstring>
+#include <cstdint>
 
 CDFCompressor::CDFCompressor()
 {
@@ -69,6 +71,8 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
 
     for (int i = 1; i < longs.size(); i++)
     {
+        double num = block[i];
+        double longnum = longs[i];
         long delta = zigzag_encode(longs[i] - lastValue);
         deltaList.push_back(delta);
         maxDelta = std::max(delta, maxDelta);
@@ -94,10 +98,12 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     bitStream.WriteLong(bitSize, 64);
     bitStream.WriteLong(firstValue, 64);
     bitStream.WriteInt(maxDecimalPlaces, 8);
+    // std::cout << "maxDecimalPlaces " <<maxDecimalPlaces<< std::endl;
     bitStream.WriteInt(bitCount, 8);
     // 按照计算的 bit 位数，将所有差值进行存储
     for (long delta : deltaList)
     {
+
         bitStream.WriteLong(delta, bitCount);
     }
 
@@ -117,27 +123,55 @@ void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<lo
         {
             maxDecimalPlaces = decimalPlaces;
         }
+
     }
     // std::cout << std::dec << "maxDecimalPlaces " << maxDecimalPlaces << std::endl;
 
     //感觉可以优化计算方法
     firstValue = static_cast<long>(block[0] * std::pow(10, maxDecimalPlaces));
 
-    for (double val : block)
+    if(maxDecimalPlaces>14)
     {
-        longs.push_back(static_cast<long>(val * std::pow(10, maxDecimalPlaces)));
+        uint64_t bits;
+        std::memcpy(&bits, &block[0], sizeof(bits));
+        firstValue = static_cast<long>(bits);
+        for (double val : block)
+        {
+            uint64_t uint64;
+            std::memcpy(&uint64, &val, sizeof(uint64));
+            longs.push_back(static_cast<long>(uint64));
+        }
+    }else
+    {
+        firstValue = static_cast<long>(std::round(block[0] * std::pow(10, maxDecimalPlaces)));
+        for (double val : block)
+        {
+            double num =val * std::pow(10, maxDecimalPlaces);
+
+            longs.push_back(static_cast<long>(std::round (val * std::pow(10, maxDecimalPlaces))));
+        }
     }
+
 }
 
 int CDFCompressor::getDecimalPlaces(double value)
 {
-    int decimalPlaces = 0;
-    while (value != static_cast<long>(value) && decimalPlaces < 64)
-    {
-        value *= 10;
-        decimalPlaces++;
+    std::ostringstream out;
+    out.precision(15); // 设置精度，确保足够的位数
+    out << value;
+    std::string numStr = out.str();
+
+    size_t pos = numStr.find('.');
+    if (pos == std::string::npos) {
+        return 0; // 没有小数部分
     }
-    return decimalPlaces;
+
+    // 去掉末尾的零
+    size_t lastNonZero = numStr.find_last_not_of('0');
+    if (lastNonZero != std::string::npos && lastNonZero > pos) {
+        return lastNonZero - pos;
+    }
+    return numStr.size() - pos - 1;
 }
 
 // 获取最大值的比特数，用于确定压缩位率
