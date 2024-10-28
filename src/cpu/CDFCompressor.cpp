@@ -26,7 +26,7 @@ void CDFCompressor::compress(const std::vector<double>& input, std::vector<unsig
     // 将压缩数据复制到输出
     for (size_t j = 0; j < buffer1.length(); ++j)
     {
-        output.push_back(static_cast<unsigned char>(buffer1[j])); // 确保类型转换
+        output.push_back(buffer1[j]); // 确保类型转换
     }
     bitStream.Refresh();
     // 对数据进行分块压缩
@@ -47,7 +47,7 @@ void CDFCompressor::compress(const std::vector<double>& input, std::vector<unsig
         // 将压缩数据复制到输出
         for (size_t j = 0; j < buffer.length(); ++j)
         {
-            output.push_back(static_cast<unsigned char>(buffer[j])); // 确保类型转换
+            output.push_back(buffer[j]); // 确保类型转换
         }
         // std::cout << output.size() << std::endl;
         // std::cout << std::endl << "Block size: " << block.size() << std::endl;
@@ -71,8 +71,8 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
 
     for (int i = 1; i < longs.size(); i++)
     {
-        double num = block[i];
-        double longnum = longs[i];
+        // double num = block[i];
+        // double longnum = longs[i];
         long delta = zigzag_encode(longs[i] - lastValue);
         deltaList.push_back(delta);
         maxDelta = std::max(delta, maxDelta);
@@ -103,7 +103,6 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     // 按照计算的 bit 位数，将所有差值进行存储
     for (long delta : deltaList)
     {
-
         bitStream.WriteLong(delta, bitCount);
     }
 
@@ -146,8 +145,7 @@ void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<lo
         firstValue = static_cast<long>(std::round(block[0] * std::pow(10, maxDecimalPlaces)));
         for (double val : block)
         {
-            double num =val * std::pow(10, maxDecimalPlaces);
-
+            // double num =val * std::pow(10, maxDecimalPlaces);
             longs.push_back(static_cast<long>(std::round (val * std::pow(10, maxDecimalPlaces))));
         }
     }
