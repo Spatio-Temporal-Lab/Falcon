@@ -6,6 +6,7 @@
 #include "array.h"
 
 //@输出bit流
+//  大端字节序
 //  data_：存储编码后的数据块
 //  cursor_: 当前写入位置的光标
 //  bit_in_buffer_: 当前缓冲区中已写入的位数

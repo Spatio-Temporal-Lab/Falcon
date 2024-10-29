@@ -1,29 +1,40 @@
 #ifndef INPUT_BIT_STREAM_H
 #define INPUT_BIT_STREAM_H
 
-#include <vector>
-#include <stdexcept>
-#include <cstdint>
+#include <endian.h>
 
+#include <cstdlib>
+#include <cstring>
+#include <vector>
+#include <cmath>
+#include <memory>
+
+#include "array.h"
 class InputBitStream {
 public:
-    explicit InputBitStream(const std::vector<uint8_t>& data);
-    
-    uint64_t Read(int numBits);
-    
-    long ReadLong(int numBits);
+    InputBitStream() = default;
 
-    
+    InputBitStream(uint8_t *raw_data, size_t size);
 
-    bool isEnd() const;
+    uint64_t ReadLong(size_t len);
 
-//private:
-    std::vector<uint8_t> data_; // 输入数据
-    size_t cursor_; // 当前读取位置
-    int bits_in_buffer_; // 当前缓冲区中的有效位数
-    uint64_t buffer_; // 当前读取的缓冲区
+    uint32_t ReadInt(size_t len);
 
-    void FillBuffer();
+    uint32_t ReadBit();
+
+    void SetBuffer(const Array<uint8_t> &new_buffer);
+
+    void SetBuffer(const std::vector<uint8_t> &new_buffer);
+
+private:
+    void Forward(size_t len);
+    uint64_t Peek(size_t len);
+
+    Array<uint32_t> data_;
+    uint64_t buffer_ = 0;
+    uint64_t cursor_ = 0;
+    uint64_t bit_in_buffer_ = 0;
 };
+
 
 #endif // INPUT_BIT_STREAM_H
