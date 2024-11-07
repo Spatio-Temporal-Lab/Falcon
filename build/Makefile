@@ -117,6 +117,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named ALP
+
+# Build rule for target.
+ALP: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ALP
+.PHONY : ALP
+
+# fast build rule for target.
+ALP/fast:
+	$(MAKE) $(MAKESILENT) -f test/baseline/ALP/CMakeFiles/ALP.dir/build.make test/baseline/ALP/CMakeFiles/ALP.dir/build
+.PHONY : ALP/fast
+
+#=============================================================================
 # Target rules for targets named test_cpu
 
 # Build rule for target.
@@ -126,128 +139,34 @@ test_cpu: cmake_check_build_system
 
 # fast build rule for target.
 test_cpu/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/build
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/build
 .PHONY : test_cpu/fast
 
-src/cpu/CDFCompressor.o: src/cpu/CDFCompressor.cpp.o
-.PHONY : src/cpu/CDFCompressor.o
+#=============================================================================
+# Target rules for targets named benchmark_tests
 
-# target to build an object file
-src/cpu/CDFCompressor.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/cpu/CDFCompressor.cpp.o
-.PHONY : src/cpu/CDFCompressor.cpp.o
+# Build rule for target.
+benchmark_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmark_tests
+.PHONY : benchmark_tests
 
-src/cpu/CDFCompressor.i: src/cpu/CDFCompressor.cpp.i
-.PHONY : src/cpu/CDFCompressor.i
+# fast build rule for target.
+benchmark_tests/fast:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/build
+.PHONY : benchmark_tests/fast
 
-# target to preprocess a source file
-src/cpu/CDFCompressor.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/cpu/CDFCompressor.cpp.i
-.PHONY : src/cpu/CDFCompressor.cpp.i
+#=============================================================================
+# Target rules for targets named test_ALP
 
-src/cpu/CDFCompressor.s: src/cpu/CDFCompressor.cpp.s
-.PHONY : src/cpu/CDFCompressor.s
+# Build rule for target.
+test_ALP: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_ALP
+.PHONY : test_ALP
 
-# target to generate assembly for a file
-src/cpu/CDFCompressor.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/cpu/CDFCompressor.cpp.s
-.PHONY : src/cpu/CDFCompressor.cpp.s
-
-src/cpu/CDFDecompressor.o: src/cpu/CDFDecompressor.cpp.o
-.PHONY : src/cpu/CDFDecompressor.o
-
-# target to build an object file
-src/cpu/CDFDecompressor.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/cpu/CDFDecompressor.cpp.o
-.PHONY : src/cpu/CDFDecompressor.cpp.o
-
-src/cpu/CDFDecompressor.i: src/cpu/CDFDecompressor.cpp.i
-.PHONY : src/cpu/CDFDecompressor.i
-
-# target to preprocess a source file
-src/cpu/CDFDecompressor.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/cpu/CDFDecompressor.cpp.i
-.PHONY : src/cpu/CDFDecompressor.cpp.i
-
-src/cpu/CDFDecompressor.s: src/cpu/CDFDecompressor.cpp.s
-.PHONY : src/cpu/CDFDecompressor.s
-
-# target to generate assembly for a file
-src/cpu/CDFDecompressor.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/cpu/CDFDecompressor.cpp.s
-.PHONY : src/cpu/CDFDecompressor.cpp.s
-
-src/utils/input_bit_stream.o: src/utils/input_bit_stream.cc.o
-.PHONY : src/utils/input_bit_stream.o
-
-# target to build an object file
-src/utils/input_bit_stream.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/utils/input_bit_stream.cc.o
-.PHONY : src/utils/input_bit_stream.cc.o
-
-src/utils/input_bit_stream.i: src/utils/input_bit_stream.cc.i
-.PHONY : src/utils/input_bit_stream.i
-
-# target to preprocess a source file
-src/utils/input_bit_stream.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/utils/input_bit_stream.cc.i
-.PHONY : src/utils/input_bit_stream.cc.i
-
-src/utils/input_bit_stream.s: src/utils/input_bit_stream.cc.s
-.PHONY : src/utils/input_bit_stream.s
-
-# target to generate assembly for a file
-src/utils/input_bit_stream.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/utils/input_bit_stream.cc.s
-.PHONY : src/utils/input_bit_stream.cc.s
-
-src/utils/output_bit_stream.o: src/utils/output_bit_stream.cc.o
-.PHONY : src/utils/output_bit_stream.o
-
-# target to build an object file
-src/utils/output_bit_stream.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/utils/output_bit_stream.cc.o
-.PHONY : src/utils/output_bit_stream.cc.o
-
-src/utils/output_bit_stream.i: src/utils/output_bit_stream.cc.i
-.PHONY : src/utils/output_bit_stream.i
-
-# target to preprocess a source file
-src/utils/output_bit_stream.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/utils/output_bit_stream.cc.i
-.PHONY : src/utils/output_bit_stream.cc.i
-
-src/utils/output_bit_stream.s: src/utils/output_bit_stream.cc.s
-.PHONY : src/utils/output_bit_stream.s
-
-# target to generate assembly for a file
-src/utils/output_bit_stream.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/src/utils/output_bit_stream.cc.s
-.PHONY : src/utils/output_bit_stream.cc.s
-
-test/CDF_test.o: test/CDF_test.cpp.o
-.PHONY : test/CDF_test.o
-
-# target to build an object file
-test/CDF_test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/test/CDF_test.cpp.o
-.PHONY : test/CDF_test.cpp.o
-
-test/CDF_test.i: test/CDF_test.cpp.i
-.PHONY : test/CDF_test.i
-
-# target to preprocess a source file
-test/CDF_test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/test/CDF_test.cpp.i
-.PHONY : test/CDF_test.cpp.i
-
-test/CDF_test.s: test/CDF_test.cpp.s
-.PHONY : test/CDF_test.s
-
-# target to generate assembly for a file
-test/CDF_test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_cpu.dir/build.make CMakeFiles/test_cpu.dir/test/CDF_test.cpp.s
-.PHONY : test/CDF_test.cpp.s
+# fast build rule for target.
+test_ALP/fast:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/build
+.PHONY : test_ALP/fast
 
 # Help Target
 help:
@@ -257,22 +176,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... ALP"
+	@echo "... benchmark_tests"
+	@echo "... test_ALP"
 	@echo "... test_cpu"
-	@echo "... src/cpu/CDFCompressor.o"
-	@echo "... src/cpu/CDFCompressor.i"
-	@echo "... src/cpu/CDFCompressor.s"
-	@echo "... src/cpu/CDFDecompressor.o"
-	@echo "... src/cpu/CDFDecompressor.i"
-	@echo "... src/cpu/CDFDecompressor.s"
-	@echo "... src/utils/input_bit_stream.o"
-	@echo "... src/utils/input_bit_stream.i"
-	@echo "... src/utils/input_bit_stream.s"
-	@echo "... src/utils/output_bit_stream.o"
-	@echo "... src/utils/output_bit_stream.i"
-	@echo "... src/utils/output_bit_stream.s"
-	@echo "... test/CDF_test.o"
-	@echo "... test/CDF_test.i"
-	@echo "... test/CDF_test.s"
 .PHONY : help
 
 

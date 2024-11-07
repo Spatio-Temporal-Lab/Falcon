@@ -88,7 +88,6 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
         maxDelta >>= 1;
         bitCount++;
     }
-}
 
 
     // std::cout << bitCount << std::endl;
