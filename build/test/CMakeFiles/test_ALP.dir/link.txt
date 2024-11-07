@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/test_ALP.dir/test_ALP.cpp.o CMakeFiles/test_ALP.dir/data/dataset_utils.cpp.o -o test_ALP  -lpthread baseline/ALP/libALP.a /usr/lib/x86_64-linux-gnu/libgtest_main.a /usr/lib/x86_64-linux-gnu/libgtest.a 

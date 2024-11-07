@@ -4,6 +4,8 @@
 mkdir build
 cd build
 cmake ..
-make
-valgrind --leak-check=full ./test_cpu
+make -j4
+./test/benchmark_tests 
+./test/test_cpu 
+./test/test_ALP
 ```
