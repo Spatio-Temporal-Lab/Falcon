@@ -13,6 +13,7 @@
 CDFCompressor::CDFCompressor()
 {
     // OutputBitStream bitStream(BLOCK_SIZE * 8); // 初始化输出位流，假设缓冲区大小为 1024 * 8
+    POW_NUM = pow(2, 51) + pow(2, 52);
 }
 
 void CDFCompressor::compress(const std::vector<double>& input, std::vector<unsigned char>& output)
@@ -129,7 +130,7 @@ void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<lo
     //感觉可以优化计算方法
     firstValue = static_cast<long>(block[0] * std::pow(10, maxDecimalPlaces));
 
-    if(maxDecimalPlaces>14)
+    if(maxDecimalPlaces>15)
     {
         uint64_t bits;
         std::memcpy(&bits, &block[0], sizeof(bits));
@@ -154,22 +155,26 @@ void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<lo
 
 int CDFCompressor::getDecimalPlaces(double value)
 {
-    std::ostringstream out;
-    out.precision(15); // 设置精度，确保足够的位数
-    out << value;
-    std::string numStr = out.str();
+    double trac = value + POW_NUM - POW_NUM;
+    double temp = value;
+    int digits = 0;
+    int64_t int_temp;
+    int64_t trac_temp;
+    std::memcpy(&int_temp, &temp, sizeof(double));
+    std::memcpy(&trac_temp, &trac, sizeof(double));
+    double log10v = log10(value);
+    int sp = floor(log10v);
+    while (std::abs(trac_temp - int_temp) >1 && digits < 16-sp-1)
+    {
+        digits++;
+        double td = pow(10, digits);
+        temp =value*td;
+        std::memcpy(&int_temp, &temp, sizeof(double));
+        trac = temp + POW_NUM - POW_NUM;
+        std::memcpy(&trac_temp, &trac, sizeof(double));
 
-    size_t pos = numStr.find('.');
-    if (pos == std::string::npos) {
-        return 0; // 没有小数部分
     }
-
-    // 去掉末尾的零
-    size_t lastNonZero = numStr.find_last_not_of('0');
-    if (lastNonZero != std::string::npos && lastNonZero > pos) {
-        return lastNonZero - pos;
-    }
-    return numStr.size() - pos - 1;
+    return digits;
 }
 
 // 获取最大值的比特数，用于确定压缩位率
