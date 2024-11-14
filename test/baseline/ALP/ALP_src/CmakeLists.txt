@@ -1,0 +1,4 @@
+# ALP_src/CMakeLists.txt
+add_subdirectory(alp_lib)  # 添加 alp_lib 库子目录
+
+
