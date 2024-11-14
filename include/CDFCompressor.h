@@ -13,6 +13,8 @@ class CDFCompressor {
 public:
     CDFCompressor();
 
+    double POW_NUM;
+
     size_t BLOCK_SIZE = 1024;
 
     // 压缩给定输入数据
