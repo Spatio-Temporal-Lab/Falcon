@@ -30,6 +30,8 @@ void InputBitStream::Forward(size_t len) {
     }
 }
 
+
+
 uint64_t InputBitStream::ReadLong(size_t len) {
     if (len == 0) return 0;
     uint64_t ret = 0;
@@ -47,6 +49,14 @@ uint64_t InputBitStream::ReadLong(size_t len) {
 uint32_t InputBitStream::ReadInt(size_t len) {
     if (len == 0) return 0;
     uint32_t ret = 0;
+    ret |= Peek(len);
+    Forward(len);
+    return ret;
+}
+
+uint8_t InputBitStream::ReadByte(size_t len) {
+    if (len == 0) return 0;
+    uint8_t ret = 0;
     ret |= Peek(len);
     Forward(len);
     return ret;

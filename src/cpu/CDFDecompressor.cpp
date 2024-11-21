@@ -8,6 +8,7 @@
 #include <iostream>
 
 #define bit8 64
+#define BLOCK_SIZE 1024
 
 // Zigzag 解码，将无符号整数还原为带符号整数
 long CDFDecompressor::zigzag_decode(unsigned long value)
@@ -15,34 +16,121 @@ long CDFDecompressor::zigzag_decode(unsigned long value)
     return (value >> 1) ^ -(value & 1);
 }
 
-void CDFDecompressor::decompressBlock(InputBitStream& bitStream, std::vector<long>& integers, int& totalBitsRead,
+void CDFDecompressor::decompressBlock(InputBitStream& bitStream, std::vector<long>& originalData, int& totalBitsRead,
                                       size_t blockSize, int& maxDecimalPlaces)
 {
+    // std::cout<<"BLOCK START"<<std::endl;
     int blocksRead = 0;
-    // 读取第一个整数
-    long firstValue = bitStream.ReadLong(64);
+    uint64_t firstValue = bitStream.ReadLong(64);
+    maxDecimalPlaces = bitStream.ReadInt(8);
+    uint32_t bitWeight = bitStream.ReadInt(8);
+    uint32_t bestPoint = bitStream.ReadInt(8);
     blocksRead += 128;
-    // std::cout << "First integer read (hex): " << firstValue << std::endl;
-    // 读取每个数据的最大位数
-    maxDecimalPlaces = static_cast<int>(bitStream.ReadInt(8));
-    // std::cout << "解压缩：最大小数位数 = " << maxDecimalPlaces << std::endl;
-    blocksRead += 16;
-    int bitWight = static_cast<int>(bitStream.ReadInt(8));
+    blocksRead += 24;
+    // 2. 计算尺寸
+    int numNonSparseCols = bestPoint;
+    int nonSparseColSize = (blockSize + 63) / 64; // 每列的大小（以 uint64_t 为单位）
+    int nonSparseSize = numNonSparseCols * nonSparseColSize;
 
-    // std::cout << "解压缩：最大数据位数 " << bitWight << std::endl;
+    int numSparseCols = bitWeight - bestPoint;
+    int sparseColSize = (blockSize+7) / 8; // 每列的大小（以字节为单位）
+    // std::cout << "blockSize: "<<blockSize << std::endl;
+    int sparseSize = numSparseCols * sparseColSize;
 
-    integers.push_back(firstValue);
-    // 读取后续的Delta编码数据
-    for (size_t i = 1; i < blockSize; i++)
+    int numFlagBits = sparseSize; // 每个字节对应一个标志位
+    int flagArraySize = (numFlagBits + 7) / 8; // 将位数转换为字节数
+    // 3. 读取 flag 数组
+
+    // std::cout << "firstValue: "<<firstValue<<std::endl;
+    // std::cout << "BWBP: "<<bitWeight<<"   "<<bestPoint<<std::endl;
+    // std::cout << "numFlagBits: "<<numFlagBits << std::endl;
+    //
+    // std::cout << "nonSparseSize: "<<nonSparseSize << std::endl;
+    // std::cout<<"flag array size: "<<flagArraySize<<std::endl;
+    std::vector<uint8_t> flag(flagArraySize);
+    for (int i = 0; i < flagArraySize; ++i)
     {
-        long encodedDelta = bitStream.ReadLong(bitWight);
-        // std::cout << encodedDelta<<" ";
-        long delta = zigzag_decode(encodedDelta);
-        integers.push_back(integers[i - 1] + delta);
+        flag[i] = bitStream.ReadByte(8);
+        // std::cout << static_cast<int>(flag[i]) << " ";
+        blocksRead += 8;
 
-        blocksRead += bitWight;
     }
-    // std::cout << blocksRead << std::endl;
+    // std::cout << std::endl;
+
+    // 4. 重建稀疏矩阵 sparseTransposed
+    std::vector<uint8_t> sparseTransposed(sparseSize, 0);
+    // std::cout << "sparseTransposed:" <<sparseSize<< std::endl;
+    for (int idx = 0; idx < sparseSize; ++idx)
+    {
+        int byteIndex = idx / 8;
+        int bitIndex = idx % 8;
+        if (flag[byteIndex] & (1 << bitIndex))
+        {
+            // std::cout << "1";
+            // 该字节在编码时是非零的，需要从 bitStream 中读取
+            sparseTransposed[idx] = bitStream.ReadByte(8);
+            // std::cout << static_cast<int>(sparseTransposed[idx]) << " ";
+            blocksRead += 8;
+        }
+        else
+        {
+            // std::cout << "0";
+            // 该字节在编码时为零，无需读取，保持为 0
+            sparseTransposed[idx] = 0;
+        }
+    }
+
+    // 5. 读取非稀疏矩阵 transposedNonSparse
+    std::vector<uint64_t> transposedNonSparse(nonSparseSize);
+    // std::cout << nonSparseSize << std::endl;
+    for (int i = 0; i < nonSparseSize; ++i)
+    {
+        transposedNonSparse[i] = bitStream.ReadLong(64);
+        // std::cout << transposedNonSparse[i] <<"："<<i<< " ";
+        blocksRead += 64;
+    }
+
+
+    std::vector<long> deltaList;
+
+    // std::cout  << std::endl;
+    // 6. 重建原始的 deltaList
+    deltaList.resize(blockSize);
+    for (int i = 0; i < blockSize; ++i)
+    {
+        deltaList[i] = 0; // 初始化
+        // 处理非稀疏列
+        for (int j = 0; j < bestPoint; ++j)
+        {
+            int baseIndex = j * nonSparseColSize;
+            if (transposedNonSparse[baseIndex + i / 64] & (1ULL << (i % 64)))
+            {
+                deltaList[i] |= (1ULL << j);
+
+            }
+        }
+
+        // 处理稀疏列
+        for (int j = bestPoint; j < bitWeight; ++j)
+        {
+            int colIndex = j - bestPoint;
+            int baseIndex = colIndex * sparseColSize;
+            int idx = baseIndex + i / 8;
+            if (sparseTransposed[idx] & (1 << (i % 8)))
+            {
+                deltaList[i] |= (1ULL << j);
+            }
+        }
+        // std::cout <<i<<":"<< deltaList[i] << " ";
+    }
+
+    // 7. 如果需要，处理 firstValue 和 maxDecimalPlaces
+    // 例如，恢复原始数据列表（假设 deltaList 存储的是差分值）
+    originalData.push_back(firstValue);
+    for (int i = 1; i < blockSize; ++i)
+    {
+        originalData.push_back(originalData[i - 1] + zigzag_decode(deltaList[i]));
+    }
 }
 
 // 解压缩数据主函数
@@ -71,9 +159,13 @@ void CDFDecompressor::decompress(const std::vector<unsigned char>& input, std::v
         // std::cout << "总大小 " << totalBitsRead << std::endl;
         int maxDecimalPlaces = 0;
         // 定义块大小
+        // std::cout << "numBlocks "<<i << std::endl;
+        // std::cout << currentBlock << std::endl;
+
+        // std::cout<<"totalbitsize: "<<totalBitsRead<<std::endl;
         decompressBlock(bitStream, integers, totalBitsRead, currentBlock, maxDecimalPlaces);
         // 将解压后的整数转换为浮点数
-        if(maxDecimalPlaces>14)
+        if(maxDecimalPlaces>15)
         {
             for (long intValue : integers)
             {
@@ -88,11 +180,13 @@ void CDFDecompressor::decompress(const std::vector<unsigned char>& input, std::v
             for (long intValue : integers)
             {
                 double value = static_cast<double>(intValue) / po;
+                // std::cout << std::dec<<value << std::endl;
                 output.push_back(value);
             }
         }
 
         // std::cout << "\n size :" << integers.size() << std::endl;
+        // std::cout<<"error: "<<(totalBitsRead + 31) / 32 * 32 - totalBitsRead<<std::endl;
         bitStream.ReadLong((totalBitsRead + 31) / 32 * 32 - totalBitsRead);
         // std::cout << "kongbai "<<(totalBitsRead+31)/32*32-totalBitsRead;
     }

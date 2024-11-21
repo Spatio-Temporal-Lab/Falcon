@@ -1,3 +1,0 @@
-/home/lz/workspace/cuCompressor/cmake-build-debug/CMakeFiles/test_cpu.dir
-/home/lz/workspace/cuCompressor/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/lz/workspace/cuCompressor/cmake-build-debug/CMakeFiles/rebuild_cache.dir

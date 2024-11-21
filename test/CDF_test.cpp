@@ -97,8 +97,8 @@ void test_compression(const std::string& file_path) {
 
 
     // std::cout << "Decompressed Data: ";
-    // for (const auto& val : decompressedData) {
-    //     std::cout << val << " ";
+    // for (int i=0;i<decompressedData.size();i++) {
+    //     std::cout <<i <<":"<< decompressedData[i] << " ";
     // }
     // std::cout << std::endl;
 
@@ -157,10 +157,10 @@ std::vector<uint8_t> ConvertArrayToVector(const Array<uint8_t>& arr) {
 //
 // }
 
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+// int main(int argc, char** argv) {
+//     ::testing::InitGoogleTest(&argc, argv);
+//     return RUN_ALL_TESTS();
+// }
 
 
 
