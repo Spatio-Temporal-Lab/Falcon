@@ -105,6 +105,7 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
         bitWeight++;
     }
 
+
     // std::cout << bitCount << std::endl;
 
     // 稀疏列的判断：从 bitWeight 向下寻找稀疏性
@@ -227,6 +228,7 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     // std::cout << "deltasize "<<deltaList.size() << std::endl;
 }
 
+
 void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<long>& longs, long& firstValue,
                                 int& maxDecimalPlaces)
 {
@@ -294,20 +296,11 @@ int CDFCompressor::getDecimalPlaces(double value)
     return digits;
 }
 
-// 获取最大值的比特数，用于确定压缩位率
-int get_bit_num(long maxQuant)
-{
-    int bits = 0;
-    while (maxQuant)
-    {
-        maxQuant >>= 1;
-        bits++;
-    }
-    return bits;
-}
 
 // Zigzag 编码，将带符号整数转为无符号整数
 unsigned long CDFCompressor::zigzag_encode(const long value)
 {
     return (value << 1) ^ (value >> (sizeof(long) * 8 - 1));
+
 }
+
