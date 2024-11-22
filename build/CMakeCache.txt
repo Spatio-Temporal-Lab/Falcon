@@ -14,6 +14,15 @@
 # EXTERNAL cache entries
 ########################
 
+//Value Computed by CMake
+ALP_BINARY_DIR:STATIC=/mnt/e/start/gpu/CUDA/cuCompressor/build/test/baseline/ALP
+
+//Value Computed by CMake
+ALP_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+ALP_SOURCE_DIR:STATIC=/mnt/e/start/gpu/CUDA/cuCompressor/test/baseline/ALP
+
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line
 
@@ -22,7 +31,7 @@ CMAKE_AR:FILEPATH=/usr/bin/ar
 
 //Choose the type of build, options are: None Debug Release RelWithDebInfo
 // MinSizeRel ...
-CMAKE_BUILD_TYPE:STRING=Debug
+CMAKE_BUILD_TYPE:STRING=
 
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
@@ -351,8 +360,20 @@ CUDA_nvToolsExt_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnvToolsExt.so
 //Path to a library.
 CUDA_rt_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/librt.a
 
+//Value Computed by CMake
+CompressionTests_BINARY_DIR:STATIC=/mnt/e/start/gpu/CUDA/cuCompressor/build/test
+
+//Value Computed by CMake
+CompressionTests_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+CompressionTests_SOURCE_DIR:STATIC=/mnt/e/start/gpu/CUDA/cuCompressor/test
+
 //The directory containing a CMake configuration file for GTest.
 GTest_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/GTest
+
+//The directory containing a CMake configuration file for benchmark.
+benchmark_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/benchmark
 
 //Value Computed by CMake
 cuCompressor-all_BINARY_DIR:STATIC=/mnt/e/start/gpu/CUDA/cuCompressor/build
@@ -472,7 +493,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=3
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
