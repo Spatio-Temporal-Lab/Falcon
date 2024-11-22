@@ -92,10 +92,3 @@ std::vector<uint8_t> ConvertArrayToVector(const Array<uint8_t>& arr) {
     return std::vector<uint8_t>(arr.begin(), arr.end());
 }
 
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
-
-

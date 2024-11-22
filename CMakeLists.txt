@@ -12,6 +12,8 @@ set(CMAKE_BUILD_TYPE Debug)
 find_package(CUDA REQUIRED)
 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -O3)
 
+#enable_language(CXX)
+#enable_language(CUDA)
 # 包含目录
 include_directories(include)
 include_directories(src/utils)
@@ -22,6 +24,7 @@ set(SRC_CPU
     src/cpu/CDFDecompressor.cpp
     src/utils/output_bit_stream.cc
     src/utils/input_bit_stream.cc
+
 )
 
 # 添加 ALP 库

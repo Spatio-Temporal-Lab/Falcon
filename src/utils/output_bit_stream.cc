@@ -78,6 +78,12 @@ uint32_t OutputBitStream::WriteBit(bool bit) {
     return Write(static_cast<uint64_t>(bit), 1);
 }
 
+//@位写入
+//
+uint32_t OutputBitStream::WriteByte(uint8_t bit) {
+    return Write(static_cast<uint64_t>(bit), 8);
+}
+
 //@获取data中指定长度（字节数）的数据
 //返回字节数组
 Array<uint8_t> OutputBitStream::GetBuffer(uint32_t len) {
