@@ -72,7 +72,7 @@ add_executable(test_cpu ${SRC_CPU} ${TEST_SOURCES_CPU})
 cuda_add_executable(test_gpu ${SRC_GPU} ${TEST_SOURCES_GPU})
 
 add_executable(benchmark_tests ${SRC_CPU} ${BENCHMARK_SOURCES})
-add_executable(test_ALP test_ALP.cpp data/dataset_utils.cpp)
+add_executable(test_ALP test_ALP.cpp data/dataset_utils.cpp ${SRC_CPU})
 cuda_add_executable(test_ndzip test_ndzip.cpp data/dataset_utils.cpp)
 
 # 链接库时使用 PRIVATE，确保符号在不同目标之间不可见

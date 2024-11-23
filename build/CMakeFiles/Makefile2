@@ -145,7 +145,7 @@ test/baseline/ndzip/clean: test/baseline/ndzip/CMakeFiles/compress.dir/clean
 test/CMakeFiles/test_cpu.dir/all: test/baseline/ALP/CMakeFiles/ALP.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=38,39,40,41,42,43,44 "Built target test_cpu"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=42,43,44,45,46,47,48 "Built target test_cpu"
 .PHONY : test/CMakeFiles/test_cpu.dir/all
 
 # Build rule for subdir invocation for target.
@@ -171,7 +171,7 @@ test/CMakeFiles/test_cpu.dir/clean:
 test/CMakeFiles/test_gpu.dir/all: test/baseline/ALP/CMakeFiles/ALP.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=45,46,47,48,49,50,51,52,53 "Built target test_gpu"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=49,50,51,52,53,54,55,56,57 "Built target test_gpu"
 .PHONY : test/CMakeFiles/test_gpu.dir/all
 
 # Build rule for subdir invocation for target.
@@ -223,12 +223,12 @@ test/CMakeFiles/benchmark_tests.dir/clean:
 test/CMakeFiles/test_ALP.dir/all: test/baseline/ALP/CMakeFiles/ALP.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=35,36,37 "Built target test_ALP"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=35,36,37,38,39,40,41 "Built target test_ALP"
 .PHONY : test/CMakeFiles/test_ALP.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_ALP.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles 9
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles 13
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_ALP.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_ALP.dir/rule
@@ -250,7 +250,7 @@ test/CMakeFiles/test_ndzip.dir/all: test/baseline/ndzip/CMakeFiles/ndzip.dir/all
 test/CMakeFiles/test_ndzip.dir/all: test/baseline/ndzip/CMakeFiles/io.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ndzip.dir/build.make test/CMakeFiles/test_ndzip.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ndzip.dir/build.make test/CMakeFiles/test_ndzip.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=54,55,56 "Built target test_ndzip"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=58,59,60 "Built target test_ndzip"
 .PHONY : test/CMakeFiles/test_ndzip.dir/all
 
 # Build rule for subdir invocation for target.

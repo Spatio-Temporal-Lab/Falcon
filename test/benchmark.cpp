@@ -43,10 +43,19 @@ void BM_Compression_CDF(benchmark::State& state, const std::string& file_path) {
         compress_data_cdf(oriData, cmpData);
 
         state.PauseTiming(); // 暂停计时
-        state.ResumeTiming(); // 恢复计时
 
         // 解压缩数据
         decompress_data_cdf(cmpData, decompressedData);
+        
+        size_t original_size = oriData.size() * sizeof(double);
+        size_t compressed_size = cmpData.size() * sizeof(unsigned char);
+        double compression_ratio = compressed_size/ static_cast<double>(original_size);
+
+        // 将压缩率添加到基准测试报告中
+        state.counters["Compression Ratio"] = benchmark::Counter(compression_ratio);
+
+
+        state.ResumeTiming(); // 恢复计时
     }
 }
 
@@ -78,10 +87,11 @@ void BM_ColumnCompression(benchmark::State& state, const Column& column) {
         throw std::runtime_error("Failed to open file: " + column.csv_file_path);
     }
 
+
     // 计时
     for (auto _ : state) {
         state.PauseTiming(); // 暂停计时以读取数据
-
+        double original_size=0,compressed_size=0;
         size_t row_idx = 0;
         std::string val_str;
         double value_to_encode;
@@ -111,6 +121,8 @@ void BM_ColumnCompression(benchmark::State& state, const Column& column) {
             // 解码过程
             unffor::unffor(ffor_right_buf.get(), ffor_right_buf.get(), stt.right_bit_width, &stt.right_for_base);
             alp::rd_encoder<PT>::decode(glue_buf.get(), ffor_right_buf.get(), unffor_left_buf.get(), exc_c_arr.get(), pos_arr.get(), exc_c_arr.get(), stt);
+            original_size += static_cast<double>(tuples_count * sizeof(PT));
+            compressed_size += static_cast<double>(tuples_count) * (static_cast<double>(stt.right_bit_width) / 8.0 + static_cast<double>(stt.left_bit_width) / 8.0);
 
         } else if (stt.scheme == alp::Scheme::ALP) {
             // 编码过程
@@ -121,9 +133,19 @@ void BM_ColumnCompression(benchmark::State& state, const Column& column) {
             // 解码过程
             generated::falp::fallback::scalar::falp(ffor_buf.get(), decoded_buf.get(), bit_width, base_buf.get(), stt.fac, stt.exp);
             alp::decoder<PT>::patch_exceptions(decoded_buf.get(), exc_buf.get(), pos_arr.get(), exc_c_arr.get());
+            original_size += static_cast<double>(tuples_count * sizeof(PT));
+            compressed_size += static_cast<double>((tuples_count * bit_width) / 8);
         }
 
         state.PauseTiming(); // 暂停计时以进行文件读取或其他操作
+            
+        // Calculate sizes
+        
+        double compression_ratio = compressed_size / static_cast<double>(original_size);
+
+        // Add compression ratio to benchmark report
+        state.counters["Compression Ratio"] = benchmark::Counter(compression_ratio);
+
         file.clear();        // 清除文件状态标志，准备下一次读取
         file.seekg(0, std::ios::beg);
     }

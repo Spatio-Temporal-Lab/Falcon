@@ -14,16 +14,19 @@ set(CMAKE_CUDA_STANDARD 17)
 find_package(CUDA REQUIRED)
 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -O3)
 
+#enable_language(CXX)
+#enable_language(CUDA)
 # 包含目录
 include_directories(include)
 include_directories(src/utils)
 
 # 源文件
 set(SRC_CPU
-    src/cpu/CDFCompressor.cpp
-    src/cpu/CDFDecompressor.cpp
-    src/utils/output_bit_stream.cc
-    src/utils/input_bit_stream.cc
+        src/cpu/CDFCompressor.cpp
+        src/cpu/CDFDecompressor.cpp
+        src/utils/output_bit_stream.cc
+        src/utils/input_bit_stream.cc
+        benchmark.cpp
 )
 
 set(SRC_GPU
@@ -32,8 +35,10 @@ set(SRC_GPU
     src/utils/output_bit_stream.cc
     src/utils/input_bit_stream.cc
 )
+
 # 添加测试模块
 add_subdirectory(test)
+
 
 # 查找 GTest 和 Google Benchmark
 find_package(GTest REQUIRED)
