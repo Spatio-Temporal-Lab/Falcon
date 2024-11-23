@@ -766,7 +766,7 @@ CUDAToolkit_rt_LIBRARY-ADVANCED:INTERNAL=1
 CUDA_64_BIT_DEVICE_CODE-ADVANCED:INTERNAL=1
 //List of intermediate files that are part of the cuda dependency
 // scanning.
-CUDA_ADDITIONAL_CLEAN_FILES:INTERNAL=/mnt/e/start/gpu/CUDA/cuCompressor/build/test/CMakeFiles/test_gpu.dir/__/src/gpu/test_gpu_generated_GDFCompressor.cu.o.depend;/mnt/e/start/gpu/CUDA/cuCompressor/build/test/CMakeFiles/test_gpu.dir/__/src/gpu/test_gpu_generated_GDFDecompressor.cu.o.depend
+CUDA_ADDITIONAL_CLEAN_FILES:INTERNAL=/mnt/e/start/gpu/CUDA/cuCompressor/build/test/CMakeFiles/test_gpu.dir/__/src/gpu/test_gpu_generated_GDFCompressor.cu.o.depend;/mnt/e/start/gpu/CUDA/cuCompressor/build/test/CMakeFiles/test_gpu.dir/__/src/gpu/test_gpu_generated_GDFDecompressor.cu.o.depend;/mnt/e/start/gpu/CUDA/cuCompressor/build/test/CMakeFiles/benchmark_tests.dir/__/src/gpu/benchmark_tests_generated_GDFCompressor.cu.o.depend;/mnt/e/start/gpu/CUDA/cuCompressor/build/test/CMakeFiles/benchmark_tests.dir/__/src/gpu/benchmark_tests_generated_GDFDecompressor.cu.o.depend
 //ADVANCED property for variable: CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE
 CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CUDA_BUILD_CUBIN

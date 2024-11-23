@@ -1419,6 +1419,34 @@ test/CMakeFiles/benchmark_tests.dir/benchmark.cpp.o: ../test/benchmark.cpp \
   ../src/utils/array.h \
   ../include/CDFCompressor.h \
   ../src/utils/output_bit_stream.h \
+  ../include/GDFCompressor.cuh \
+  /usr/local/cuda/include/cuda_runtime.h \
+  /usr/local/cuda/include/crt/host_config.h \
+  /usr/local/cuda/include/builtin_types.h \
+  /usr/local/cuda/include/device_types.h \
+  /usr/local/cuda/include/crt/host_defines.h \
+  /usr/local/cuda/include/driver_types.h \
+  /usr/local/cuda/include/vector_types.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h \
+  /usr/include/limits.h \
+  /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
+  /usr/include/linux/limits.h \
+  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
+  /usr/local/cuda/include/surface_types.h \
+  /usr/local/cuda/include/texture_types.h \
+  /usr/local/cuda/include/library_types.h \
+  /usr/local/cuda/include/channel_descriptor.h \
+  /usr/local/cuda/include/cuda_runtime_api.h \
+  /usr/local/cuda/include/cuda_device_runtime_api.h \
+  /usr/local/cuda/include/driver_functions.h \
+  /usr/local/cuda/include/vector_functions.h \
+  /usr/local/cuda/include/vector_functions.hpp \
+  /usr/include/c++/11/math.h \
+  ../include/GDFDecompressor.cuh \
   /usr/include/benchmark/benchmark.h
 
 test/CMakeFiles/benchmark_tests.dir/data/dataset_utils.cpp.o: ../test/data/dataset_utils.cpp \
@@ -1794,6 +1822,30 @@ test/CMakeFiles/benchmark_tests.dir/data/dataset_utils.cpp.o: ../test/data/datas
 
 /usr/include/benchmark/benchmark.h:
 
+../include/GDFDecompressor.cuh:
+
+/usr/include/c++/11/math.h:
+
+/usr/local/cuda/include/vector_functions.h:
+
+/usr/local/cuda/include/driver_functions.h:
+
+/usr/local/cuda/include/cuda_device_runtime_api.h:
+
+/usr/local/cuda/include/cuda_runtime_api.h:
+
+/usr/local/cuda/include/library_types.h:
+
+/usr/local/cuda/include/vector_types.h:
+
+/usr/local/cuda/include/device_types.h:
+
+/usr/local/cuda/include/builtin_types.h:
+
+/usr/local/cuda/include/crt/host_config.h:
+
+../include/GDFCompressor.cuh:
+
 /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h:
 
 /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h:
@@ -1807,6 +1859,8 @@ test/CMakeFiles/benchmark_tests.dir/data/dataset_utils.cpp.o: ../test/data/datas
 /usr/include/c++/11/cassert:
 
 /usr/include/gtest/internal/gtest-param-util.h:
+
+/usr/local/cuda/include/channel_descriptor.h:
 
 /usr/include/c++/11/bits/stream_iterator.h:
 
@@ -1904,6 +1958,8 @@ test/CMakeFiles/benchmark_tests.dir/data/dataset_utils.cpp.o: ../test/data/datas
 
 /usr/include/gtest/gtest.h:
 
+/usr/local/cuda/include/crt/host_defines.h:
+
 /usr/include/c++/11/bits/fs_ops.h:
 
 /usr/include/c++/11/bits/fs_dir.h:
@@ -1973,6 +2029,8 @@ test/CMakeFiles/benchmark_tests.dir/data/dataset_utils.cpp.o: ../test/data/datas
 /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h:
 
 /usr/local/cuda/targets/x86_64-linux/include/crt/host_defines.h:
+
+/usr/local/cuda/include/vector_functions.hpp:
 
 /usr/include/signal.h:
 
@@ -2240,6 +2298,8 @@ test/CMakeFiles/benchmark_tests.dir/data/dataset_utils.cpp.o: ../test/data/datas
 
 /usr/include/c++/11/bits/stl_iterator_base_funcs.h:
 
+/usr/local/cuda/include/driver_types.h:
+
 /usr/include/x86_64-linux-gnu/bits/fp-logb.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/siginfo_t.h:
@@ -2324,6 +2384,8 @@ test/CMakeFiles/benchmark_tests.dir/data/dataset_utils.cpp.o: ../test/data/datas
 
 /usr/include/c++/11/bits/locale_classes.tcc:
 
+/usr/local/cuda/include/cuda_runtime.h:
+
 /usr/include/c++/11/limits:
 
 /usr/include/x86_64-linux-gnu/bits/byteswap.h:
@@ -2398,6 +2460,8 @@ test/CMakeFiles/benchmark_tests.dir/data/dataset_utils.cpp.o: ../test/data/datas
 
 /usr/include/c++/11/bits/invoke.h:
 
+/usr/local/cuda/include/texture_types.h:
+
 /usr/include/x86_64-linux-gnu/bits/getopt_posix.h:
 
 /usr/include/time.h:
@@ -2429,6 +2493,8 @@ test/CMakeFiles/benchmark_tests.dir/data/dataset_utils.cpp.o: ../test/data/datas
 /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
 
 /usr/include/c++/11/bits/ostream_insert.h:
+
+/usr/local/cuda/include/surface_types.h:
 
 /usr/include/c++/11/bits/cxxabi_forced.h:
 
