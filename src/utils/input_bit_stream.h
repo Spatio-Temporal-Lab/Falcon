@@ -20,6 +20,8 @@ public:
 
     uint32_t ReadInt(size_t len);
 
+    uint8_t ReadByte(size_t len);
+
     uint32_t ReadBit();
 
     void SetBuffer(const Array<uint8_t> &new_buffer);

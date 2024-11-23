@@ -242,6 +242,7 @@ __/src/cpu/CDFCompressor.cpp.o:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/cpu/CDFCompressor.cpp.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/cpu/CDFCompressor.cpp.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/cpu/CDFCompressor.cpp.o
+	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.o
 .PHONY : __/src/cpu/CDFCompressor.cpp.o
 
 __/src/cpu/CDFCompressor.i: __/src/cpu/CDFCompressor.cpp.i
@@ -252,6 +253,7 @@ __/src/cpu/CDFCompressor.cpp.i:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/cpu/CDFCompressor.cpp.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/cpu/CDFCompressor.cpp.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/cpu/CDFCompressor.cpp.i
+	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.i
 .PHONY : __/src/cpu/CDFCompressor.cpp.i
 
 __/src/cpu/CDFCompressor.s: __/src/cpu/CDFCompressor.cpp.s
@@ -262,6 +264,7 @@ __/src/cpu/CDFCompressor.cpp.s:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/cpu/CDFCompressor.cpp.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/cpu/CDFCompressor.cpp.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/cpu/CDFCompressor.cpp.s
+	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.s
 .PHONY : __/src/cpu/CDFCompressor.cpp.s
 
 __/src/cpu/CDFDecompressor.o: __/src/cpu/CDFDecompressor.cpp.o
@@ -272,6 +275,7 @@ __/src/cpu/CDFDecompressor.cpp.o:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/cpu/CDFDecompressor.cpp.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/cpu/CDFDecompressor.cpp.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/cpu/CDFDecompressor.cpp.o
+	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.o
 .PHONY : __/src/cpu/CDFDecompressor.cpp.o
 
 __/src/cpu/CDFDecompressor.i: __/src/cpu/CDFDecompressor.cpp.i
@@ -282,6 +286,7 @@ __/src/cpu/CDFDecompressor.cpp.i:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/cpu/CDFDecompressor.cpp.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/cpu/CDFDecompressor.cpp.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/cpu/CDFDecompressor.cpp.i
+	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.i
 .PHONY : __/src/cpu/CDFDecompressor.cpp.i
 
 __/src/cpu/CDFDecompressor.s: __/src/cpu/CDFDecompressor.cpp.s
@@ -292,6 +297,7 @@ __/src/cpu/CDFDecompressor.cpp.s:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/cpu/CDFDecompressor.cpp.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/cpu/CDFDecompressor.cpp.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/cpu/CDFDecompressor.cpp.s
+	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.s
 .PHONY : __/src/cpu/CDFDecompressor.cpp.s
 
 __/src/utils/input_bit_stream.o: __/src/utils/input_bit_stream.cc.o
@@ -302,6 +308,7 @@ __/src/utils/input_bit_stream.cc.o:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/utils/input_bit_stream.cc.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/utils/input_bit_stream.cc.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/utils/input_bit_stream.cc.o
+	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.o
 .PHONY : __/src/utils/input_bit_stream.cc.o
 
 __/src/utils/input_bit_stream.i: __/src/utils/input_bit_stream.cc.i
@@ -312,6 +319,7 @@ __/src/utils/input_bit_stream.cc.i:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/utils/input_bit_stream.cc.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/utils/input_bit_stream.cc.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/utils/input_bit_stream.cc.i
+	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.i
 .PHONY : __/src/utils/input_bit_stream.cc.i
 
 __/src/utils/input_bit_stream.s: __/src/utils/input_bit_stream.cc.s
@@ -322,6 +330,7 @@ __/src/utils/input_bit_stream.cc.s:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/utils/input_bit_stream.cc.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/utils/input_bit_stream.cc.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/utils/input_bit_stream.cc.s
+	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.s
 .PHONY : __/src/utils/input_bit_stream.cc.s
 
 __/src/utils/output_bit_stream.o: __/src/utils/output_bit_stream.cc.o
@@ -332,6 +341,7 @@ __/src/utils/output_bit_stream.cc.o:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/utils/output_bit_stream.cc.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/utils/output_bit_stream.cc.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/utils/output_bit_stream.cc.o
+	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.o
 .PHONY : __/src/utils/output_bit_stream.cc.o
 
 __/src/utils/output_bit_stream.i: __/src/utils/output_bit_stream.cc.i
@@ -342,6 +352,7 @@ __/src/utils/output_bit_stream.cc.i:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/utils/output_bit_stream.cc.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/utils/output_bit_stream.cc.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/utils/output_bit_stream.cc.i
+	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.i
 .PHONY : __/src/utils/output_bit_stream.cc.i
 
 __/src/utils/output_bit_stream.s: __/src/utils/output_bit_stream.cc.s
@@ -352,6 +363,7 @@ __/src/utils/output_bit_stream.cc.s:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/utils/output_bit_stream.cc.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/utils/output_bit_stream.cc.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/utils/output_bit_stream.cc.s
+	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.s
 .PHONY : __/src/utils/output_bit_stream.cc.s
 
 benchmark.o: benchmark.cpp.o

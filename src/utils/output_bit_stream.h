@@ -23,6 +23,8 @@ class OutputBitStream {
 
     uint32_t WriteBit(bool bit);
 
+    uint32_t WriteByte(uint8_t bit);
+
     void Flush();
 
     Array<uint8_t> GetBuffer(uint32_t len);
