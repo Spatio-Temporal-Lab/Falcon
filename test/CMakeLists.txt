@@ -71,14 +71,14 @@ add_executable(test_cpu ${SRC_CPU} ${TEST_SOURCES_CPU})
 # 使用 CUDA 编译目标
 cuda_add_executable(test_gpu ${SRC_GPU} ${TEST_SOURCES_GPU})
 
-add_executable(benchmark_tests ${SRC_CPU} ${BENCHMARK_SOURCES})
+cuda_add_executable(benchmark_tests ${SRC_CPU} ${SRC_GPU} ${BENCHMARK_SOURCES})
 add_executable(test_ALP test_ALP.cpp data/dataset_utils.cpp ${SRC_CPU})
 cuda_add_executable(test_ndzip test_ndzip.cpp data/dataset_utils.cpp)
 
 # 链接库时使用 PRIVATE，确保符号在不同目标之间不可见
 target_link_libraries(test_cpu PRIVATE GTest::GTest GTest::Main pthread ALP)
 target_link_libraries(test_gpu ${CUDA_LIBRARIES} GTest::GTest GTest::Main pthread ALP)
-target_link_libraries(benchmark_tests PRIVATE benchmark::benchmark GTest::GTest GTest::Main pthread ALP)
+target_link_libraries(benchmark_tests ${CUDA_LIBRARIES} benchmark::benchmark GTest::GTest GTest::Main pthread ALP)
 target_link_libraries(test_ALP PRIVATE GTest::GTest GTest::Main pthread ALP)
 target_link_libraries(test_ndzip ${CUDA_LIBRARIES} GTest::GTest io Boost::program_options GTest::Main ndzip pthread )  # 链接到 ndzip 库
 

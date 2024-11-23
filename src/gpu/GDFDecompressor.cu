@@ -135,6 +135,6 @@ void GDFDecompressor::decompress(const std::vector<unsigned char>& compressedDat
 
     // 处理剩余位（如果有）
     if(reader.getBitPos() < dataSize) {
-        std::cerr << "Warning: " << (dataSize - reader.getBitPos()) << " remaining bits not processed." << std::endl;
+        //std::cerr << "Warning: " << (dataSize - reader.getBitPos()) << " remaining bits not processed." << std::endl;
     }
 }

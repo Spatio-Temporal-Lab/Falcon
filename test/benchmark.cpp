@@ -2,6 +2,8 @@
 #include "data/dataset_utils.hpp"  // 包含 dataset_utils.hpp 来获取 get_dynamic_dataset
 #include "CDFDecompressor.h"
 #include "CDFCompressor.h"         // 包含 CDFCompressor 和 CDFDecompressor 的头文件
+#include "GDFCompressor.cuh"
+#include "GDFDecompressor.cuh"
 #include <benchmark/benchmark.h>
 #include <filesystem>
 #include <fstream>
@@ -19,11 +21,22 @@ static void compress_data_cdf(const std::vector<double>& oriData, std::vector<un
     CDFCompressor CDFC;
     CDFC.compress(oriData, cmpData);
 }
+static void compress_data_gdf(const std::vector<double>& oriData, std::vector<unsigned char>& cmpData) {
+    GDFCompressor GDFC;
+    GDFC.compress(oriData, cmpData);
+}
+
 
 // 静态定义 CDF 解压缩函数
 static void decompress_data_cdf(const std::vector<unsigned char>& cmpData, std::vector<double>& decompressedData) {
     CDFDecompressor CDFD;
     CDFD.decompress(cmpData, decompressedData);
+}
+
+// 静态定义 CDF 解压缩函数
+static void decompress_data_gdf(const std::vector<unsigned char>& cmpData, std::vector<double>& decompressedData) {
+    GDFDecompressor GDFD;
+    GDFD.decompress(cmpData, decompressedData);
 }
 
 // 定义 CDF 基准测试函数
@@ -46,6 +59,40 @@ void BM_Compression_CDF(benchmark::State& state, const std::string& file_path) {
 
         // 解压缩数据
         decompress_data_cdf(cmpData, decompressedData);
+        
+        size_t original_size = oriData.size() * sizeof(double);
+        size_t compressed_size = cmpData.size() * sizeof(unsigned char);
+        double compression_ratio = compressed_size/ static_cast<double>(original_size);
+
+        // 将压缩率添加到基准测试报告中
+        state.counters["Compression Ratio"] = benchmark::Counter(compression_ratio);
+
+
+        state.ResumeTiming(); // 恢复计时
+    }
+}
+
+
+// 定义 GDF 基准测试函数
+void BM_Compression_GDF(benchmark::State& state, const std::string& file_path) {
+    // 读取数据
+    std::vector<double> oriData = read_data(file_path, false);
+    std::vector<unsigned char> cmpData;
+    std::vector<double> decompressedData;
+
+    for (auto _ : state) {
+        state.PauseTiming();  // 暂停计时
+        cmpData.clear();      // 清除压缩数据
+        decompressedData.clear();
+        state.ResumeTiming(); // 开始计时
+
+        // 压缩数据
+        compress_data_gdf(oriData, cmpData);
+
+        state.PauseTiming(); // 暂停计时
+
+        // 解压缩数据
+        decompress_data_gdf(cmpData, decompressedData);
         
         size_t original_size = oriData.size() * sizeof(double);
         size_t compressed_size = cmpData.size() * sizeof(unsigned char);
@@ -167,12 +214,18 @@ void RegisterCompressionBenchmarks() {
                 })->Unit(benchmark::kMillisecond);
 
             benchmark::RegisterBenchmark(
-                ("BM_ColumnCompression_" + entry.path().filename().string()).c_str(),
+                ("BM_Compression_GDF_" + entry.path().filename().string()).c_str(),
                 [file_path](benchmark::State& state) {
-                    Column column;
-                    column.csv_file_path = file_path;
-                    BM_ColumnCompression<double>(state, column);
+                    BM_Compression_GDF(state, file_path);
                 })->Unit(benchmark::kMillisecond);
+
+            // benchmark::RegisterBenchmark(
+            //     ("BM_ColumnCompression_" + entry.path().filename().string()).c_str(),
+            //     [file_path](benchmark::State& state) {
+            //         Column column;
+            //         column.csv_file_path = file_path;
+            //         BM_ColumnCompression<double>(state, column);
+            //     })->Unit(benchmark::kMillisecond);
         }
     }
 }
