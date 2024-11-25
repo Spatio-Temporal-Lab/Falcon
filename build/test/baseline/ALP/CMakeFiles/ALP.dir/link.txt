@@ -1,2 +1,0 @@
-/usr/bin/ar qc libALP.a CMakeFiles/ALP.dir/src/falp.cpp.o CMakeFiles/ALP.dir/src/fastlanes_ffor.cpp.o CMakeFiles/ALP.dir/src/fastlanes_generated_ffor.cpp.o CMakeFiles/ALP.dir/src/fastlanes_generated_unffor.cpp.o CMakeFiles/ALP.dir/src/fastlanes_unffor.cpp.o
-/usr/bin/ranlib libALP.a
