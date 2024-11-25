@@ -117,19 +117,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named ALP
-
-# Build rule for target.
-ALP: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ALP
-.PHONY : ALP
-
-# fast build rule for target.
-ALP/fast:
-	$(MAKE) $(MAKESILENT) -f test/baseline/ALP/CMakeFiles/ALP.dir/build.make test/baseline/ALP/CMakeFiles/ALP.dir/build
-.PHONY : ALP/fast
-
-#=============================================================================
 # Target rules for targets named test_cpu
 
 # Build rule for target.
@@ -141,6 +128,19 @@ test_cpu: cmake_check_build_system
 test_cpu/fast:
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/build
 .PHONY : test_cpu/fast
+
+#=============================================================================
+# Target rules for targets named test_gpu
+
+# Build rule for target.
+test_gpu: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_gpu
+.PHONY : test_gpu
+
+# fast build rule for target.
+test_gpu/fast:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/build
+.PHONY : test_gpu/fast
 
 #=============================================================================
 # Target rules for targets named benchmark_tests
@@ -168,6 +168,84 @@ test_ALP/fast:
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/build
 .PHONY : test_ALP/fast
 
+#=============================================================================
+# Target rules for targets named test_ndzip
+
+# Build rule for target.
+test_ndzip: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_ndzip
+.PHONY : test_ndzip
+
+# fast build rule for target.
+test_ndzip/fast:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ndzip.dir/build.make test/CMakeFiles/test_ndzip.dir/build
+.PHONY : test_ndzip/fast
+
+#=============================================================================
+# Target rules for targets named ALP
+
+# Build rule for target.
+ALP: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ALP
+.PHONY : ALP
+
+# fast build rule for target.
+ALP/fast:
+	$(MAKE) $(MAKESILENT) -f test/baseline/ALP/CMakeFiles/ALP.dir/build.make test/baseline/ALP/CMakeFiles/ALP.dir/build
+.PHONY : ALP/fast
+
+#=============================================================================
+# Target rules for targets named ndzip
+
+# Build rule for target.
+ndzip: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ndzip
+.PHONY : ndzip
+
+# fast build rule for target.
+ndzip/fast:
+	$(MAKE) $(MAKESILENT) -f test/baseline/ndzip/CMakeFiles/ndzip.dir/build.make test/baseline/ndzip/CMakeFiles/ndzip.dir/build
+.PHONY : ndzip/fast
+
+#=============================================================================
+# Target rules for targets named ndzip-cuda
+
+# Build rule for target.
+ndzip-cuda: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ndzip-cuda
+.PHONY : ndzip-cuda
+
+# fast build rule for target.
+ndzip-cuda/fast:
+	$(MAKE) $(MAKESILENT) -f test/baseline/ndzip/CMakeFiles/ndzip-cuda.dir/build.make test/baseline/ndzip/CMakeFiles/ndzip-cuda.dir/build
+.PHONY : ndzip-cuda/fast
+
+#=============================================================================
+# Target rules for targets named io
+
+# Build rule for target.
+io: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 io
+.PHONY : io
+
+# fast build rule for target.
+io/fast:
+	$(MAKE) $(MAKESILENT) -f test/baseline/ndzip/CMakeFiles/io.dir/build.make test/baseline/ndzip/CMakeFiles/io.dir/build
+.PHONY : io/fast
+
+#=============================================================================
+# Target rules for targets named compress
+
+# Build rule for target.
+compress: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 compress
+.PHONY : compress
+
+# fast build rule for target.
+compress/fast:
+	$(MAKE) $(MAKESILENT) -f test/baseline/ndzip/CMakeFiles/compress.dir/build.make test/baseline/ndzip/CMakeFiles/compress.dir/build
+.PHONY : compress/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -178,8 +256,14 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... ALP"
 	@echo "... benchmark_tests"
+	@echo "... compress"
+	@echo "... io"
+	@echo "... ndzip"
+	@echo "... ndzip-cuda"
 	@echo "... test_ALP"
 	@echo "... test_cpu"
+	@echo "... test_gpu"
+	@echo "... test_ndzip"
 .PHONY : help
 
 
