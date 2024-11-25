@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory(baseline/ALP)
 
 # 添加 ndzip 库的路径
-add_subdirectory(baseline/ndzip)
+#add_subdirectory(baseline/ndzip)
 
 # 查找 GTest
 find_package(GTest REQUIRED)
