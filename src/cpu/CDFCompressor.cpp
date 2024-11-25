@@ -26,7 +26,7 @@ void CDFCompressor::compress(const std::vector<double>& input, std::vector<unsig
     bitStream.Flush();
     Array<uint8_t> buffer1 = bitStream.GetBuffer(8);
 
-    // 将压缩数据复制到输出，输入的数据位数
+    // 将压缩数据复制到输出
     for (size_t j = 0; j < buffer1.length(); ++j)
     {
         output.push_back(buffer1[j]); // 确保类型转换
@@ -70,7 +70,6 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
 
     // std::cout << "blockSize: "<<currentBlockSize << std::endl;
 
-    //进行delta序列转化
     long lastValue = firstValue;
     std::vector<long> deltaList;
     long maxDelta = 0;
@@ -247,8 +246,8 @@ void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<lo
         // std::cout<<k<<" "<<val<<" "<<decimalPlaces<<std::endl;
     }
     // std::cout << std::dec << "maxDecimalPlaces " << maxDecimalPlaces << std::endl;
-    //std::cout<<"最大小数位数"<<maxDecimalPlaces<<std::endl;
-    //感觉可以优化计算方法，伪10进制转化为整数
+
+    //感觉可以优化计算方法
     firstValue = static_cast<long>(block[0] * std::pow(10, maxDecimalPlaces));
 
     if (maxDecimalPlaces > 15)
@@ -274,7 +273,7 @@ void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<lo
     }
 }
 
-int CDFCompressor::getDecimalPlaces(double value)//得到小数位数
+int CDFCompressor::getDecimalPlaces(double value)
 {
     double trac = value + POW_NUM - POW_NUM;
     double temp = value;

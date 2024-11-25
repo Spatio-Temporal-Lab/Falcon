@@ -97,86 +97,22 @@ test/CMakeFiles/test_ALP.dir/data/dataset_utils.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test_ALP.dir/data/dataset_utils.cpp.s"
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/start/gpu/CUDA/cuCompressor/test/data/dataset_utils.cpp -o CMakeFiles/test_ALP.dir/data/dataset_utils.cpp.s
 
-test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.o: test/CMakeFiles/test_ALP.dir/flags.make
-test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.o: ../src/cpu/CDFCompressor.cpp
-test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.o: test/CMakeFiles/test_ALP.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.o"
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.o -MF CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.o.d -o CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.o -c /mnt/e/start/gpu/CUDA/cuCompressor/src/cpu/CDFCompressor.cpp
-
-test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.i"
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/start/gpu/CUDA/cuCompressor/src/cpu/CDFCompressor.cpp > CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.i
-
-test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.s"
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/start/gpu/CUDA/cuCompressor/src/cpu/CDFCompressor.cpp -o CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.s
-
-test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.o: test/CMakeFiles/test_ALP.dir/flags.make
-test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.o: ../src/cpu/CDFDecompressor.cpp
-test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.o: test/CMakeFiles/test_ALP.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.o"
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.o -MF CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.o.d -o CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.o -c /mnt/e/start/gpu/CUDA/cuCompressor/src/cpu/CDFDecompressor.cpp
-
-test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.i"
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/start/gpu/CUDA/cuCompressor/src/cpu/CDFDecompressor.cpp > CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.i
-
-test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.s"
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/start/gpu/CUDA/cuCompressor/src/cpu/CDFDecompressor.cpp -o CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.s
-
-test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.o: test/CMakeFiles/test_ALP.dir/flags.make
-test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.o: ../src/utils/output_bit_stream.cc
-test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.o: test/CMakeFiles/test_ALP.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.o"
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.o -MF CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.o.d -o CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.o -c /mnt/e/start/gpu/CUDA/cuCompressor/src/utils/output_bit_stream.cc
-
-test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.i"
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/start/gpu/CUDA/cuCompressor/src/utils/output_bit_stream.cc > CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.i
-
-test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.s"
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/start/gpu/CUDA/cuCompressor/src/utils/output_bit_stream.cc -o CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.s
-
-test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.o: test/CMakeFiles/test_ALP.dir/flags.make
-test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.o: ../src/utils/input_bit_stream.cc
-test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.o: test/CMakeFiles/test_ALP.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.o"
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.o -MF CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.o.d -o CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.o -c /mnt/e/start/gpu/CUDA/cuCompressor/src/utils/input_bit_stream.cc
-
-test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.i"
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/start/gpu/CUDA/cuCompressor/src/utils/input_bit_stream.cc > CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.i
-
-test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.s"
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/start/gpu/CUDA/cuCompressor/src/utils/input_bit_stream.cc -o CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.s
-
 # Object files for target test_ALP
 test_ALP_OBJECTS = \
 "CMakeFiles/test_ALP.dir/test_ALP.cpp.o" \
-"CMakeFiles/test_ALP.dir/data/dataset_utils.cpp.o" \
-"CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.o" \
-"CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.o" \
-"CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.o" \
-"CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.o"
+"CMakeFiles/test_ALP.dir/data/dataset_utils.cpp.o"
 
 # External object files for target test_ALP
 test_ALP_EXTERNAL_OBJECTS =
 
 test/test_ALP: test/CMakeFiles/test_ALP.dir/test_ALP.cpp.o
 test/test_ALP: test/CMakeFiles/test_ALP.dir/data/dataset_utils.cpp.o
-test/test_ALP: test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.o
-test/test_ALP: test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.o
-test/test_ALP: test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.o
-test/test_ALP: test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.o
 test/test_ALP: test/CMakeFiles/test_ALP.dir/build.make
 test/test_ALP: test/baseline/ALP/libALP.a
 test/test_ALP: /usr/lib/x86_64-linux-gnu/libgtest_main.a
 test/test_ALP: /usr/lib/x86_64-linux-gnu/libgtest.a
 test/test_ALP: test/CMakeFiles/test_ALP.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable test_ALP"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/e/start/gpu/CUDA/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable test_ALP"
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build/test && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_ALP.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

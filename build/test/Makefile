@@ -131,20 +131,6 @@ test_cpu/fast:
 .PHONY : test_cpu/fast
 
 # Convenience name for target.
-test/CMakeFiles/test_gpu.dir/rule:
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_gpu.dir/rule
-.PHONY : test/CMakeFiles/test_gpu.dir/rule
-
-# Convenience name for target.
-test_gpu: test/CMakeFiles/test_gpu.dir/rule
-.PHONY : test_gpu
-
-# fast build rule for target.
-test_gpu/fast:
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/build
-.PHONY : test_gpu/fast
-
-# Convenience name for target.
 test/CMakeFiles/benchmark_tests.dir/rule:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/benchmark_tests.dir/rule
 .PHONY : test/CMakeFiles/benchmark_tests.dir/rule
@@ -172,20 +158,6 @@ test_ALP/fast:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/build
 .PHONY : test_ALP/fast
 
-# Convenience name for target.
-test/CMakeFiles/test_ndzip.dir/rule:
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_ndzip.dir/rule
-.PHONY : test/CMakeFiles/test_ndzip.dir/rule
-
-# Convenience name for target.
-test_ndzip: test/CMakeFiles/test_ndzip.dir/rule
-.PHONY : test_ndzip
-
-# fast build rule for target.
-test_ndzip/fast:
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ndzip.dir/build.make test/CMakeFiles/test_ndzip.dir/build
-.PHONY : test_ndzip/fast
-
 CDF_test.o: CDF_test.cpp.o
 .PHONY : CDF_test.o
 
@@ -210,39 +182,13 @@ CDF_test.cpp.s:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/CDF_test.cpp.s
 .PHONY : CDF_test.cpp.s
 
-GDF_test.o: GDF_test.cpp.o
-.PHONY : GDF_test.o
-
-# target to build an object file
-GDF_test.cpp.o:
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/GDF_test.cpp.o
-.PHONY : GDF_test.cpp.o
-
-GDF_test.i: GDF_test.cpp.i
-.PHONY : GDF_test.i
-
-# target to preprocess a source file
-GDF_test.cpp.i:
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/GDF_test.cpp.i
-.PHONY : GDF_test.cpp.i
-
-GDF_test.s: GDF_test.cpp.s
-.PHONY : GDF_test.s
-
-# target to generate assembly for a file
-GDF_test.cpp.s:
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/GDF_test.cpp.s
-.PHONY : GDF_test.cpp.s
-
 __/src/cpu/CDFCompressor.o: __/src/cpu/CDFCompressor.cpp.o
 .PHONY : __/src/cpu/CDFCompressor.o
 
 # target to build an object file
 __/src/cpu/CDFCompressor.cpp.o:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/cpu/CDFCompressor.cpp.o
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/cpu/CDFCompressor.cpp.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/cpu/CDFCompressor.cpp.o
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.o
 .PHONY : __/src/cpu/CDFCompressor.cpp.o
 
 __/src/cpu/CDFCompressor.i: __/src/cpu/CDFCompressor.cpp.i
@@ -251,9 +197,7 @@ __/src/cpu/CDFCompressor.i: __/src/cpu/CDFCompressor.cpp.i
 # target to preprocess a source file
 __/src/cpu/CDFCompressor.cpp.i:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/cpu/CDFCompressor.cpp.i
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/cpu/CDFCompressor.cpp.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/cpu/CDFCompressor.cpp.i
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.i
 .PHONY : __/src/cpu/CDFCompressor.cpp.i
 
 __/src/cpu/CDFCompressor.s: __/src/cpu/CDFCompressor.cpp.s
@@ -262,9 +206,7 @@ __/src/cpu/CDFCompressor.s: __/src/cpu/CDFCompressor.cpp.s
 # target to generate assembly for a file
 __/src/cpu/CDFCompressor.cpp.s:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/cpu/CDFCompressor.cpp.s
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/cpu/CDFCompressor.cpp.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/cpu/CDFCompressor.cpp.s
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFCompressor.cpp.s
 .PHONY : __/src/cpu/CDFCompressor.cpp.s
 
 __/src/cpu/CDFDecompressor.o: __/src/cpu/CDFDecompressor.cpp.o
@@ -273,9 +215,7 @@ __/src/cpu/CDFDecompressor.o: __/src/cpu/CDFDecompressor.cpp.o
 # target to build an object file
 __/src/cpu/CDFDecompressor.cpp.o:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/cpu/CDFDecompressor.cpp.o
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/cpu/CDFDecompressor.cpp.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/cpu/CDFDecompressor.cpp.o
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.o
 .PHONY : __/src/cpu/CDFDecompressor.cpp.o
 
 __/src/cpu/CDFDecompressor.i: __/src/cpu/CDFDecompressor.cpp.i
@@ -284,9 +224,7 @@ __/src/cpu/CDFDecompressor.i: __/src/cpu/CDFDecompressor.cpp.i
 # target to preprocess a source file
 __/src/cpu/CDFDecompressor.cpp.i:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/cpu/CDFDecompressor.cpp.i
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/cpu/CDFDecompressor.cpp.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/cpu/CDFDecompressor.cpp.i
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.i
 .PHONY : __/src/cpu/CDFDecompressor.cpp.i
 
 __/src/cpu/CDFDecompressor.s: __/src/cpu/CDFDecompressor.cpp.s
@@ -295,9 +233,7 @@ __/src/cpu/CDFDecompressor.s: __/src/cpu/CDFDecompressor.cpp.s
 # target to generate assembly for a file
 __/src/cpu/CDFDecompressor.cpp.s:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/cpu/CDFDecompressor.cpp.s
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/cpu/CDFDecompressor.cpp.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/cpu/CDFDecompressor.cpp.s
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/cpu/CDFDecompressor.cpp.s
 .PHONY : __/src/cpu/CDFDecompressor.cpp.s
 
 __/src/utils/input_bit_stream.o: __/src/utils/input_bit_stream.cc.o
@@ -306,9 +242,7 @@ __/src/utils/input_bit_stream.o: __/src/utils/input_bit_stream.cc.o
 # target to build an object file
 __/src/utils/input_bit_stream.cc.o:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/utils/input_bit_stream.cc.o
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/utils/input_bit_stream.cc.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/utils/input_bit_stream.cc.o
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.o
 .PHONY : __/src/utils/input_bit_stream.cc.o
 
 __/src/utils/input_bit_stream.i: __/src/utils/input_bit_stream.cc.i
@@ -317,9 +251,7 @@ __/src/utils/input_bit_stream.i: __/src/utils/input_bit_stream.cc.i
 # target to preprocess a source file
 __/src/utils/input_bit_stream.cc.i:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/utils/input_bit_stream.cc.i
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/utils/input_bit_stream.cc.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/utils/input_bit_stream.cc.i
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.i
 .PHONY : __/src/utils/input_bit_stream.cc.i
 
 __/src/utils/input_bit_stream.s: __/src/utils/input_bit_stream.cc.s
@@ -328,9 +260,7 @@ __/src/utils/input_bit_stream.s: __/src/utils/input_bit_stream.cc.s
 # target to generate assembly for a file
 __/src/utils/input_bit_stream.cc.s:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/utils/input_bit_stream.cc.s
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/utils/input_bit_stream.cc.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/utils/input_bit_stream.cc.s
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/utils/input_bit_stream.cc.s
 .PHONY : __/src/utils/input_bit_stream.cc.s
 
 __/src/utils/output_bit_stream.o: __/src/utils/output_bit_stream.cc.o
@@ -339,9 +269,7 @@ __/src/utils/output_bit_stream.o: __/src/utils/output_bit_stream.cc.o
 # target to build an object file
 __/src/utils/output_bit_stream.cc.o:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/utils/output_bit_stream.cc.o
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/utils/output_bit_stream.cc.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/utils/output_bit_stream.cc.o
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.o
 .PHONY : __/src/utils/output_bit_stream.cc.o
 
 __/src/utils/output_bit_stream.i: __/src/utils/output_bit_stream.cc.i
@@ -350,9 +278,7 @@ __/src/utils/output_bit_stream.i: __/src/utils/output_bit_stream.cc.i
 # target to preprocess a source file
 __/src/utils/output_bit_stream.cc.i:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/utils/output_bit_stream.cc.i
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/utils/output_bit_stream.cc.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/utils/output_bit_stream.cc.i
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.i
 .PHONY : __/src/utils/output_bit_stream.cc.i
 
 __/src/utils/output_bit_stream.s: __/src/utils/output_bit_stream.cc.s
@@ -361,9 +287,7 @@ __/src/utils/output_bit_stream.s: __/src/utils/output_bit_stream.cc.s
 # target to generate assembly for a file
 __/src/utils/output_bit_stream.cc.s:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/__/src/utils/output_bit_stream.cc.s
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/__/src/utils/output_bit_stream.cc.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/__/src/utils/output_bit_stream.cc.s
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/__/src/utils/output_bit_stream.cc.s
 .PHONY : __/src/utils/output_bit_stream.cc.s
 
 benchmark.o: benchmark.cpp.o
@@ -396,10 +320,8 @@ data/dataset_utils.o: data/dataset_utils.cpp.o
 # target to build an object file
 data/dataset_utils.cpp.o:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/data/dataset_utils.cpp.o
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/data/dataset_utils.cpp.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/data/dataset_utils.cpp.o
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/data/dataset_utils.cpp.o
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ndzip.dir/build.make test/CMakeFiles/test_ndzip.dir/data/dataset_utils.cpp.o
 .PHONY : data/dataset_utils.cpp.o
 
 data/dataset_utils.i: data/dataset_utils.cpp.i
@@ -408,10 +330,8 @@ data/dataset_utils.i: data/dataset_utils.cpp.i
 # target to preprocess a source file
 data/dataset_utils.cpp.i:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/data/dataset_utils.cpp.i
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/data/dataset_utils.cpp.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/data/dataset_utils.cpp.i
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/data/dataset_utils.cpp.i
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ndzip.dir/build.make test/CMakeFiles/test_ndzip.dir/data/dataset_utils.cpp.i
 .PHONY : data/dataset_utils.cpp.i
 
 data/dataset_utils.s: data/dataset_utils.cpp.s
@@ -420,10 +340,8 @@ data/dataset_utils.s: data/dataset_utils.cpp.s
 # target to generate assembly for a file
 data/dataset_utils.cpp.s:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cpu.dir/build.make test/CMakeFiles/test_cpu.dir/data/dataset_utils.cpp.s
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_gpu.dir/build.make test/CMakeFiles/test_gpu.dir/data/dataset_utils.cpp.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/benchmark_tests.dir/build.make test/CMakeFiles/benchmark_tests.dir/data/dataset_utils.cpp.s
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/data/dataset_utils.cpp.s
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ndzip.dir/build.make test/CMakeFiles/test_ndzip.dir/data/dataset_utils.cpp.s
 .PHONY : data/dataset_utils.cpp.s
 
 test_ALP.o: test_ALP.cpp.o
@@ -450,30 +368,6 @@ test_ALP.cpp.s:
 	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ALP.dir/build.make test/CMakeFiles/test_ALP.dir/test_ALP.cpp.s
 .PHONY : test_ALP.cpp.s
 
-test_ndzip.o: test_ndzip.cpp.o
-.PHONY : test_ndzip.o
-
-# target to build an object file
-test_ndzip.cpp.o:
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ndzip.dir/build.make test/CMakeFiles/test_ndzip.dir/test_ndzip.cpp.o
-.PHONY : test_ndzip.cpp.o
-
-test_ndzip.i: test_ndzip.cpp.i
-.PHONY : test_ndzip.i
-
-# target to preprocess a source file
-test_ndzip.cpp.i:
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ndzip.dir/build.make test/CMakeFiles/test_ndzip.dir/test_ndzip.cpp.i
-.PHONY : test_ndzip.cpp.i
-
-test_ndzip.s: test_ndzip.cpp.s
-.PHONY : test_ndzip.s
-
-# target to generate assembly for a file
-test_ndzip.cpp.s:
-	cd /mnt/e/start/gpu/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ndzip.dir/build.make test/CMakeFiles/test_ndzip.dir/test_ndzip.cpp.s
-.PHONY : test_ndzip.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -485,14 +379,9 @@ help:
 	@echo "... benchmark_tests"
 	@echo "... test_ALP"
 	@echo "... test_cpu"
-	@echo "... test_gpu"
-	@echo "... test_ndzip"
 	@echo "... CDF_test.o"
 	@echo "... CDF_test.i"
 	@echo "... CDF_test.s"
-	@echo "... GDF_test.o"
-	@echo "... GDF_test.i"
-	@echo "... GDF_test.s"
 	@echo "... __/src/cpu/CDFCompressor.o"
 	@echo "... __/src/cpu/CDFCompressor.i"
 	@echo "... __/src/cpu/CDFCompressor.s"
@@ -514,9 +403,6 @@ help:
 	@echo "... test_ALP.o"
 	@echo "... test_ALP.i"
 	@echo "... test_ALP.s"
-	@echo "... test_ndzip.o"
-	@echo "... test_ndzip.i"
-	@echo "... test_ndzip.s"
 .PHONY : help
 
 

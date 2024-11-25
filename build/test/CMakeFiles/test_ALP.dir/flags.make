@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/mnt/e/start/gpu/CUDA/cuCompressor/include -I/mnt/e/start/gpu/CUDA/cuCompressor/src/utils -I/usr/local/cuda/include -I/mnt/e/start/gpu/CUDA/cuCompressor/test/baseline/ALP/include -I/mnt/e/start/gpu/CUDA/cuCompressor/test/data -I/mnt/e/start/gpu/CUDA/cuCompressor/test/baseline/ndzip/include
+CXX_INCLUDES = -I/mnt/e/start/gpu/CUDA/cuCompressor/include -I/mnt/e/start/gpu/CUDA/cuCompressor/src/utils -I/mnt/e/start/gpu/CUDA/cuCompressor/test/baseline/ALP/include -I/mnt/e/start/gpu/CUDA/cuCompressor/test/data
 
 CXX_FLAGS = -g -DGTEST_HAS_PTHREAD=1 -std=gnu++17
 

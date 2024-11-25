@@ -1,1 +1,0 @@
-/usr/bin/c++ -g CMakeFiles/compress.dir/src/compress/compress.cc.o -o compress  -Wl,-rpath,/mnt/e/start/gpu/CUDA/cuCompressor/build/test/baseline/ndzip libio.a /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.74.0 libndzip-cuda.so libndzip.so 

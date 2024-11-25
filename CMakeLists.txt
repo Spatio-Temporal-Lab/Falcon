@@ -9,8 +9,6 @@ set(CMAKE_BUILD_TYPE Debug)
 
 
 # CUDA 设置
-# 设置 CUDA 编译器使用 C++17 标准
-set(CMAKE_CUDA_STANDARD 17)
 find_package(CUDA REQUIRED)
 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -O3)
 
@@ -22,23 +20,18 @@ include_directories(src/utils)
 
 # 源文件
 set(SRC_CPU
-        src/cpu/CDFCompressor.cpp
-        src/cpu/CDFDecompressor.cpp
-        src/utils/output_bit_stream.cc
-        src/utils/input_bit_stream.cc
-        benchmark.cpp
-)
-
-set(SRC_GPU
-    src/gpu/GDFCompressor.cu
-    src/gpu/GDFDecompressor.cu
+    src/cpu/CDFCompressor.cpp
+    src/cpu/CDFDecompressor.cpp
     src/utils/output_bit_stream.cc
     src/utils/input_bit_stream.cc
+
 )
+
+# 添加 ALP 库
+add_subdirectory(test/baseline/ALP)
 
 # 添加测试模块
 add_subdirectory(test)
-
 
 # 查找 GTest 和 Google Benchmark
 find_package(GTest REQUIRED)

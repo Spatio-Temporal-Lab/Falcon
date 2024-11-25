@@ -8,12 +8,8 @@
 #include <vector>
 #include <memory>
 #include <chrono>  // 用于计时
-
-#include "CDFCompressor.h"
-#include "CDFDecompressor.h"
 namespace fs = std::filesystem;
 
-double ALP_compression_ratio=0;
 namespace test {
 template <typename T>
 void ALP_ASSERT(T original_val, T decoded_val) {
@@ -225,12 +221,12 @@ public:
 
             total_processed += tuples_count;
         }
-        //std::cout << "Encoding Time: " << encode_t.count() << " seconds." << std::endl;
-        //std::cout << "Decoding Time: " << decode_t.count() << " seconds." << std::endl;
-        ALP_compression_ratio =  compressed_size / original_size;
-        std::cout << "ALP Compression Ratio: " << ALP_compression_ratio << std::endl;
+        std::cout << "Encoding Time: " << encode_t.count() << " seconds." << std::endl;
+        std::cout << "Decoding Time: " << decode_t.count() << " seconds." << std::endl;
+        double compression_ratio =  compressed_size / original_size;
+        std::cout << "Compression Ratio: " << compression_ratio << std::endl;
 
-        //std::cout << "\033[32m-- " << column.name << '\n';
+        std::cout << "\033[32m-- " << column.name << '\n';
         file.close();
     }
 };
@@ -245,66 +241,6 @@ TEST_F(alp_test, test_alp_double) {
         ASSERT_NO_THROW(test_column<double>(col));
     }
 }
-
-double compression_ratio=0;
-// 测试压缩和解压缩
-void test_compression(const std::string& file_path) {
-    std::vector<double> oriData = read_data(file_path);
-    std::vector<unsigned char> cmpData;
-    size_t nbEle = oriData.size();
-    //进行压缩
-    CDFCompressor CDFC;
-    CDFC.compress(oriData,cmpData);
-    // 解压缩相关变量
-    std::vector<double> decompressedData;
-
-    //进行解压
-    CDFDecompressor CDFD;
-    CDFD.decompress(cmpData,decompressedData);
-
-    // 计算压缩率
-    size_t original_size = oriData.size() * sizeof(double);
-    size_t compressed_size = cmpData.size() * sizeof(unsigned char);
-    compression_ratio = compressed_size/ static_cast<double>(original_size);
-
-    // 打印压缩率
-    std::cout << "压缩率: " << compression_ratio << std::endl;
-    ASSERT_EQ(decompressedData.size() , oriData.size()) << "解压失败，数据不一致。";
-    for(int i=0;i<oriData[i];i++)
-    {
-        // 验证解压结果是否与原始数据一致
-        // std::cout << std::fixed << std::setprecision(10)<<decompressedData[i]<<" "<<oriData[i]<<std::endl;
-        ASSERT_EQ(decompressedData[i] , oriData[i]) <<i<< "解压失败，数据不一致。";
-
-    }
-
-}
-TEST_F(alp_test,ratio){
-    std::string dir_path = "/mnt/e/start/gpu/CUDA/cuCompressor/test/data/float";//有毛病还没有数据集
-    auto dataset = get_dynamic_dataset(dir_path);
-    ASSERT_FALSE(dataset.empty()) << "Dataset is empty, check data directory!";
-    int i=0;
-    int ans=0;
-    for (const auto& entry : fs::directory_iterator(dir_path)) {
-        
-        if (entry.is_regular_file()) {
-            std::string file_path = entry.path().string();
-            std::cout << "正在处理文件: " << std::endl;//file_path << std::endl;
-            test_compression(file_path);
-            ASSERT_NO_THROW(test_column<double>(dataset[i]));
-            std::cout << "---------------------------------------------" << std::endl;
-            if(ALP_compression_ratio<compression_ratio)
-            {
-                ans++;
-            }
-        }
-        i++;
-    }
-    std::cout<<"\n\n "<<i<<" : "<< ans<<" \n\n";
-
-
-}
-
 
 
 
