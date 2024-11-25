@@ -1,5 +1,0 @@
-if(EXISTS "/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/chimp_test[1]_tests.cmake")
-  include("/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/chimp_test[1]_tests.cmake")
-else()
-  add_test(chimp_test_NOT_BUILT chimp_test_NOT_BUILT)
-endif()

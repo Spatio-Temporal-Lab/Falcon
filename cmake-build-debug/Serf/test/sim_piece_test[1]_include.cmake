@@ -1,5 +1,0 @@
-if(EXISTS "/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/sim_piece_test[1]_tests.cmake")
-  include("/home/lz/workspace/cuCompressor/cmake-build-debug/Serf/test/sim_piece_test[1]_tests.cmake")
-else()
-  add_test(sim_piece_test_NOT_BUILT sim_piece_test_NOT_BUILT)
-endif()
