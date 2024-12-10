@@ -45,6 +45,33 @@ find_package(GTest REQUIRED)
 find_package(benchmark REQUIRED)
 
 
+# 添加库不存在的下载方法
+if (NOT GTest_FOUND)
+    message(STATUS "GTest not found. Downloading and building...")
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG release-1.11.0  # 目前我的版本
+    )
+    FetchContent_MakeAvailable(googletest)
+endif()
+
+
+if (NOT benchmark_FOUND)
+    message(STATUS "Google Benchmark library not found. Downloading and building it locally...")
+    
+    # 设置下载目录
+    include(FetchContent)
+    FetchContent_Declare(
+        benchmark
+        GIT_REPOSITORY https://github.com/google/benchmark.git
+        GIT_TAG v1.6.1 # 目前我的版本
+    )
+    FetchContent_MakeAvailable(benchmark)
+endif()
+
+
 
 
 
