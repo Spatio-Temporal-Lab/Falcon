@@ -28,10 +28,10 @@ private:
 
     // 对数据块进行采样，获取最大的小数位数
     void sampleBlock(const std::vector<double>& block, std::vector<long>& longs, long& firstValue,
-                                int& maxDecimalPlaces);
+                                int& maxDecimalPlaces, int& isOk);
 
     // 计算给定值的小数点后位数
-    int getDecimalPlaces(double value);
+    int getDecimalPlaces(double value, int sp);
 
     // 刷新位写入操作
     void flushBits(std::vector<unsigned char>& output, OutputBitStream& bitStream, int& totalBitsWritten);
