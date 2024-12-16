@@ -17,16 +17,18 @@ long CDFDecompressor::zigzag_decode(unsigned long value)
 }
 
 void CDFDecompressor::decompressBlock(InputBitStream& bitStream, std::vector<long>& originalData, int& totalBitsRead,
-                                      size_t blockSize, int& maxDecimalPlaces)
+                                      size_t blockSize, int& maxDecimalPlaces,int& isOk)
 {
     // std::cout<<"BLOCK START"<<std::endl;
     int blocksRead = 0;
+
     uint64_t firstValue = bitStream.ReadLong(64);
+    isOk = bitStream.ReadInt(8);
     maxDecimalPlaces = bitStream.ReadInt(8);
     uint32_t bitWeight = bitStream.ReadInt(8);
     uint32_t bestPoint = bitStream.ReadInt(8);
     blocksRead += 128;
-    blocksRead += 24;
+    blocksRead += 32;
     // 2. 计算尺寸
     int numNonSparseCols = bestPoint;
     int nonSparseColSize = (blockSize + 63) / 64; // 每列的大小（以 uint64_t 为单位）
@@ -158,14 +160,15 @@ void CDFDecompressor::decompress(const std::vector<unsigned char>& input, std::v
         int totalBitsRead = bitStream.ReadLong(64);
         // std::cout << "总大小 " << totalBitsRead << std::endl;
         int maxDecimalPlaces = 0;
+        int isOk;
         // 定义块大小
         // std::cout << "numBlocks "<<i << std::endl;
         // std::cout << currentBlock << std::endl;
 
         // std::cout<<"totalbitsize: "<<totalBitsRead<<std::endl;
-        decompressBlock(bitStream, integers, totalBitsRead, currentBlock, maxDecimalPlaces);
+        decompressBlock(bitStream, integers, totalBitsRead, currentBlock, maxDecimalPlaces, isOk);
         // 将解压后的整数转换为浮点数
-        if(maxDecimalPlaces>15)
+        if(isOk==0)
         {
             for (long intValue : integers)
             {
