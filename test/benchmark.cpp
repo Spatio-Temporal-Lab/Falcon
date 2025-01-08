@@ -35,9 +35,9 @@ static void decompress_data_cdf(const std::vector<unsigned char>& cmpData, std::
 }
 
 // 静态定义 CDF 解压缩函数
-static void decompress_data_gdf(const std::vector<unsigned char>& cmpData, std::vector<double>& decompressedData) {
+static void decompress_data_gdf(const std::vector<unsigned char>& cmpData, std::vector<double>& decompressedData, size_t nbEle) {
     GDFDecompressor GDFD;
-    GDFD.decompress(cmpData, decompressedData);
+    GDFD.decompress(cmpData, decompressedData, nbEle);
 }
 
 // 定义 CDF 基准测试函数
@@ -80,7 +80,7 @@ void BM_Compression_GDF(benchmark::State& state, const std::string& file_path) {
     std::vector<double> oriData = read_data(file_path, false);
     std::vector<unsigned char> cmpData;
     std::vector<double> decompressedData;
-
+    size_t nbEle = oriData.size();
     for (auto _ : state) {
         state.PauseTiming();  // 暂停计时
         cmpData.clear();      // 清除压缩数据
@@ -93,7 +93,7 @@ void BM_Compression_GDF(benchmark::State& state, const std::string& file_path) {
         state.PauseTiming(); // 暂停计时
 
         // 解压缩数据
-        decompress_data_gdf(cmpData, decompressedData);
+        decompress_data_gdf(cmpData, decompressedData,nbEle);
         
         size_t original_size = oriData.size() * sizeof(double);
         size_t compressed_size = cmpData.size() * sizeof(unsigned char);
