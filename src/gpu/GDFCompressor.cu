@@ -3,11 +3,15 @@
 //
 #include "GDFCompressor.cuh"
 #include <iomanip> // 用于设置输出格式
-
 // 定义常量
-#define DATA_PER_THREAD 32
+#define BLOCK_SIZE_G 32
+#define POW_NUM_G ((1L << 51) + (1L << 52))
+#define DATA_PER_THREAD 1024
+
+#define DATA_PER_ONE 32
+
 #define MAX_BITCOUNT 64
-#define MAX_BITSIZE_PER_BLOCK (64 + 64 + 8 + 8 + (BLOCK_SIZE_G * DATA_PER_THREAD - 1) * MAX_BITCOUNT)
+#define MAX_BITSIZE_PER_BLOCK (64 + 64 + 8 + 8 + 64 + (DATA_PER_THREAD) * MAX_BITCOUNT)
 #define MAX_BYTES_PER_BLOCK ((MAX_BITSIZE_PER_BLOCK + 7) / 8)
 
 // pow10_table 和 POW_NUM_G
@@ -93,461 +97,630 @@ __device__ inline uint64_t device_min_uint64(uint64_t a, uint64_t b) {
 __device__ inline uint64_t device_max_uint64(uint64_t a, uint64_t b) {
     return (a > b) ? a : b;
 }
-// 定义共享内存结构体，确保对齐
-struct SharedMemory {
-    int decimalPlaces[BLOCK_SIZE_G * DATA_PER_THREAD];
-    // Padding to align to 8 bytes
-    char padding[sizeof(int64_t) - (BLOCK_SIZE_G * DATA_PER_THREAD * sizeof(int)) % sizeof(int64_t)];
-    int64_t integers[BLOCK_SIZE_G * DATA_PER_THREAD];
-    uint64_t deltas[BLOCK_SIZE_G * DATA_PER_THREAD - 1];
-};
 
+
+__device__ inline long double2long(double data,int maxDecimalPlaces)
+{
+    if (maxDecimalPlaces > 15) {
+        unsigned long long bits = __double_as_longlong(data);
+        return static_cast<long>(bits);//当前线程在块中的数据位置
+        } else {
+        return static_cast<long>(round(data * pow10_table[maxDecimalPlaces]));
+    }
+}
 // 核函数实现
 /*
+实现逻辑：
+1.采样
+    1.1 获取所有小数的最大小数位数
+    1.2 所有数字转化为整数
+    1.3 得到第一个值
+2.（原差分序列）FOR + zigzag    
+    2.1 用FOR的话就可以进一步提高并行度，可以用··向量化··（8或者4）来处理一个线程的数据
+        会比delta更快
+    2.2 zigzag处理负数
+3. 得到编码过后的最大delta值，从而得到最大bit位数
+4. 稀疏列和非稀疏列（需要问一下）
+    4.1 先shuffle
+    4.2 根据每一个数（shuffle过后的每一个8bit就是8个数的对应bit）中0的位数进行添加标识位
+5. 前缀和计算，模仿cuszp（学一下）
+    找到数据存放位置
+6. bit位打包（这个目前的新方法还不是很清楚）
+    对于找到首地址的每个块：
+    6.1 写入：总位宽（64 bit），第一个数（64 bit），最大小数位数（8 bit），最大位宽（8 bit）
+    6.2 原本的方法：
+        写入最佳切割点（每个数的前几位是稀疏的）
+        写入flag
+        写入转置稀疏列
+        写入转置非稀疏列
+    6.3 新方法：（问一下）
+        主要是还需不需要最佳切入点了
+        先转置，变成二维数组
+
+要点：
+1.内存处理：一个块中BLOCK_SIZE_G（32）个线程，一个线程处理DATA_PER_THREAD（64）个数据
+
+2.向量化加速
+3.
+*/
+/*
 input：输入的完整数据
-blockSize:块大小//线程数量
 totalSize:输入数据的完整大小
 output:输出数据
 bitSizes:每个块的bitSize
 */
-__global__ void compressBlockKernel(const double* input, int blockSize, int totalSize, unsigned char* output, uint64_t* bitSizes) {
-    int blockIdxGlobal = blockIdx.x;// 块id
-    int tid = threadIdx.x;// 线程id
+__global__ void compressBlockKernel(
+    const double* input,
+    int totalSize,
+    unsigned char* output,
+    uint64_t* bitSizes,
+    volatile unsigned int* const __restrict__ cmpOffset, // 压缩数据偏移量数组（输出）
+    volatile unsigned int* const __restrict__ locOffset, // 局部偏移量数组（输出）
+    volatile int* const __restrict__ flag             // 标志数组，用于同步不同warp的状态（输出
+)
+{
+        // 共享内存，用于在线程块内共享数据
+    __shared__ unsigned int excl_sum; // 排他性前缀和，用于偏移量计算
+    //__shared__ unsigned int base_idx; // 当前warp的基地址索引
 
-    // 每个线程处理32个数据项,每个线程在所有数据中的开始和结束位置
-    int startIdx = blockIdxGlobal * blockSize * DATA_PER_THREAD + tid * DATA_PER_THREAD;
-    int endIdx = min(startIdx + DATA_PER_THREAD, totalSize);
+    // 获取线程和块信息
+    int tid = threadIdx.x;
+    int bid = blockIdx.x;
+    int idx = bid * blockDim.x + tid;
+    const int lane = idx & 0x1f;                   // 当前线程在warp中的位置（0-31）
+    const int warp = idx >> 5;                     // 当前线程所属的warp编号
     
-    int startIdxInBlock = tid * DATA_PER_THREAD;
- 
-    // 结构体尝试
-    extern __shared__ unsigned char sharedMemRaw[];// 动态分配共享内存
-    SharedMemory* sharedMem = (SharedMemory*)sharedMemRaw;
-    int* decimalPlaces = sharedMem->decimalPlaces;// 小数位数数组
-    long* integers = sharedMem->integers;
-    uint64_t* deltas = sharedMem->deltas;
+    // 每个线程处理1024个数据项
+    int startIdx = idx * DATA_PER_THREAD;
+    int endIdx = min(startIdx + DATA_PER_THREAD, totalSize);
+    int numDatas = endIdx - startIdx;
+    uint64_t deltas[1024];
+    //int numDeltas = numDatas - 1;
+    if(numDatas<=0)
+    {
+        return;
+    }
+    // 局部变量
+    int maxDecimalPlaces = 0;
+    long firstValue = 0;
+    int bitCount = 0;
 
-    __shared__ int maxDecimalPlaces;// 最大小数位
-    __shared__ long firstValue;// 第一位
-    __shared__ int bitCount;// 差分值的最大位宽
+    int base_block_start_idx, base_block_end_idx;
+    int quant_chunk_idx;
+    // int block_idx; // 如果不使用，可以移除
 
-    __shared__ int numDeltas; // 新增：实际 delta 数量
+    long currQuant;
+    long lorenQuant;
+    long prevQuant;
 
-    // 计算实际的 delta 数量
-    if (tid == 0) {
-        numDeltas = 0;
-        maxDecimalPlaces = 0;//初始化
-        for (int i = 0; i < blockSize * DATA_PER_THREAD && (blockIdxGlobal * blockSize * DATA_PER_THREAD + i) < totalSize; i++) {
-            //if ((blockIdxGlobal * blockSize * DATA_PER_THREAD + i) > 0) {//这是所有块用一个firstvalue
-            if(i>0){
-                numDeltas++;
+    unsigned int thread_ofs = 0;
+    double4 tmp_buffer;
+
+    // 1. 采样 
+    for (int i = 0; i < numDatas; i++) {
+        maxDecimalPlaces = device_max(maxDecimalPlaces, getDecimalPlaces(input[startIdx + i]));
+    }
+    //printf("maxDecimalPlaces:%d\n", maxDecimalPlaces);
+    // 2. FOR + zigzag（用4向量化进行实现）
+    uint64_t maxDelta = 0;
+    for(int j = 0; j < (numDatas+31) / 32; j++) { // 每个线程的数量 / 一个数据批次（32）
+        base_block_start_idx = startIdx + j * 32;           //每一组32个数据的起始位置
+        base_block_end_idx = base_block_start_idx + 32;     //每一组32个数据的结束位置
+
+        if(base_block_start_idx == startIdx) { // 针对第一个数据
+            firstValue = double2long(input[base_block_start_idx], maxDecimalPlaces); // 量化当前数据点
+            prevQuant = firstValue;// 初始化第一个量化值
+            //printf("firstValue:%d\n",firstValue);
+        }
+
+        if(base_block_end_idx < totalSize) {
+            #pragma unroll 8 //循环展开8次，就是4*8=32个数据
+            for(int i = base_block_start_idx; i < base_block_end_idx; i += 4) {
+                
+                tmp_buffer = reinterpret_cast<const double4*>(input)[i / 4];
+                quant_chunk_idx = j * 32 + (i % 32); //处理的每一组的第几个数据
+
+                // 处理x分量
+                if(i == startIdx) { // 针对第一个数据
+                    // firstValue = double2long(tmp_buffer.x, maxDecimalPlaces); // 量化当前数据点
+                    // prevQuant = firstValue;
+                    // printf("firstValue:%d\n",firstValue);
+                    deltas[quant_chunk_idx] = 0;//填充第一个数据为0保证1024个数据
+                }
+                else {
+                    currQuant = double2long(tmp_buffer.x, maxDecimalPlaces); // 量化当前数据点
+                    lorenQuant = currQuant - prevQuant; // 计算差分
+
+                    deltas[quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
+                    //printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx],quant_chunk_idx,lorenQuant,currQuant,prevQuant);
+                    prevQuant = currQuant; // 更新前一个量化值
+                    maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]); // 存储差分绝对值
+                }
+
+                // 处理y分量
+                currQuant = double2long(tmp_buffer.y, maxDecimalPlaces);   
+                lorenQuant = currQuant - prevQuant;
+
+                deltas[quant_chunk_idx + 1] = zigzag_encode_cuda(lorenQuant);
+                //printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+1],quant_chunk_idx+1,lorenQuant,currQuant,prevQuant);
+                prevQuant = currQuant;
+                maxDelta = device_max_uint64(maxDelta, deltas[ quant_chunk_idx + 1]);
+
+                // 处理z分量
+                currQuant = double2long(tmp_buffer.z, maxDecimalPlaces);   
+                lorenQuant = currQuant - prevQuant;
+
+                deltas[quant_chunk_idx + 2] = zigzag_encode_cuda(lorenQuant);
+                // printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+2],quant_chunk_idx+2,lorenQuant,currQuant,prevQuant);
+                prevQuant = currQuant;
+                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 2]);     
+
+                // 处理w分量
+                currQuant = double2long(tmp_buffer.w, maxDecimalPlaces);   
+                lorenQuant = currQuant - prevQuant;
+
+                deltas[quant_chunk_idx + 3] = zigzag_encode_cuda(lorenQuant);
+                // printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+3],quant_chunk_idx+3,lorenQuant,currQuant,prevQuant);
+                prevQuant = currQuant;
+                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 3]);          
             }
         }
-        //printf("ND:%d\n",numDeltas);
-    }
-    __syncthreads();
+        else {
+            // 处理当前数据块超出数据范围的情况
+            if(base_block_start_idx >= endIdx) {
+                // 如果整个数据块都超出范围，将absQuant设置为0
+                quant_chunk_idx = j * 32 + (base_block_start_idx % 32);
+                for(int i = quant_chunk_idx; i < quant_chunk_idx + 32; i++) 
+                    deltas[i] = 0;
+            }
+            else {
+                // 部分数据块在范围内，部分超出范围
+                int remainbEle = totalSize - base_block_start_idx;  // 剩余有效数据元素数
+                int zeronbEle = base_block_end_idx - totalSize;     // 超出范围的数据元素数
 
-    // 1. 每个线程计算其32个数据项的小数位数:可能会有错误的
-    for (int i = 0; i < DATA_PER_THREAD; i++) {
-        int idx = startIdx + i;
-        if (idx < endIdx) {
-            decimalPlaces[startIdxInBlock + i] = getDecimalPlaces(input[idx]);
-        } 
-        // else {
-        //     decimalPlaces[startIdxInBlock + i] = 0;
+                // 处理剩余有效数据元素
+                for(int i = base_block_start_idx; i < base_block_start_idx + remainbEle; i++) {
+                    if(i==startIdx)
+                    {
+                        deltas[0]=0;
+                        continue;
+                    }
+                    quant_chunk_idx = j * 32 + (i % 32);
+                    currQuant = double2long(input[i], maxDecimalPlaces); 
+
+                    lorenQuant = currQuant - prevQuant;
+
+                    deltas[ quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
+                    // printf("I:%d delta:%ld currQuant:%ld  prevQuant:%ld ",
+                    //     quant_chunk_idx,  
+                    //     lorenQuant,
+                    //     currQuant,
+                    //     prevQuant);
+                    // printf("zigzag:%02x \n", deltas[quant_chunk_idx]);
+                    prevQuant = currQuant;
+                    maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]);  
+                }
+
+                quant_chunk_idx = j * 32 + (totalSize % 32);
+                for(int i = quant_chunk_idx; i < quant_chunk_idx + zeronbEle; i++) 
+                    deltas[i] = 0;
+            }  
+        }
+    }
+
+    // 3. 得到编码过后的最大delta值，并且得到最大bit位
+    bitCount = 0;
+
+    while (maxDelta > 0) {
+        maxDelta >>= 1;
+        bitCount++;
+    }
+
+    // 防止 bitCount 为 0（所有 deltas 都为 0）
+    if (bitCount == 0) {
+        bitCount = 1;
+    }
+
+    // 限制 bitCount 不超过 MAX_BITCOUNT
+    bitCount = device_min(bitCount, MAX_BITCOUNT);
+
+    // 4. 稀疏列处理
+    
+        // 4.1 shuffle 
+        // 原 numData个数据 每个数据占bitCount位
+        // 变成 bitCount行 numData列 第i行是所有数据的第i位bit
+
+        // 计算需要多少列，每列最多包含8个数据的bit位
+        int numByte = (numDatas + 7) / 8;
+        uint8_t result[64][128];
+        // 初始化二维数组
+
+        // 遍历每个uint64_t的数据
+        for (int i = 0; i < bitCount; ++i) {//行
+            
+            for (int j = 0; j < numDatas; ++j) {//列numBytes
+                //计算当前行（即bit位）
+                // if(i==0)
+                // {
+                //     printf("0x %02x ", deltas[j]); // 打印为十六进制，且确保每个字节以2位输出
+                // }
+                int byteIndex = j / 8;  // 当前bit属于第几个字节
+                int bitIndex = j % 8;   // 当前bit在字节中的位置
+
+                // 提取当前bit位并存入结果数组
+                result[i][byteIndex] |= (((deltas[j] >> (bitCount - 1 - i)) & 1) << (7 - bitIndex));
+            }
+        }
+
+        // 4.2 设置稀疏列，并且进行标记，同时计算bitsize
+        uint64_t bitSize =  64ULL +                 // bitsize
+                            64ULL +                 // firstValue
+                            8ULL +                  // maxDecimalPlaces
+                            8ULL +                  // bitCount
+                            64ULL;                  // flag1
+
+        uint64_t flag1 = 0;              // 用于记录每一列是否为稀疏列
+        uint8_t flag2[64][16];          // 对于稀疏列统计稀疏位置,最多1024个数据，所以最多1024bit，即128byte,
+                                        //每一个byte用1bit标识，所以最多16byte
+        //很重要的一点：flag2是byte单位
+        for( int i=0;i<bitCount;++i)
+        {
+            int b0=0;
+            int b1=0;
+            int s=0;
+            for(int j=0;j<numByte;++j)
+            {
+                int m_byte =j/8; //flag2的第几个byte位
+                int m_bit =j%8;  //flag2的这个byte位的第几个bit
+                if(result[i][j]==0)//如果是0可以稀疏化
+                {
+                    b0++;   //只用1个标识位，减少了7位
+                    flag2[i][m_byte] &= ~(1ULL << m_bit);//设置flag2的第i行（和flag对应）的对应字节的bit位为0
+                }
+                else
+                {
+                    b1++;//多用一位进行标识
+                    flag2[i][m_byte] |= (1ULL << m_bit); //设置flag2的第i行（和flag对应）的对应字节的bit位为1
+                }
+            }
+            if (((numByte+7)/8+b1)>= numByte) {
+                // 浪费了，设置 flag1 的第 i 位为 0
+                flag1 &= ~(1ULL << i); // 使用按位与和按位取反清除第 i 位
+
+                // 4.3 非稀疏列处理
+                bitSize += 8 * numByte;
+
+            } else {
+                // 设置 flag1 的第 i 位为 1
+                flag1 |= (1ULL << i); // 使用按位或设置第 i 位为 1
+
+                // 4.4 稀疏列处理
+                bitSize += ((numByte+7)/8+b1)*8;    //用byte为单位
+            }
+        }
+
+        // for (int i = 0; i < bitCount; ++i) {
+        //     for (int j = 0; j < numBytes; ++j) {
+        //         printf("0x %02x ", result[i][j]); // 打印为十六进制，且确保每个字节以2位输出
+        //     }
+        //     printf("\n");
         // }
 
-        //printf("i:%d,mD:%d\n",startIdx + i,decimalPlaces[startIdxInBlock + i]);
-    }
-    __syncthreads();
+    // 5. 前缀和计算
+        thread_ofs+=bitSize;//bitSize是每一个线程处理后需要写入的数据量所占的bit位
 
-    // 归约找到最大的小数位数
-    if (tid == 0) {
-        for(int i=0;i<=numDeltas;i++)
+        // 5.1. Warp(块)内前缀和计算，确定每个线程的字节偏移量
+        #pragma unroll 5
+        for(int i = 1; i < 32; i <<= 1)
         {
-            maxDecimalPlaces = device_max(maxDecimalPlaces, decimalPlaces[i]);
+            int tmp = __shfl_up_sync(0xffffffff, thread_ofs, i); 
+            if(lane >= i) thread_ofs += tmp;                      // 累加偏移量
         }
-        maxDecimalPlaces = device_min(maxDecimalPlaces, 16);
-        //printf("maxD:%d\n",maxDecimalPlaces);
-    }
-    __syncthreads();
+        __syncthreads(); // 同步线程，确保前缀和计算完成
 
-    // 2. 转换浮点数为整数
-    for (int i = 0; i < DATA_PER_THREAD; i++) {
-        int idx = startIdx + i;
-        if (idx < endIdx) {
-            if (maxDecimalPlaces > 15) {
-                unsigned long long bits = __double_as_longlong(input[idx]);
-                integers[startIdxInBlock + i] = static_cast<long>(bits);//当前线程在块中的数据位置
-            } else {
-                integers[startIdxInBlock + i] = static_cast<long>(round(input[idx] * pow10_table[maxDecimalPlaces]));
+        // 5.2 Warp(块)内最后一个线程更新locOffset和flag数组
+        if(lane == 31) 
+        {
+            locOffset[warp + 1] = thread_ofs; // 更新下一warp的局部偏移量
+            __threadfence();                  // 确保全局内存中的写操作完成
+            if(warp == 0)
+            {
+                flag[0] = 2;                   // 标记第一个warp完成前缀和计算
+                __threadfence();              
+                flag[1] = 1;                   // 标记下一个warp可以开始
+                __threadfence();
+            }
+            else
+            {
+                flag[warp + 1] = 1;            // 标记下一个warp可以开始
+                __threadfence();    
             }
         }
-        //printf("i:%d v:%lo\n",idx,integers[startIdxInBlock + i]);
-    }
-    __syncthreads();
+        __syncthreads(); // 同步线程，确保flag更新完成
 
-    // 3. 计算Delta序列
-    if (tid == 0 && startIdx < totalSize) {
-        firstValue = integers[0];
-    }
-    __syncthreads();
+        // 5.3 对于非第一个warp，计算排他性前缀和
+        if(warp > 0)
+        {
+            if(!lane) // 每个warp的第一个线程
+            {
+                int lookback = warp;          // 查找前一个warp(块)的状态
+                int loc_excl_sum = 0;         // 本地排他性前缀和
 
-    // 计算 deltas 仅限于实际的数据
-    for (int i = 0; i < DATA_PER_THREAD; i++) {
-        int nid = startIdxInBlock + i;//当前线程在块中的位置
-        if (startIdx + i < endIdx && nid>0) {
-            deltas[nid - 1] = integers[nid] - integers[nid - 1];
-            //printf("i:%d Dv:%lo\n",startIdx + i,deltas[nid - 1]);
+                while(lookback > 0)//向前计算得到当前wrap（块）的起始位置
+                {
+                    int status;
+                    do{
+                        status = flag[lookback]; // 获取一个warp的状态
+                        __threadfence();         // 确保读取到最新的状态
+                    } while(status == 0);
+
+                    if(status == 2)
+                    {
+                        loc_excl_sum += cmpOffset[lookback]; // 累加前一个warp的cmpOffset
+                        __threadfence();
+                        break;
+                    }
+                    if(status == 1) 
+                        loc_excl_sum += locOffset[lookback]; // 累加前一个warp的locOffset
+                    lookback--;
+                    __threadfence();
+                }
+                excl_sum = loc_excl_sum; // 存储排他性前缀和
+                __syncthreads(); // 同步线程，确保排他性前缀和计算完成
+            
+                // 2.3 更新cmpOffset数组
+                cmpOffset[warp] = excl_sum; // 更新当前warp的cmpOffset
+                __threadfence();           // 确保写操作完成
+                if(warp == gridDim.x - 1) 
+                    cmpOffset[warp + 1] = cmpOffset[warp] + locOffset[warp + 1]; // 更新最后一个warp的cmpOffset
+                __threadfence();
+                flag[warp] = 2;             // 标记当前warp完成
+                __threadfence(); 
+            } 
         }
+        __syncthreads(); // 同步线程，确保cmpOffset更新完成
         
-    }
-    __syncthreads();
+        // 5.4 得到写入位置
+        int outputIdxBit = excl_sum + thread_ofs - bitSize; //bit wrap偏移+wrap内偏移 得到当前压缩后数据应该写入的起始位置
+        int outputIdx = (outputIdxBit+7)/8;
+        printf("idx:%d outputIdx:%d bitSize :%d \n",idx,outputIdx,bitSize );
+    // 6 开始写入
+    // printf("excl_sum:%d\n",excl_sum);
+    // printf("thread_ofs:%d\n",thread_ofs);
+    // printf("bitSize:%d\n",bitSize);
+    // printf("firstValue:%d\n",firstValue);
+    // printf("maxDecimalPlaces:%d\n",maxDecimalPlaces);
+    // printf("bitCount:%d\n",bitCount);
+    // printf("flag1:%016llx\n",flag1);
+    
 
-    // 4. ZigZag编码
-    for (int i = 0; i < DATA_PER_THREAD; i++) {
-        int deltaIdx = startIdxInBlock + i;
-        if (deltaIdx < numDeltas ) {
-            deltas[deltaIdx] = zigzag_encode_cuda(deltas[deltaIdx]);
-            //printf("i:%d dv:%lo\n",startIdx + i,deltas[deltaIdx]);
+    bitSizes[idx] = bitSize;
+    // 6.1 写入 bitSize (8 字节)
+    printf("bitSize:%d\n",bitSize);
+    for(int i = 0; i < 8; i++) {
+        output[outputIdx + i] = (bitSize >> (i * 8)) & 0xFF;
+        __threadfence(); 
+        if(idx==1)
+        {
+            printf("0x%02x ", output[outputIdx + i]);
         }
     }
-    __syncthreads();
+    printf("\n");
 
-    // 5. 计算每个块的bitCount
-    if (tid == 0) {
-        bitCount = 0;
-        uint64_t maxDelta = 0;
-        for (int i = 0; i < numDeltas && i < (blockSize * DATA_PER_THREAD - 1); i++) {
-            maxDelta = device_max_uint64(maxDelta, deltas[i]);
+    // 6.2. 写入 firstValue (8 字节)
+    unsigned long long firstValueBits = 0;
+    memcpy(&firstValueBits, &firstValue, sizeof(long));
+    printf("firstValue:%d\n",firstValue);
+    for(int i = 0; i < 8; i++) {
+        output[outputIdx + 8 + i] = (firstValueBits >> (i * 8)) & 0xFF;
+        __threadfence(); 
+        if(idx==1)
+        {
+            printf("0x%02x ", output[outputIdx + 8 + i]);
         }
-        //printf("maxDelta:%d\n",maxDelta);
-        while (maxDelta > 0) {
-            maxDelta >>= 1;
-            bitCount++;
-        }
-        //printf("bitcount:%d\n",bitCount);
-        // 防止 bitCount 为 0（所有 deltas 都为 0）
-        if (bitCount == 0) {
-            bitCount = 1;
-        }
-
-        // 限制 bitCount 不超过 MAX_BITCOUNT
-        bitCount = device_min(bitCount, MAX_BITCOUNT);
     }
-    __syncthreads();
+    printf("\n");
 
-    // 6. 写入 output
-    if (tid == 0) {
-        // 计算 bitSize
-        uint64_t bitSize = 64ULL + 64ULL + 8ULL + 8ULL + ((uint64_t)numDeltas) * ((uint64_t)bitCount);
-        bitSizes[blockIdxGlobal] = bitSize;
-
-        // 检查 bitSize 是否合理
-        if (bitSize > MAX_BITSIZE_PER_BLOCK) {
-            // 设置 bitSize 为 0，表示该块无效
-            bitSizes[blockIdxGlobal] = 0;
-            // 可以在此处添加更多的错误处理逻辑
-            return;
+    __syncthreads(); // 同步线程
+    for(int i = outputIdx; i < outputIdx+16; i++) {
+        printf("idx0:%d i:%d 0x%02x \n", idx,i,output[i]);
+    }
+    // 6.3. 写入 maxDecimalPlaces 和 bitCount (各1字节)
+    output[outputIdx + 16] = static_cast<unsigned char>(maxDecimalPlaces);
+    __threadfence(); 
+    output[outputIdx + 17] = static_cast<unsigned char>(bitCount);
+    __threadfence(); 
+    // 6.4 写入flag1(8字节 标识稀疏)
+    for(int i = 0; i < 8; i++) {
+        output[outputIdx + 18 + i] = (flag1 >> (i * 8)) & 0xFF;
+    }
+    // 6.5 写入每一列 
+    int flag2Byte=(numByte+7)/8;
+    int ofs=outputIdx + 26;
+    //int res=0;              //byte中剩余的bit位
+    for(int i=0;i<bitCount;i++)
+    {
+        if((flag1 & (1ULL << i)) != 0)//flag第i个bit不为0:稀疏
+        {
+            // 6.5.1 稀疏列写入flag2+data
+            for(int j=0;j<flag2Byte;j++)
+            {
+                output[ofs++] = static_cast<unsigned char>(flag2[i][j]);
+                __threadfence(); 
+                // printf("flag2[%d][%d]:0x%llx\n",i,j,flag2[i][j]);
+            }
+            for(int j=0;j<numByte;j++)
+            {   
+                if(result[i][j])
+                {
+                    output[ofs++] = static_cast<unsigned char>(result[i][j]);
+                    __threadfence(); 
+                }
+            }
         }
-
-        int outputIdx = blockIdxGlobal * MAX_BYTES_PER_BLOCK; // 使用 MAX_BYTES_PER_BLOCK 作为偏移量
-
-        // 写入 bitSize (8 字节)
-        for (int i = 0; i < 8; i++) {
-            output[outputIdx + i] = (bitSize >> (i * 8)) & 0xFF;
-        }
-
-        // 写入 firstValue (8 字节)
-        unsigned long long firstValueBits = 0;
-        memcpy(&firstValueBits, &firstValue, sizeof(long));
-        for (int i = 0; i < 8; i++) {
-            output[outputIdx + 8 + i] = (firstValueBits >> (i * 8)) & 0xFF;
-        }
-        // 写入 maxDecimalPlaces 和 bitCount (各1字节)
-        output[outputIdx + 16] = static_cast<unsigned char>(maxDecimalPlaces);
-        output[outputIdx + 17] = static_cast<unsigned char>(bitCount);
-
-        // 写入 Delta 差分值序列
-        int deltaStartIdx = outputIdx + 18; // Delta 数据起始位置
-        int bitOffset = 0; // 当前字节已使用的位数
-        unsigned char currentByte = 0; // 当前字节缓冲区
-
-        for(int i = 0; i < numDeltas; i++) {
-            uint64_t deltaValue = deltas[i] & ((1ULL << bitCount) -1);
-
-            // 将 Delta 填充到当前字节的剩余空间
-            currentByte |= (deltaValue << bitOffset);
-            bitOffset += bitCount;
-
-            // 如果当前字节已满（8 位），写入 output，并开始下一个字节
-            while(bitOffset >=8) {
-                output[deltaStartIdx++] = currentByte;
-                bitOffset -=8;
-                // 将剩余的 Delta 位数放入新字节
-                currentByte = (deltaValue >> (bitCount - bitOffset)) &0xFF; // 运算优先级修正
+        else{
+            // 6.5.2 非稀疏列写入data
+            for(int j=0;j<numByte;j++)
+            {   
+                output[ofs++] = static_cast<unsigned char>(result[i][j]);
+                __threadfence(); 
             }
         }
 
-        // 如果有未写入的字节（即 bitOffset > 0），写入最后一个字节
-        if(bitOffset >0) {
-            output[deltaStartIdx++] = currentByte;
-        }
-
-        // 填充剩余的输出缓冲区
-        while(deltaStartIdx < MAX_BYTES_PER_BLOCK){
-            output[deltaStartIdx++] = 0x00;
-        }
-        // 不需要填充剩余的字节，因为 bitSize 已经正确反映了实际的数据
     }
+    __syncthreads(); // 同步线程
+    for(int i = outputIdx; i < outputIdx+16; i++) {
+        printf("idx1:%d i:%d 0x%02x \n", idx,i,output[i]);
+    }
+    // 6.. 填充剩余的输出缓冲区
+    // int totalWrittenBytes = 19 ;//+ flagArraySize + (sparseWritten * 8) + (nonSparseSize * 8);
+    // while(totalWrittenBytes < MAX_BYTES_PER_BLOCK) {
+    //     output[outputIdx + totalWrittenBytes++] = 0x00;
+    // }
+    // __syncthreads(); // 同步线程
+    if(idx==1)
+    {
+        __syncthreads();
+        printf("\nidx:%d\n",idx);
+        for(int i = outputIdx; i < outputIdx+bitSize; i++) {
+            printf("0x%02x ", output[i]);
+            // 每 16 个字节换行
+            if ((i + 1) % 16 == 0) {
+                printf("\n");
+            }
+        }
+    }
+    // printf("\nofs:%d\n",ofs);
 }
-
-
-// __global__ void compressBlockKernel(const double* input, int blockSize, int totalSize, unsigned char* output, uint64_t* bitSizes) {
-//     int blockIdxGlobal = blockIdx.x;
-//     int tid = threadIdx.x;
-
-//     // 每个线程处理32个数据项
-//     int startIdx = blockIdxGlobal * blockSize * DATA_PER_THREAD + tid * DATA_PER_THREAD;
-//     int endIdx = min(startIdx + DATA_PER_THREAD, totalSize);
-
-//     extern __shared__ unsigned char sharedMemRaw[];
-//     SharedMemory* sharedMem = (SharedMemory*)sharedMemRaw;
-//     int* decimalPlaces = sharedMem->decimalPlaces;
-//     long* integers = sharedMem->integers;
-//     uint64_t* deltas = sharedMem->deltas;
-
-//     __shared__ int maxDecimalPlaces;
-//     __shared__ long firstValue;
-//     __shared__ int bitCount;
-
-//     // 1. 每个线程计算其32个数据项的小数位数
-//     for (int i = 0; i < DATA_PER_THREAD; i++) {
-//         int idx = startIdx + i;
-//         if (idx < endIdx) {
-//             decimalPlaces[tid * DATA_PER_THREAD + i] = getDecimalPlaces(input[idx]);
-//         } else {
-//             decimalPlaces[tid * DATA_PER_THREAD + i] = 0;
-//         }
-//     }
-//     __syncthreads();
-
-//     // 归约找到最大的小数位数
-//     if (tid == 0) {
-//         maxDecimalPlaces = 0;
-//         for (int i = 0; i < blockSize * DATA_PER_THREAD && (blockIdxGlobal * blockSize * DATA_PER_THREAD + i) < totalSize; i++) {
-//             maxDecimalPlaces = device_max(maxDecimalPlaces, decimalPlaces[i]);
-//         }
-//         maxDecimalPlaces = device_min(maxDecimalPlaces, 16);
-//     }
-//     __syncthreads();
-
-//     // 2. 转换浮点数为整数
-//     for (int i = 0; i < DATA_PER_THREAD; i++) {
-//         int idx = startIdx + i;
-//         if (idx < endIdx) {
-//             if (maxDecimalPlaces > 15) {
-//                 unsigned long long bits = __double_as_longlong(input[idx]);
-//                 integers[tid * DATA_PER_THREAD + i] = static_cast<long>(bits);
-//             } else {
-//                 integers[tid * DATA_PER_THREAD + i] = static_cast<long>(round(input[idx] * pow10_table[maxDecimalPlaces]));
-//             }
-//         }
-//     }
-//     __syncthreads();
-
-//     // 3. 计算Delta序列
-//     if (tid == 0 && blockIdxGlobal * blockSize * DATA_PER_THREAD < totalSize) {
-//         firstValue = integers[0];
-//     }
-//     __syncthreads();
-
-//     for (int i = 0; i < DATA_PER_THREAD; i++) {
-//         int idx = startIdx + i;
-//         if (idx < endIdx) {
-//             if (i != 0 || (blockIdxGlobal * blockSize * DATA_PER_THREAD + idx) != 0) {
-//                 if (idx > 0) {
-//                     deltas[tid * DATA_PER_THREAD + i - 1] = integers[tid * DATA_PER_THREAD + i] - integers[tid * DATA_PER_THREAD + i - 1];
-//                 }
-//             }
-//         }
-//     }
-//     __syncthreads();
-
-//     // 4. ZigZag编码
-//     for (int i = 0; i < DATA_PER_THREAD - 1; i++) {
-//         int deltaIdx = tid * DATA_PER_THREAD + i;
-//         if (deltaIdx < blockSize * DATA_PER_THREAD - 1 && (blockIdxGlobal * blockSize * DATA_PER_THREAD + deltaIdx) < totalSize - 1) {
-//             deltas[deltaIdx] = zigzag_encode_cuda(deltas[deltaIdx]);
-//         }
-//     }
-//     __syncthreads();
-
-//     // 5. 计算每个块的bitCount
-//     if (tid == 0) {
-//         bitCount = 0;
-//         uint64_t maxDelta = 0;
-//         for (int i = 0; i < blockSize * DATA_PER_THREAD - 1 && (blockIdxGlobal * blockSize * DATA_PER_THREAD + i) < totalSize - 1; i++) {
-//             maxDelta = device_max_uint64(maxDelta, deltas[i]);
-//         }
-//         while (maxDelta > 0) {
-//             maxDelta >>= 1;
-//             bitCount++;
-//         }
-
-//         if (bitCount == 0) bitCount = 1;
-//         bitCount = device_min(bitCount, MAX_BITCOUNT);
-//     }
-//     __syncthreads();
-
-//     // 6. 写入输出
-//     if (tid == 0) {
-//         // 计算 bitSize
-//         uint64_t bitSize = 64ULL + 64ULL + 8ULL + 8ULL + ((uint64_t)(blockSize * DATA_PER_THREAD - 1)) * ((uint64_t)bitCount);
-//         bitSizes[blockIdxGlobal] = bitSize;
-
-//         if (bitSize > MAX_BITSIZE_PER_BLOCK) {
-//             bitSizes[blockIdxGlobal] = 0;
-//             return;
-//         }
-
-//         int outputIdx = blockIdxGlobal * MAX_BYTES_PER_BLOCK;
-
-//         // 写入 bitSize
-//         for (int i = 0; i < 8; i++) {
-//             output[outputIdx + i] = (bitSize >> (i * 8)) & 0xFF;
-//         }
-
-//         // 写入 firstValue
-//         unsigned long long firstValueBits = 0;
-//         memcpy(&firstValueBits, &firstValue, sizeof(long));
-//         for (int i = 0; i < 8; i++) {
-//             output[outputIdx + 8 + i] = (firstValueBits >> (i * 8)) & 0xFF;
-//         }
-
-//         // 写入 maxDecimalPlaces 和 bitCount
-//         output[outputIdx + 16] = static_cast<unsigned char>(maxDecimalPlaces);
-//         output[outputIdx + 17] = static_cast<unsigned char>(bitCount);
-
-//         // 写入 Delta 差分值序列
-//         int deltaStartIdx = outputIdx + 18;
-//         int bitOffset = 0;
-//         unsigned char currentByte = 0;
-
-//         for(int i = 0; i < blockSize * DATA_PER_THREAD - 1; i++) {
-//             uint64_t deltaValue = deltas[i] & ((1ULL << bitCount) -1);
-
-//             currentByte |= (deltaValue << bitOffset);
-//             bitOffset += bitCount;
-
-//             while(bitOffset >=8) {
-//                 output[deltaStartIdx++] = currentByte;
-//                 bitOffset -=8;
-//                 currentByte = (deltaValue >> (bitCount - bitOffset)) &0xFF;
-//             }
-//         }
-
-//         if(bitOffset >0) {
-//             output[deltaStartIdx++] = currentByte;
-//         }
-
-//         while(deltaStartIdx < MAX_BYTES_PER_BLOCK){
-//             output[deltaStartIdx++] = 0x00;
-//         }
-//     }
-// }
 
 
 // 初始化设备内存
-void GDFCompressor::setupDeviceMemory(const std::vector<double>& input, double*& d_input, unsigned char*& d_output, uint64_t*& d_bitSizes) {
+void GDFCompressor::setupDeviceMemory(
+    const std::vector<double>& input,
+    double*& d_input,
+    unsigned char*& d_output,
+    uint64_t*& d_bitSizes
+) {
     size_t inputSize = input.size();
+    int numBlocks = (inputSize + DATA_PER_THREAD - 1) / (DATA_PER_THREAD);
+
+    // 分配输入数据的设备内存
     cudaCheckError(cudaMalloc((void**)&d_input, inputSize * sizeof(double)));
-    int numBlocks = (inputSize + BLOCK_SIZE_G * DATA_PER_THREAD - 1) / (BLOCK_SIZE_G * DATA_PER_THREAD);
-    cudaCheckError(cudaMalloc((void**)&d_output, numBlocks * MAX_BYTES_PER_BLOCK * sizeof(unsigned char)));
-    cudaCheckError(cudaMalloc((void**)&d_bitSizes, numBlocks * sizeof(uint64_t)));
-    
     cudaCheckError(cudaMemcpy(d_input, input.data(), inputSize * sizeof(double), cudaMemcpyHostToDevice));
+
+    // 分配输出数据的设备内存
+    cudaCheckError(cudaMalloc((void**)&d_output, numBlocks * MAX_BYTES_PER_BLOCK * sizeof(unsigned char)));
+
+    // 分配 bitSizes 的设备内存
+    cudaCheckError(cudaMalloc((void**)&d_bitSizes, numBlocks * sizeof(uint64_t)));
+
 }
 
-// 释放设备内存
-void GDFCompressor::freeDeviceMemory(double* d_input, unsigned char* d_output, uint64_t* d_bitSizes) {
+// 更新释放设备内存的函数
+void GDFCompressor::freeDeviceMemory(
+    double* d_input,
+    unsigned char* d_output,
+    uint64_t* d_bitSizes
+) {
     cudaFree(d_input);
     cudaFree(d_output);
     cudaFree(d_bitSizes);
 }
 
+
 // 主压缩函数
 void GDFCompressor::compress(const std::vector<double>& input, std::vector<unsigned char>& output) {
+    //std::cout<<"begin1\n";
     size_t inputSize = input.size();
     if (inputSize == 0) return;
 
-    int blockSize = BLOCK_SIZE_G; // 32
-    size_t numBlocks = (inputSize + blockSize * DATA_PER_THREAD - 1) / (blockSize * DATA_PER_THREAD);
 
-    double* d_input;
-    unsigned char* d_output;
-    uint64_t* d_bitSizes;
+    int blockSize = BLOCK_SIZE_G; // 32个线程每块
+    size_t numBlocks = (inputSize + blockSize * DATA_PER_THREAD - 1) / (blockSize * DATA_PER_THREAD); // 多少个线程块
+    size_t numthread = (inputSize + DATA_PER_THREAD - 1) / (DATA_PER_THREAD); // 多少个数据块(线程)
+    double* d_input = nullptr;
+    unsigned char* d_output = nullptr;
+    uint64_t* d_bitSizes = nullptr;
 
+    unsigned int* d_cmpOffset;
+    unsigned int* d_locOffset;
+    int* d_flag;
+    int cmpOffSize = numBlocks + 1;
+    cudaMalloc((void**)&d_cmpOffset, sizeof(unsigned int)*cmpOffSize);
+    cudaMemset(d_cmpOffset, 0, sizeof(unsigned int)*cmpOffSize);
+
+    cudaMalloc((void**)&d_locOffset, sizeof(unsigned int)*cmpOffSize);
+    cudaMemset(d_locOffset, 0, sizeof(unsigned int)*cmpOffSize);
+
+    cudaMalloc((void**)&d_flag, sizeof(int)*cmpOffSize);
+    cudaMemset(d_flag, 0, sizeof(int)*cmpOffSize);
     // 分配设备内存
     setupDeviceMemory(input, d_input, d_output, d_bitSizes);
 
     // 启动核函数
-    size_t sharedMemSize = sizeof(SharedMemory);
-    compressBlockKernel<<<numBlocks, blockSize, sharedMemSize>>>(d_input, blockSize, inputSize, d_output, d_bitSizes);
+    size_t sharedMemSize = 64; // 确保 SharedMemory 已正确定义
+    //std::cout<<"begin2\n";
 
+    compressBlockKernel<<<numBlocks, blockSize, sharedMemSize>>>(
+        d_input,
+        inputSize,
+        d_output,
+        d_bitSizes,
+        d_cmpOffset,
+        d_locOffset,
+        d_flag
+    );
+    // size_t freeMem, totalMem;
+    // cudaMemGetInfo(&freeMem, &totalMem);
+    // std::cout << "Free memory: " << freeMem << ", Total memory: " << totalMem << std::endl;
+
+    // cudaDeviceProp prop;
+    // cudaGetDeviceProperties(&prop, 0);
+    // std::cout << "Max threads per block: " << prop.maxThreadsPerBlock <<" \nnumBlocks: "<< numBlocks <<" \nblockSize: "<< blockSize<< std::endl;
+    // std::cout << "Max threads per multiprocessor(设备最大线程数): " << prop.maxThreadsPerMultiProcessor << std::endl;
+
+    // std::cout<<"end1\n";
     // 检查错误
     cudaCheckError(cudaGetLastError());
     cudaCheckError(cudaDeviceSynchronize());
-
+    //std::cout<<"end2\n";
+    
     // 复制 bitSizes 回主机
-    std::vector<uint64_t> bitSizes(numBlocks);
-    cudaCheckError(cudaMemcpy(bitSizes.data(), d_bitSizes, numBlocks * sizeof(uint64_t), cudaMemcpyDeviceToHost));
 
+    std::vector<uint64_t> bitSizes(numthread);
+    cudaCheckError(cudaMemcpy(bitSizes.data(), d_bitSizes, numthread * sizeof(uint64_t), cudaMemcpyDeviceToHost));
+    //std::cout<<"end3\n";
+    
     // 计算每个块的输出偏移量
-    std::vector<uint64_t> offsets(numBlocks, 0);
+    std::vector<uint64_t> offsets(numthread, 0);
     uint64_t totalCompressedBits = 0;
-    for (size_t i = 0; i < numBlocks; i++) {
+    for (size_t i = 0; i < numthread; i++) {
         offsets[i] = totalCompressedBits;
         totalCompressedBits += bitSizes[i];
     }
+    //    std::cout<<"end4\n";
+    
     uint64_t totalCompressedBytes = (totalCompressedBits + 7) / 8; // 按字节对齐
-
-    // 分配输出缓冲区
+    printf("outputSize(bits):%d\n",totalCompressedBits);
+    
+    // // 分配输出缓冲区
     output.resize(totalCompressedBytes, 0);
-
+    printf("outputSize(byte):%d\n",totalCompressedBytes);
     // 复制 d_output 到主机的临时缓冲区
-    std::vector<unsigned char> tempOutput(numBlocks * MAX_BYTES_PER_BLOCK);
-    cudaCheckError(cudaMemcpy(tempOutput.data(), d_output, numBlocks * MAX_BYTES_PER_BLOCK * sizeof(unsigned char), cudaMemcpyDeviceToHost));
-
-    // 将压缩数据整理到最终的 output 中
-    size_t currentBitPos = 0;
-    for (size_t i = 0; i < numBlocks; i++) {
-        uint64_t bitSize = bitSizes[i];
-        if (bitSize == 0) {
-            continue;
-        }
-        int byteSize = (bitSize + 7) / 8;
-        size_t srcIdx = i * MAX_BYTES_PER_BLOCK;
-        size_t dstByteIdx = currentBitPos / 8;
-        int dstBitOffsetRemainder = currentBitPos % 8;
-
-        for (int b = 0; b < byteSize; b++) {
-            if (dstBitOffsetRemainder == 0) {
-                if (dstByteIdx + b < output.size()) {
-                    output[dstByteIdx + b] = tempOutput[srcIdx + b];
-                }
-            } else {
-                if (dstByteIdx + b < output.size()) {
-                    output[dstByteIdx + b] |= tempOutput[srcIdx + b] << dstBitOffsetRemainder;
-                }
-                if (dstByteIdx + b + 1 < output.size()) {
-                    output[dstByteIdx + b + 1] |= tempOutput[srcIdx + b] >> (8 - dstBitOffsetRemainder);
-                }
-            }
-        }
-        currentBitPos += bitSize;
-    }
-
+    std::vector<unsigned char> tempOutput(totalCompressedBytes);
+    cudaCheckError(cudaMemcpy(tempOutput.data(), d_output,totalCompressedBytes * sizeof(unsigned char), cudaMemcpyDeviceToHost));
+    output = std::move(tempOutput);
+        //把output中totalCompressedBits到totalCompressedBytes*8部分的bit位数置0
+        // int remainingBits = totalCompressedBits % 8; // 计算最后一个字节的有效位数
+        // if (remainingBits > 0) {
+        //     unsigned char mask = (1 << remainingBits) - 1; // 创建掩码，例如如果有效位数为 5，则掩码为 0b00011111
+        //     output[totalCompressedBytes - 1] &= mask;     // 将无效位清零
+        // }
+    //std::cout<<"end5\n";
     // 释放设备内存
     freeDeviceMemory(d_input, d_output, d_bitSizes);
+    cudaFree(d_cmpOffset);
+    cudaFree(d_locOffset);
+    cudaFree(d_flag);
 }
+

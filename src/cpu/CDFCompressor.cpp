@@ -10,7 +10,6 @@
 #include <cstring>
 #include <cstdint>
 
-#include "../../../../../../usr/local/cuda/targets/x86_64-linux/include/driver_types.h"
 
 CDFCompressor::CDFCompressor()
 {
@@ -66,10 +65,7 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     int maxDecimalPlaces = 0;
     sampleBlock(block, longs, firstValue, maxDecimalPlaces);
     size_t currentBlockSize = block.size();
-    // std::cout << std::endl << "sample " << block.size() << std::endl;
-
-    // std::cout << "blockSize: "<<currentBlockSize << std::endl;
-
+    
     //进行delta序列转化
     long lastValue = firstValue;
     std::vector<long> deltaList;
@@ -77,14 +73,10 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     std::vector<int> bitCounts(64, 0);
     deltaList.push_back(0);
 
-    // std::cout << "0"<<":"<<deltaList[0] << " ";
     for (int i = 1; i < longs.size(); i++)
     {
-        // double num = block[i];
-        // double longnum = longs[i];
         long delta = zigzag_encode(longs[i] - lastValue);
         deltaList.push_back(delta);
-        // std::cout << i<<":"<<deltaList[i] << " ";
         maxDelta = std::max(delta, maxDelta);
         for (int i = 0; i < 64; i++)
         {
@@ -93,25 +85,18 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
         lastValue = longs[i];
     }
 
-    // std::cout << std::endl;
-
     // 计算所有差值，并找出所需的最大 bit 位数
     int bitWeight = 0;
 
-    // std::cout<<maxDelta<<std::endl;
-    // std::cout << " maxDelta " << maxDelta << std::endl;
     while (maxDelta != 0)
     {
         maxDelta >>= 1;
         bitWeight++;
     }
 
-
-    // std::cout << bitCount << std::endl;
-
     // 稀疏列的判断：从 bitWeight 向下寻找稀疏性
     int bestPoint = bitWeight;
-    // std::cout<<bitWeight<<std::endl;
+
     for (int i = bitWeight - 1; i >= 0; --i)
     {
         if (currentBlockSize / 8 + bitCounts[i] * 8 >= currentBlockSize)
@@ -120,15 +105,14 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
         }
         bestPoint = i;
     }
-    // std::cout<<bestPoint<<std::endl;
+
 
     // 1. 非稀疏列处理：从 0 到 bestPoint
     int numNonSparseCols = bestPoint;
     int nonSparseColSize = (currentBlockSize + 63) / 64; // 每列的大小（以 uint64_t 为单位）
     int nonSparseSize = numNonSparseCols * nonSparseColSize;
     std::vector<uint64_t> transposedNonSparse(nonSparseSize, 0);
-    // std::cout << nonSparseSize << std::endl;
-    // std::cout<<bitWeight<<" "<<bestPoint<<std::endl;
+
     for (int j = 0; j < bestPoint; ++j)
     {
         int baseIndex = j * nonSparseColSize;
@@ -186,47 +170,36 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     // 将firstValue和位数写入输出
     bitSize = 64 + 64 + 8 + 8 + 8 + flagArraySize * 8 + num1Value * 8 + nonSparseSize * 64;
 
-    // std::cout << "firstValue: " << firstValue << std::endl;
-    // std::cout << "BWBP: " << bitWeight << "   " << bestPoint << std::endl;
-    // std::cout << "numFlagBits: " << numFlagBits << std::endl;
-    // std::cout << "nonSparseSize: " << nonSparseSize << std::endl;
-    // std::cout << "flag array size: " << flagArraySize << std::endl;
-    // std::cout << " bitSize " << bitSize << std::endl;
-    // std::cout << " flagArraySize " << flagArraySize << std::endl;
-    // std::cout << " num1Value " << num1Value << std::endl;
-    // std::cout << " nonSparseSize " << nonSparseSize << std::endl;
+    
     bitStream.WriteLong(bitSize, 64);
     bitStream.WriteLong(firstValue, 64);
     bitStream.WriteInt(maxDecimalPlaces, 8);
     bitStream.WriteInt(bitWeight, 8);
     bitStream.WriteInt(bestPoint, 8);
-    // std::cout << "maxDecimalPlaces " <<maxDecimalPlaces<< std::endl;
+    
     for (int i = 0; i < flagArraySize; i++)
     {
         bitStream.WriteByte(flag[i]);
 
-        // std::cout << static_cast<int>(flag[i]) << " ";
+
     }
-    // std::cout << "BWBP " << bitWeight << " " << bestPoint << std::endl;
-    // std::cout << std::endl;
+    
     for (int i = 0; i < sparseTransposed.size(); i++)
     {
         if (sparseTransposed[i] != 0)
         {
             bitStream.WriteByte(sparseTransposed[i]);
-            // std::cout << static_cast<int>(sparseTransposed[i]) << " ";
+           
         }
     }
-    // std::cout << std::endl;
+
     for (int i = 0; i < nonSparseSize; i++)
     {
         bitStream.WriteLong(transposedNonSparse[i], 64);
 
-        // std::cout << transposedNonSparse[i] <<"："<<i<< " ";
+        
     }
-    // std::cout << std::endl;
-
-    // std::cout << "deltasize "<<deltaList.size() << std::endl;
+    
 }
 
 

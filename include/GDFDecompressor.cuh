@@ -12,7 +12,7 @@
 // 解压缩类
 class GDFDecompressor {
 public:
-    void decompress(const std::vector<unsigned char>& compressedData, std::vector<double>& output);
+    void decompress(const std::vector<unsigned char>& compressedData, std::vector<double>& output,int numDatas);
 };
 
 // 辅助类，用于按位读取压缩数据
