@@ -435,10 +435,11 @@ __global__ void compressBlockKernel(
                 flag[warp + 1] = 1;            // 标记下一个warp可以开始
                 __threadfence();    
             }
+            printf("flag[%d] ready\n",warp + 1);
         }
         __syncthreads(); // 同步线程，确保flag更新完成
 
-        // 5.3 对于非第一个warp，计算排他性前缀和
+        // 5.3 对于非第一个warp，计算排他性前缀和（有问题）
         if(warp > 0)
         {
             if(!lane) // 每个warp的第一个线程
@@ -451,6 +452,7 @@ __global__ void compressBlockKernel(
                     int status;
                     do{
                         status = flag[lookback]; // 获取一个warp的状态
+                        printf(" loop flag[%d]:%d\n",lookback,status);
                         __threadfence();         // 确保读取到最新的状态
                     } while(status == 0);
 
@@ -464,17 +466,25 @@ __global__ void compressBlockKernel(
                         loc_excl_sum += locOffset[lookback]; // 累加前一个warp的locOffset
                     lookback--;
                     __threadfence();
+                    printf(" turn flag[%d]:%d\n",lookback,status);
                 }
+                printf(" loop out warp:%d\n",warp);
                 excl_sum = loc_excl_sum; // 存储排他性前缀和
-                __syncthreads(); // 同步线程，确保排他性前缀和计算完成
-            
+                //__syncthreads(); // 这个同步有毛病，用了就卡死，同步线程，确保排他性前缀和计算完成
+                
+                printf("flag[%d] over0\n",warp);
                 // 2.3 更新cmpOffset数组
                 cmpOffset[warp] = excl_sum; // 更新当前warp的cmpOffset
                 __threadfence();           // 确保写操作完成
+                
+                printf("flag[%d] over1\n",warp);
                 if(warp == gridDim.x - 1) 
+                {
                     cmpOffset[warp + 1] = cmpOffset[warp] + locOffset[warp + 1]; // 更新最后一个warp的cmpOffset
-                __threadfence();
+                    __threadfence();
+                }
                 flag[warp] = 2;             // 标记当前warp完成
+                printf("flag[%d] over2\n",warp);
                 __threadfence(); 
             } 
         }
@@ -483,114 +493,87 @@ __global__ void compressBlockKernel(
         // 5.4 得到写入位置
         int outputIdxBit = excl_sum + thread_ofs - bitSize; //bit wrap偏移+wrap内偏移 得到当前压缩后数据应该写入的起始位置
         int outputIdx = (outputIdxBit+7)/8;
-        printf("idx:%d outputIdx:%d bitSize :%d \n",idx,outputIdx,bitSize );
+        //printf("idx:%d outputIdx:%d bitSize :%d \n",idx,outputIdx,bitSize );
     // 6 开始写入
-    // printf("excl_sum:%d\n",excl_sum);
-    // printf("thread_ofs:%d\n",thread_ofs);
-    // printf("bitSize:%d\n",bitSize);
-    // printf("firstValue:%d\n",firstValue);
-    // printf("maxDecimalPlaces:%d\n",maxDecimalPlaces);
-    // printf("bitCount:%d\n",bitCount);
-    // printf("flag1:%016llx\n",flag1);
-    
+        // printf("excl_sum:%d\n",excl_sum);
+        // printf("thread_ofs:%d\n",thread_ofs);
+        // printf("bitSize:%d\n",bitSize);
+        // printf("firstValue:%d\n",firstValue);
+        // printf("maxDecimalPlaces:%d\n",maxDecimalPlaces);
+        // printf("bitCount:%d\n",bitCount);
+        // printf("flag1:%016llx\n",flag1);
+        
 
-    bitSizes[idx] = bitSize;
-    // 6.1 写入 bitSize (8 字节)
-    printf("bitSize:%d\n",bitSize);
-    for(int i = 0; i < 8; i++) {
-        output[outputIdx + i] = (bitSize >> (i * 8)) & 0xFF;
-        __threadfence(); 
-        if(idx==1)
-        {
-            printf("0x%02x ", output[outputIdx + i]);
+        bitSizes[idx] = bitSize;
+        // 6.1 写入 bitSize (8 字节)
+        for(int i = 0; i < 8; i++) {
+            output[outputIdx + i] = (bitSize >> (i * 8)) & 0xFF;
+
         }
-    }
-    printf("\n");
 
-    // 6.2. 写入 firstValue (8 字节)
-    unsigned long long firstValueBits = 0;
-    memcpy(&firstValueBits, &firstValue, sizeof(long));
-    printf("firstValue:%d\n",firstValue);
-    for(int i = 0; i < 8; i++) {
-        output[outputIdx + 8 + i] = (firstValueBits >> (i * 8)) & 0xFF;
-        __threadfence(); 
-        if(idx==1)
-        {
-            printf("0x%02x ", output[outputIdx + 8 + i]);
+
+        // 6.2. 写入 firstValue (8 字节)
+        unsigned long long firstValueBits = 0;
+        memcpy(&firstValueBits, &firstValue, sizeof(long));
+        for(int i = 0; i < 8; i++) {
+            output[outputIdx + 8 + i] = (firstValueBits >> (i * 8)) & 0xFF;
+
         }
-    }
-    printf("\n");
 
-    __syncthreads(); // 同步线程
-    for(int i = outputIdx; i < outputIdx+16; i++) {
-        printf("idx0:%d i:%d 0x%02x \n", idx,i,output[i]);
-    }
-    // 6.3. 写入 maxDecimalPlaces 和 bitCount (各1字节)
-    output[outputIdx + 16] = static_cast<unsigned char>(maxDecimalPlaces);
-    __threadfence(); 
-    output[outputIdx + 17] = static_cast<unsigned char>(bitCount);
-    __threadfence(); 
-    // 6.4 写入flag1(8字节 标识稀疏)
-    for(int i = 0; i < 8; i++) {
-        output[outputIdx + 18 + i] = (flag1 >> (i * 8)) & 0xFF;
-    }
-    // 6.5 写入每一列 
-    int flag2Byte=(numByte+7)/8;
-    int ofs=outputIdx + 26;
-    //int res=0;              //byte中剩余的bit位
-    for(int i=0;i<bitCount;i++)
-    {
-        if((flag1 & (1ULL << i)) != 0)//flag第i个bit不为0:稀疏
+        // 6.3. 写入 maxDecimalPlaces 和 bitCount (各1字节)
+        output[outputIdx + 16] = static_cast<unsigned char>(maxDecimalPlaces);
+
+        output[outputIdx + 17] = static_cast<unsigned char>(bitCount);
+
+        // 6.4 写入flag1(8字节 标识稀疏)
+        for(int i = 0; i < 8; i++) {
+            output[outputIdx + 18 + i] = (flag1 >> (i * 8)) & 0xFF;
+        }
+        // 6.5 写入每一列 
+        int flag2Byte=(numByte+7)/8;
+        int ofs=outputIdx + 26;
+        //int res=0;              //byte中剩余的bit位
+        for(int i=0;i<bitCount;i++)
         {
-            // 6.5.1 稀疏列写入flag2+data
-            for(int j=0;j<flag2Byte;j++)
+            if((flag1 & (1ULL << i)) != 0)//flag第i个bit不为0:稀疏
             {
-                output[ofs++] = static_cast<unsigned char>(flag2[i][j]);
-                __threadfence(); 
-                // printf("flag2[%d][%d]:0x%llx\n",i,j,flag2[i][j]);
-            }
-            for(int j=0;j<numByte;j++)
-            {   
-                if(result[i][j])
+                // 6.5.1 稀疏列写入flag2+data
+                for(int j=0;j<flag2Byte;j++)
                 {
-                    output[ofs++] = static_cast<unsigned char>(result[i][j]);
-                    __threadfence(); 
+                    output[ofs++] = static_cast<unsigned char>(flag2[i][j]);
+                    // printf("flag2[%d][%d]:0x%llx\n",i,j,flag2[i][j]);
+                }
+                for(int j=0;j<numByte;j++)
+                {   
+                    if(result[i][j])
+                    {
+                        output[ofs++] = static_cast<unsigned char>(result[i][j]);
+                    }
                 }
             }
-        }
-        else{
-            // 6.5.2 非稀疏列写入data
-            for(int j=0;j<numByte;j++)
-            {   
-                output[ofs++] = static_cast<unsigned char>(result[i][j]);
-                __threadfence(); 
+            else{
+                // 6.5.2 非稀疏列写入data
+                for(int j=0;j<numByte;j++)
+                {   
+                    output[ofs++] = static_cast<unsigned char>(result[i][j]);
+                }
             }
+
         }
 
-    }
-    __syncthreads(); // 同步线程
-    for(int i = outputIdx; i < outputIdx+16; i++) {
-        printf("idx1:%d i:%d 0x%02x \n", idx,i,output[i]);
-    }
-    // 6.. 填充剩余的输出缓冲区
-    // int totalWrittenBytes = 19 ;//+ flagArraySize + (sparseWritten * 8) + (nonSparseSize * 8);
-    // while(totalWrittenBytes < MAX_BYTES_PER_BLOCK) {
-    //     output[outputIdx + totalWrittenBytes++] = 0x00;
+    // if(idx==1)
+    // {
+    //     __syncthreads();
+         //printf("\nfinish idx:%d\n",idx);
+    //     for(int i = outputIdx; i < outputIdx+bitSize; i++) {
+    //         printf("0x%02x ", output[i]);
+    //         // 每 16 个字节换行
+    //         if ((i + 1) % 16 == 0) {
+    //             printf("\n");
+    //         }
+    //     }
     // }
-    // __syncthreads(); // 同步线程
-    if(idx==1)
-    {
-        __syncthreads();
-        printf("\nidx:%d\n",idx);
-        for(int i = outputIdx; i < outputIdx+bitSize; i++) {
-            printf("0x%02x ", output[i]);
-            // 每 16 个字节换行
-            if ((i + 1) % 16 == 0) {
-                printf("\n");
-            }
-        }
-    }
-    // printf("\nofs:%d\n",ofs);
+    //printf("\nofs:%d\n",ofs);
 }
 
 
