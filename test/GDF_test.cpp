@@ -137,7 +137,7 @@ void test_compression0(const std::string& file_path) {
     
 }
 
-// Google Test 测试用例
+//Google Test 测试用例
 // TEST(CDFCompressorTest, CompressionDecompression) {
 //     std::string dir_path = "/mnt/e/start/gpu/CUDA/cuCompressor/test/data/float";//有毛病还没有数据集
 //     for (const auto& entry : fs::directory_iterator(dir_path)) {
@@ -196,13 +196,13 @@ void comp(std::vector<double> oriData,std::vector<double> &decompData)
     // }
     // std::cout << std::endl;
 
-    std::cout << "\nGPU压缩结果:\n";
-    for (size_t i = 0; i < cmpData2.size(); ++i) {
-        std::cout << std::setw(2) << std::setfill('0') << std::hex 
-                  << static_cast<int>(cmpData2[i]) << " ";
-        if ((i + 1) % 16 == 0) std::cout << "\n"; // 每 16 字节换行
-    }
-    std::cout << std::endl;
+    // std::cout << "\nGPU压缩结果:\n";
+    // for (size_t i = 0; i < cmpData2.size(); ++i) {
+    //     std::cout << std::setw(2) << std::setfill('0') << std::hex 
+    //               << static_cast<int>(cmpData2[i]) << " ";
+    //     if ((i + 1) % 16 == 0) std::cout << "\n"; // 每 16 字节换行
+    // }
+    // std::cout << std::endl;
     try {
         for (size_t i = 0; i < oriData.size(); ++i) {
             ASSERT_NEAR(oriData[i], decompData[i], 1e-6) << "第 " << i << " 个值不相等。";
@@ -218,7 +218,7 @@ void comp(std::vector<double> oriData,std::vector<double> &decompData)
 TEST(GDFCompressorTest0, CompressionDecompression) {
     // 读取数据
     //std::vector<double> oriData = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.8};//{0.001,0.122,0.01543,0.14,0.5,0.47};
-    const size_t size = 1024*16;
+    const size_t size = 1024*30;
     std::vector<double> oriData(size*2);
 
     // 初始化数组，每个值递增 0.1
@@ -235,10 +235,10 @@ TEST(GDFCompressorTest0, CompressionDecompression) {
 
     std::vector<double> newData;
     comp(oriData,newData);
-    for(auto n:newData)
-    {
-        printf("%f,",n);
-    }
+    // for(auto n:newData)
+    // {
+    //     printf("%f,",n);
+    // }
 }
 TEST(GDFCompressorTest1, CompressionDecompression) {
     // 读取数据
