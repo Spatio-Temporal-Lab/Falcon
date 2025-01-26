@@ -1,211 +1,217 @@
-// #include <gtest/gtest.h>
-// #include <fstream>
-// #include <sstream>
-// #include <filesystem>
-// #include <iostream>
-// #include <chrono>
-// #include <vector>
-// #include <stdexcept>
-// #include <cassert>
-// #include <cstring>
-// #include <memory>
-// #include <iomanip>
+/*cpu版本   
 
-// #include <cstdlib>
-// #include <optional>
+    // #include "ndzip/ndzip.hh"
+    // #include <gtest/gtest.h>
+    // #include <fstream>
+    // #include <vector>
+    // #include <chrono>
+    // #include <filesystem>
+    // #include <iostream>
 
-// #include <boost/program_options.hpp>
-// #include <ndzip/offload.hh>
-// #include <boost/filesystem.hpp>
-// #include "io.hh"
+    // namespace fs = std::filesystem;
 
-// namespace fs = std::filesystem;  // 加入这一行
+    // // 读取浮点数据文件
+    // std::vector<float> read_data(const std::string &file_path) {
+    //     std::ifstream file(file_path, std::ios::binary);
+    //     if (!file.is_open()) {
+    //         throw std::runtime_error("无法打开文件: " + file_path);
+    //     }
 
-// namespace opts = boost::program_options;
+    //     file.seekg(0, std::ios::end);
+    //     size_t size = file.tellg() / sizeof(float);
+    //     file.seekg(0, std::ios::beg);
 
-// namespace ndzip::detail {
+    //     std::vector<float> data(size);
+    //     file.read(reinterpret_cast<char *>(data.data()), size * sizeof(float));
+    //     file.close();
+    //     return data;
+    // }
 
-// enum class data_type { t_float, t_double };
+    // // 压缩和解压测试
+    // void test_compression(const std::string &file_path) {
+    //     // 读取数据
+    //     std::vector<float> oriData = read_data(file_path);
 
-// template<typename T>
-// void compress_stream(const std::string &in, const std::string &out, const ndzip::extent &size,
-//         ndzip::offloader<T> &offloader, const ndzip::detail::io_factory &io) {
-//     using compressed_type = ndzip::compressed_type<T>;
+    //     // 压缩相关变量
+    //     auto compressor = ndzip::make_compressor<float>(1); // 一维压缩器
+    //     size_t compressedSize = ndzip::compressed_length_bound<float>({static_cast<ndzip::index_type>(oriData.size())});
+    //     std::vector<ndzip::compressed_type<float>> cmpData(compressedSize);
 
-//     const auto array_chunk_length = static_cast<size_t>(num_elements(size));
-//     const auto array_chunk_size = array_chunk_length * sizeof(T);
-//     const auto max_compressed_chunk_length = ndzip::compressed_length_bound<T>(size);
-//     const auto max_compressed_chunk_size = max_compressed_chunk_length * sizeof(compressed_type);
+    //     // 开始压缩
+    //     std::cout << "压缩开始\n";
+    //     auto start_compress = std::chrono::high_resolution_clock::now();
+    //     size_t actualCompressedSize = compressor->compress(oriData.data(), 
+    //         {static_cast<ndzip::index_type>(oriData.size())}, cmpData.data());
+    //     auto end_compress = std::chrono::high_resolution_clock::now();
+    //     cmpData.resize(actualCompressedSize);  // 调整压缩数据大小
+    //     std::chrono::duration<double> compress_duration = end_compress - start_compress;
 
-//     size_t compressed_length = 0;
-//     size_t n_chunks = 0;
-//     kernel_duration total_duration{};
-//     {
-//         auto in_stream = io.create_input_stream(in, array_chunk_size);
-//         auto out_stream = io.create_output_stream(out, max_compressed_chunk_size);
+    //     // 输出压缩时间
+    //     std::cout << "压缩时间: " << compress_duration.count() << " 秒\n";
 
-//         while (auto *chunk = in_stream->read_exact()) {
-//             const auto input_buffer = static_cast<const T *>(chunk);
-//             const auto write_buffer = static_cast<compressed_type *>(out_stream->get_write_buffer());
-//             kernel_duration chunk_duration;
-//             const auto compressed_chunk_length = offloader.compress(input_buffer, size, write_buffer, &chunk_duration);
-//             const auto compressed_chunk_size = compressed_chunk_length * sizeof(compressed_type);
-//             assert(compressed_chunk_length <= max_compressed_chunk_length);
-//             out_stream->commit_chunk(compressed_chunk_size);
-//             compressed_length += compressed_chunk_length;
-//             total_duration += chunk_duration;
-//             ++n_chunks;
-//         }
-//     }
+    //     // 解压缩相关变量
+    //     auto decompressor = ndzip::make_decompressor<float>(1); // 一维解压缩器
+    //     std::vector<float> decompressedData(oriData.size());
 
-//     const auto in_file_size = n_chunks * array_chunk_size;
-//     const auto compressed_size = compressed_length * sizeof(compressed_type);
-//     std::cerr << "raw = " << n_chunks * in_file_size << " bytes";
-//     if (n_chunks > 1) { std::cerr << " (" << n_chunks << " chunks à " << array_chunk_size << " bytes)"; }
-//     std::cerr << ", compressed = " << compressed_size << " bytes";
-//     std::cerr << ", ratio = " << std::fixed << std::setprecision(4)
-//               << (static_cast<double>(compressed_size) / in_file_size);
-//     std::cerr << ", time = " << std::setprecision(3) << std::fixed
-//               << std::chrono::duration_cast<std::chrono::duration<double>>(total_duration).count() << "s\n";
-// }
+    //     // 开始解压缩
+    //     std::cout << "解压开始\n";
+    //     auto start_decompress = std::chrono::high_resolution_clock::now();
+    //     decompressor->decompress(cmpData.data(), decompressedData.data(), 
+    //         {static_cast<ndzip::index_type>(oriData.size())});
+    //     auto end_decompress = std::chrono::high_resolution_clock::now();
+    //     std::chrono::duration<double> decompress_duration = end_decompress - start_decompress;
 
-// template<typename T>
-// void decompress_stream(const std::string &in, const std::string &out, const ndzip::extent &size,
-//         ndzip::offloader<T> &offloader, const ndzip::detail::io_factory &io) {
-//     using compressed_type = ndzip::compressed_type<T>;
+    //     // 输出解压时间
+    //     std::cout << "解压时间: " << decompress_duration.count() << " 秒\n";
 
-//     const auto array_chunk_length = static_cast<size_t>(num_elements(size));
-//     const auto array_chunk_size = array_chunk_length * sizeof(T);
-//     const auto max_compressed_chunk_length = ndzip::compressed_length_bound<T>(size);
-//     const auto max_compressed_chunk_size = max_compressed_chunk_length * sizeof(compressed_type);
+    //     // 计算压缩率
+    //     size_t original_size = oriData.size() * sizeof(float);
+    //     size_t compressed_size = cmpData.size() * sizeof(ndzip::compressed_type<float>);
+    //     double compression_ratio = static_cast<double>(compressed_size) / original_size;
 
-//     const auto in_stream = io.create_input_stream(in, max_compressed_chunk_size);
-//     const auto out_stream = io.create_output_stream(out, array_chunk_size);
+    //     // 输出压缩率
+    //     std::cout << "压缩率: " << compression_ratio << "\n";
 
-//     size_t compressed_bytes_left = 0;
-//     for (;;) {
-//         const auto [chunk, bytes_in_chunk] = in_stream->read_some(compressed_bytes_left);
-//         if (bytes_in_chunk == 0) { break; }
+    //     // 验证解压结果
+    //     ASSERT_EQ(decompressedData.size(), oriData.size()) << "解压失败，数据大小不一致";
+    //     for (size_t i = 0; i < oriData.size(); ++i) {
+    //         ASSERT_FLOAT_EQ(decompressedData[i], oriData[i]) << i << " 解压数据与原始数据不一致";
+    //     }
+    // }
 
-//         const auto chunk_buffer = static_cast<const compressed_type *>(chunk);
-//         const auto chunk_buffer_length = bytes_in_chunk / sizeof(compressed_type);  // floor division!
-//         const auto output_buffer = static_cast<T *>(out_stream->get_write_buffer());
-//         const auto compressed_length = offloader.decompress(chunk_buffer, chunk_buffer_length, output_buffer, size);
-//         const auto compressed_size = compressed_length * sizeof(compressed_type);
-//         assert(compressed_length <= chunk_buffer_length);
-//         out_stream->commit_chunk(array_chunk_size);
-//         compressed_bytes_left = bytes_in_chunk - compressed_size;
-//     }
-// }
+    // // Google Test 测试用例
+    // TEST(NDZipTest, CompressionDecompression) {
+    //     std::string dir_path = "/mnt/e/start/gpu/CUDA/cuCompressor/test/data/float"; // 数据文件目录
+    //     for (const auto &entry : fs::directory_iterator(dir_path)) {
+    //         if (entry.is_regular_file()) {
+    //             std::string file_path = entry.path().string();
+    //             std::cout << "正在处理文件: " << file_path << "\n";
+    //             test_compression(file_path);
+    //             std::cout << "---------------------------------------------\n";
+    //         }
+    //     }
+    // }
+*/
 
-// template<typename T>
-// void process_stream(bool decompress, const std::string &in, const std::string &out, const ndzip::extent &size,
-//         ndzip::offloader<T> &offloader, const ndzip::detail::io_factory &io) {
-//     if (decompress) {
-//         decompress_stream(in, out, size, offloader, io);
-//     } else {
-//         compress_stream(in, out, size, offloader, io);
-//     }
-// }
+#include "ndzip/cuda.hh"
+#include <gtest/gtest.h>
+#include <fstream>
+#include <vector>
+#include <chrono>
+#include <filesystem>
+#include <iostream>
+#include <cuda_runtime.h>
 
-// template<typename T>
-// void process_stream(bool decompress, const ndzip::extent &size, ndzip::target target,
-//         std::optional<size_t> num_cpu_threads, const std::string &in, const std::string &out,
-//         const ndzip::detail::io_factory &io) {
-//     std::unique_ptr<ndzip::offloader<T>> offloader;
-//     if (target == ndzip::target::cpu && num_cpu_threads.has_value()) {
-//         offloader = ndzip::make_cpu_offloader<T>(size.dimensions(), *num_cpu_threads);
-//     } else {
-//         offloader = ndzip::make_offloader<T>(target, size.dimensions(), true /* enable_profiling */);
-//     }
-//     process_stream(decompress, in, out, size, *offloader, io);
-// }
+namespace fs = std::filesystem;
 
-// void process_stream(bool decompress, const ndzip::extent &size, ndzip::target target,
-//         std::optional<size_t> num_cpu_threads, const data_type &data_type, const std::string &in,
-//         const std::string &out, const ndzip::detail::io_factory &io) {
-//     switch (data_type) {
-//         case detail::data_type::t_float:
-//             return process_stream<float>(decompress, size, target, num_cpu_threads, in, out, io);
-//         case detail::data_type::t_double:
-//             return process_stream<double>(decompress, size, target, num_cpu_threads, in, out, io);
-//         default: std::terminate();
-//     }
-// }
+// 读取浮点数据文件
+std::vector<float> read_data(const std::string &file_path) {
+    std::ifstream file(file_path, std::ios::binary);
+    if (!file.is_open()) {
+        throw std::runtime_error("无法打开文件: " + file_path);
+    }
 
-// }  // namespace ndzip::detail
-// // 根据平台选择具体的 io_factory 实现类
+    file.seekg(0, std::ios::end);
+    size_t size = file.tellg() / sizeof(float);
+    file.seekg(0, std::ios::beg);
 
-// #if NDZIP_SUPPORT_MMAP
-//     using io_factory = ndzip::detail::mmap_io_factory;
-// #else
-//     using io_factory = ndzip::detail::stdio_io_factory;
-// #endif
+    std::vector<float> data(size);
+    file.read(reinterpret_cast<char *>(data.data()), size * sizeof(float));
+    file.close();
+    return data;
+}
 
-// TEST(CompressionTest, CompressAndDecompressCSVFiles) {
-//     // 测试文件夹路径
-//     std::string input_dir = "/mnt/e/start/gpu/CUDA/cuCompressor/test/data/float";  // 你的文件夹路径
-//     std::string output_dir = "/mnt/e/start/gpu/CUDA/cuCompressor/test/output";  // 输出文件夹路径
+// 基于CUDA的压缩和解压测试
+void test_cuda_compression(const std::string &file_path) {
+    // 读取数据
+    std::vector<float> oriData = read_data(file_path);
 
-//     // 确保输出目录存在
-//     fs::create_directory(output_dir);
+    // 数据大小
+    size_t data_size = oriData.size();
+    ndzip::extent data_extent{static_cast<ndzip::index_type>(data_size)};
 
-//     // 创建io_factory对象
-//     std::unique_ptr<ndzip::detail::io_factory> io_factory;
+    // 分配GPU内存
+    float *device_data;
+    cudaMalloc(&device_data, data_size * sizeof(float));
+    cudaMemcpy(device_data, oriData.data(), data_size * sizeof(float), cudaMemcpyHostToDevice);
 
-//     // 选择具体的 io_factory 子类
-//     #if NDZIP_SUPPORT_MMAP
-//         io_factory = std::make_unique<ndzip::detail::mmap_io_factory>();
-//     #else
-//         io_factory = std::make_unique<ndzip::detail::stdio_io_factory>();
-//     #endif
+    // 创建CUDA压缩器
+    auto compressor = ndzip::make_cuda_compressor<float>(
+        ndzip::compressor_requirements{data_extent});
 
-//     for (const auto &entry : fs::directory_iterator(input_dir)) {
-//         if (entry.is_regular_file() && entry.path().extension() == ".csv") {
-//             std::string input_file = entry.path().string();
-//             std::string output_file = output_dir + "/" + entry.path().stem().string() + ".ndzip";  // 压缩后的输出文件
-//             std::string decompressed_file = output_dir + "/" + entry.path().stem().string() + "_decompressed.csv";  // 解压后的文件
+    // 分配压缩结果存储的GPU内存
+    size_t compressed_size = ndzip::compressed_length_bound<float>(data_extent);
+    ndzip::compressed_type<float> *device_compressed_data;
+    cudaMalloc(&device_compressed_data, compressed_size * sizeof(ndzip::compressed_type<float>));
 
-//             std::cout << "Processing file: " << input_file << std::endl;
+    ndzip::index_type *device_compressed_length;
+    cudaMalloc(&device_compressed_length, sizeof(ndzip::index_type));
 
-//             // 设置压缩所需的尺寸，这里假设你已经知道文件的尺寸（例如通过读取文件头）
-//             ndzip::extent size = {/* 填写你的尺寸信息 */};  // 根据实际情况设置
+    // 开始压缩
+    std::cout << "CUDA 压缩开始\n";
+    auto start_compress = std::chrono::high_resolution_clock::now();
+    compressor->compress(device_data, data_extent, device_compressed_data, device_compressed_length);
+    auto end_compress = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> compress_duration = end_compress - start_compress;
 
-//             // 创建压缩时使用的 offloader
-//             std::unique_ptr<ndzip::offloader<float>> offloader = ndzip::make_offloader<float>(ndzip::target::cpu, size.dimensions(), true);
+    // 拷贝压缩结果到主机
+    ndzip::index_type host_compressed_length;
+    cudaMemcpy(&host_compressed_length, device_compressed_length, sizeof(ndzip::index_type), cudaMemcpyDeviceToHost);
+    std::vector<ndzip::compressed_type<float>> host_compressed_data(host_compressed_length);
+    cudaMemcpy(host_compressed_data.data(), device_compressed_data,
+               host_compressed_length * sizeof(ndzip::compressed_type<float>), cudaMemcpyDeviceToHost);
 
-//             // 压缩文件
-//             ndzip::detail::process_stream(false, size, ndzip::target::cpu, std::nullopt, ndzip::detail::data_type::t_float, input_file, output_file, *io_factory);
+    // 输出压缩时间
+    std::cout << "压缩时间: " << compress_duration.count() << " 秒\n";
+    std::cout << "实际压缩大小: " << host_compressed_length << " 元素\n";
 
-//             // 解压文件
-//             ndzip::detail::process_stream(true, size, ndzip::target::cpu, std::nullopt, ndzip::detail::data_type::t_float, output_file, decompressed_file, *io_factory);
+    // 创建CUDA解压缩器
+    auto decompressor = ndzip::make_cuda_decompressor<float>(1);
 
-//             // 验证解压后的文件与原始文件内容是否相同
-//             std::ifstream original(input_file, std::ios::binary);
-//             std::ifstream decompressed(decompressed_file, std::ios::binary);
+    // 分配解压缩结果的GPU内存
+    float *device_decompressed_data;
+    cudaMalloc(&device_decompressed_data, data_size * sizeof(float));
 
-//             ASSERT_TRUE(original.is_open());
-//             ASSERT_TRUE(decompressed.is_open());
+    // 开始解压缩
+    std::cout << "CUDA 解压缩开始\n";
+    auto start_decompress = std::chrono::high_resolution_clock::now();
+    decompressor->decompress(device_compressed_data, device_decompressed_data, data_extent);
+    auto end_decompress = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> decompress_duration = end_decompress - start_decompress;
 
-//             // 读取文件内容并进行比较
-//             std::stringstream original_stream;
-//             original_stream << original.rdbuf();
-//             std::stringstream decompressed_stream;
-//             decompressed_stream << decompressed.rdbuf();
+    // 拷贝解压缩结果到主机
+    std::vector<float> host_decompressed_data(data_size);
+    cudaMemcpy(host_decompressed_data.data(), device_decompressed_data, data_size * sizeof(float),
+               cudaMemcpyDeviceToHost);
 
-//             ASSERT_EQ(original_stream.str(), decompressed_stream.str()) << "The decompressed file does not match the original.";
+    // 输出解压时间
+    std::cout << "解压时间: " << decompress_duration.count() << " 秒\n";
 
-//             std::cout << "Successfully processed: " << input_file << std::endl;
-//         }
-//     }
-// }
+    // 验证解压结果
+    ASSERT_EQ(host_decompressed_data.size(), oriData.size()) << "解压失败，数据大小不一致";
+    for (size_t i = 0; i < oriData.size(); ++i) {
+        ASSERT_FLOAT_EQ(host_decompressed_data[i], oriData[i]) << "数据不一致，索引: " << i;
+    }
 
+    // 清理GPU内存
+    cudaFree(device_data);
+    cudaFree(device_compressed_data);
+    cudaFree(device_compressed_length);
+    cudaFree(device_decompressed_data);
 
+    std::cout << "CUDA 压缩与解压测试完成。\n";
+}
 
+// Google Test 测试用例
+TEST(NDZipCudaTest, CompressionDecompression) {
+    std::string dir_path = "/mnt/e/start/gpu/CUDA/cuCompressor/test/data/float"; // 数据文件目录
+    for (const auto &entry : fs::directory_iterator(dir_path)) {
+        if (entry.is_regular_file()) {
+            std::string file_path = entry.path().string();
+            std::cout << "正在处理文件: " << file_path << "\n";
+            test_cuda_compression(file_path);
+            std::cout << "---------------------------------------------\n";
+        }
+    }
+}
 
-
-
-// int main(int argc, char **argv) {
-//     ::testing::InitGoogleTest(&argc, argv);
-//     return RUN_ALL_TESTS();
-// }

@@ -46,7 +46,7 @@ double bitsToDoubleHost(uint64_t bits) {
 void GDFDecompressor::decompress(const std::vector<unsigned char>& compressedData, std::vector<double>& output,int numDatas) {
     BitReader reader(compressedData);
     size_t dataSize = compressedData.size() * 8; // 总位数
-    printf("dataSize:%d\n",dataSize);
+    //printf("dataSize:%d\n",dataSize);
     int blockNumber = 0;
 
     while(reader.getBitPos() + 64 + 64 + 8 + 8 +64 <= dataSize) { // 确保有足够的元数据
@@ -55,6 +55,7 @@ void GDFDecompressor::decompress(const std::vector<unsigned char>& compressedDat
             printf("Warning！！！\n");
             break;
         }
+        // printf("reader.getBitPos():%d\n",reader.getBitPos());
         int numData = min(numDatas, 1024);//剩余数据
         numDatas -= 1024;
         // 1. 读取 bitSize (64 位)
@@ -70,10 +71,10 @@ void GDFDecompressor::decompress(const std::vector<unsigned char>& compressedDat
         // 4. 读取 bitCount (8 位)
         uint64_t bitCountRaw = reader.readBits(8);
         unsigned char bitCount = static_cast<unsigned char>(bitCountRaw);
-        if(bitCount>64)
-        {
-            break;
-        }
+        // if(bitCount>64)
+        // {
+        //     break;
+        // }
 
         // 检查 bitCount 是否为零
         if(bitCount ==0) {
@@ -92,33 +93,39 @@ void GDFDecompressor::decompress(const std::vector<unsigned char>& compressedDat
         //     delta_bits = bitSize;
         // }
         // 调试输出
-        std::cout << "Block " << blockNumber++ << " Metadata:" << std::endl;
-        printf("bitSize:%d\n",bitSize);
-        printf("firstValue:%d\n",firstValue);
-        printf("maxDecimalPlaces:%d\n",maxDecimalPlaces);
-        printf("bitCount:%d\n",bitCount);
-        printf("flag1:%016llx\n",flag1);
+        // std::cout << "Block " << blockNumber++ << " Metadata:" << std::endl;
+        // printf("bitSize:%d\n",bitSize);
+        // printf("firstValue:%d\n",firstValue);
+        // printf("maxDecimalPlaces:%d\n",maxDecimalPlaces);
+        // printf("bitCount:%d\n",bitCount);
+        // printf("flag1:%016llx\n",flag1);
 
         // 6. 得到result数组
         uint8_t result[64][128];
         int dataByte = (numData+7)/8;    //data里面有多少byte
         int flag2Size = (dataByte+7)/8;   //flag2占多少byte
+        uint8_t flag2[64][128];
+        memset(flag2, 0, sizeof(flag2));
         for(int i=0;i<bitCount;i++)//循环判断每一列，进行复原
         {
             
             if((flag1 & (1ULL << i)) != 0)//第i列是稀疏的
             {
                 //读取flag2
-                printf("read\n");
-                uint64_t flag2 = reader.readBits(flag2Size*8);
-                printf("flag2[%d]:0x%llx\n",i,flag2);
+                //printf("read\n");
+                for(int z=0;z<flag2Size*8;z++)
+                {
+                    flag2[i][z] = reader.readBits(1);
+                }
+                //printf("flag2[%d]:0x%llx\n",i,flag2);
                 for(int j=0;j<dataByte;j++)
                 {
                     if (i >= 64 || j >= 128) {
                         std::cerr << "Index out of bounds: i=" << i << ", j=" << j << std::endl;
+                        return;
                         continue;
                     }
-                    if((flag2 & (1ULL << j)) != 0)//第j个bit不为0
+                    if(flag2[i][j] != 0)//第j个bit不为0
                     {
                         uint64_t temp=reader.readBits(8);
                         result[i][j]=static_cast<unsigned char>(temp);
@@ -135,6 +142,7 @@ void GDFDecompressor::decompress(const std::vector<unsigned char>& compressedDat
                 {
                     if (i >= 64 || j >= 128) {
                         std::cerr << "Index out of bounds: i=" << i << ", j=" << j << std::endl;
+                        return;
                         continue;
                     }
                     uint64_t temp=reader.readBits(8);
@@ -192,11 +200,11 @@ void GDFDecompressor::decompress(const std::vector<unsigned char>& compressedDat
             output.push_back(d);
         }
 
-        std::cout << "Block " << (blockNumber-1) << " decompressed successfully." << std::endl;
+        //std::cout << "Block " << (blockNumber-1) << " decompressed successfully." << std::endl;
     }
 
     // 处理剩余位（如果有）
     if(reader.getBitPos() < dataSize) {
-        std::cerr << "Warning: " << (dataSize - reader.getBitPos()) << " remaining bits not processed." << std::endl;
+        //std::cerr << "Warning: " << (dataSize - reader.getBitPos()) << " remaining bits not processed." << std::endl;
     }
 }
