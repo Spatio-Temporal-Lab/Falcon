@@ -137,18 +137,7 @@ void test_compression0(const std::string& file_path) {
     
 }
 
-//Google Test 测试用例
-// TEST(CDFCompressorTest, CompressionDecompression) {
-//     std::string dir_path = "/mnt/e/start/gpu/CUDA/cuCompressor/test/data/float";//有毛病还没有数据集
-//     for (const auto& entry : fs::directory_iterator(dir_path)) {
-//         if (entry.is_regular_file()) {
-//             std::string file_path = entry.path().string();
-//             std::cout << "正在处理文件: " << file_path << std::endl;
-//             test_compression(file_path);
-//             std::cout << "---------------------------------------------" << std::endl;
-//         }
-//     }
-// }
+
 
 void comp(std::vector<double> oriData,std::vector<double> &decompData)
 {
@@ -218,7 +207,7 @@ void comp(std::vector<double> oriData,std::vector<double> &decompData)
 TEST(GDFCompressorTest0, CompressionDecompression) {
     // 读取数据
     //std::vector<double> oriData = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.8};//{0.001,0.122,0.01543,0.14,0.5,0.47};
-    const size_t size = 1024*30;
+    const size_t size = 1024*256;
     std::vector<double> oriData(size*2);
 
     // 初始化数组，每个值递增 0.1
@@ -229,7 +218,7 @@ TEST(GDFCompressorTest0, CompressionDecompression) {
         oriData[i] = startValue + i * step;
     }
     for (size_t i = size; i < size * 2; ++i) {
-        oriData[i] = std::floor((oriData[i - 1] - 0.05) * 1000.0) / 1000.0;
+        oriData[i] = std::floor((oriData[i - 1] - 0.05) * 100000000.0) / 100000000.0;
     }
 
 
@@ -256,7 +245,18 @@ TEST(GDFCompressorTest1, CompressionDecompression) {
 std::vector<uint8_t> ConvertArrayToVector(const Array<uint8_t>& arr) {
     return std::vector<uint8_t>(arr.begin(), arr.end());
 }
-
+//Google Test 测试用例
+TEST(CDFCompressorTest, CompressionDecompression) {
+    std::string dir_path = "/mnt/e/start/gpu/CUDA/cuCompressor/test/data/float";//有毛病还没有数据集
+    for (const auto& entry : fs::directory_iterator(dir_path)) {
+        if (entry.is_regular_file()) {
+            std::string file_path = entry.path().string();
+            std::cout << "正在处理文件: " << file_path << std::endl;
+            test_compression(file_path);
+            std::cout << "---------------------------------------------" << std::endl;
+        }
+    }
+}
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
