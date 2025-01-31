@@ -203,7 +203,7 @@ void BM_ColumnCompression(benchmark::State& state, const Column& column) {
 
 // 注册基准测试
 void RegisterCompressionBenchmarks() {
-    std::string dir_path = "/mnt/e/start/gpu/CUDA/cuCompressor/test/data/float";
+    std::string dir_path = "../../test/data/float";
     for (const auto& entry : fs::directory_iterator(dir_path)) {
         if (entry.is_regular_file()) {
             std::string file_path = entry.path().string();
