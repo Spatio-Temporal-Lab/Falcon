@@ -9,7 +9,6 @@
 #include <cstdint>
 #include <gtest/internal/gtest-internal.h>
 
-#include "../../../../../../usr/local/cuda/targets/x86_64-linux/include/driver_types.h"
 
 CDFCompressor::CDFCompressor()
 {
@@ -81,7 +80,6 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
         lastValue = longs[i];
     }
 
-
     // 计算所有差值，并找出所需的最大 bit 位数
     int bitWeight = 0;
 
@@ -92,9 +90,9 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     }
 
 
-
     // 稀疏列的判断：从 bitWeight 向下寻找稀疏性
     int bestPoint = bitWeight;
+
     for (int i = bitWeight - 1; i >= 0; --i)
     {
         if (currentBlockSize / 8 + bitCounts[i] * 8 >= currentBlockSize)
@@ -109,6 +107,7 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     int nonSparseColSize = (currentBlockSize + 63) / 64; // 每列的大小（以 uint64_t 为单位）
     int nonSparseSize = numNonSparseCols * nonSparseColSize;
     std::vector<uint64_t> transposedNonSparse(nonSparseSize, 0);
+
     for (int j = 0; j < bestPoint; ++j)
     {
         int baseIndex = j * nonSparseColSize;
@@ -163,6 +162,7 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
 
     // 将 bit 位数写入输出
     // 将firstValue和位数写入输出
+
     bitSize = 64 + 64 + 8 + 8 + 8 + 8 + flagArraySize * 8 + num1Value * 8 + nonSparseSize * 64;
 
     bitStream.WriteLong(bitSize, 64);
@@ -171,25 +171,21 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     bitStream.WriteInt(maxDecimalPlaces, 8);
     bitStream.WriteInt(bitWeight, 8);
     bitStream.WriteInt(bestPoint, 8);
-    // std::cout << "maxDecimalPlaces " <<maxDecimalPlaces<< std::endl;
+    
     for (int i = 0; i < flagArraySize; i++)
     {
         bitStream.WriteByte(flag[i]);
 
-    }
     for (int i = 0; i < sparseTransposed.size(); i++)
     {
         if (sparseTransposed[i] != 0)
         {
             bitStream.WriteByte(sparseTransposed[i]);
-        }
-    }
+
     for (int i = 0; i < nonSparseSize; i++)
     {
         bitStream.WriteLong(transposedNonSparse[i], 64);
 
-    }
-}
 
 
 void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<long>& longs, long& firstValue,

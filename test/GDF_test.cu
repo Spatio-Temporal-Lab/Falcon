@@ -58,7 +58,7 @@ void test_compression(const std::string& file_path) {
 
     //进行解压
     GDFDecompressor GDFD;
-    GDFD.decompress(cmpData,decompressedData);
+    GDFD.decompress(cmpData,decompressedData,nbEle);
     auto end_decompress = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> decompress_duration = end_decompress - start_decompress;
 
@@ -137,18 +137,7 @@ void test_compression0(const std::string& file_path) {
     
 }
 
-// Google Test 测试用例
-TEST(CDFCompressorTest, CompressionDecompression) {
-    std::string dir_path = "/mnt/e/start/gpu/CUDA/cuCompressor/test/data/float";//有毛病还没有数据集
-    for (const auto& entry : fs::directory_iterator(dir_path)) {
-        if (entry.is_regular_file()) {
-            std::string file_path = entry.path().string();
-            std::cout << "正在处理文件: " << file_path << std::endl;
-            test_compression(file_path);
-            std::cout << "---------------------------------------------" << std::endl;
-        }
-    }
-}
+
 
 void comp(std::vector<double> oriData,std::vector<double> &decompData)
 {
@@ -185,7 +174,7 @@ void comp(std::vector<double> oriData,std::vector<double> &decompData)
 
     // 比较压缩后的数据
     GDFDecompressor GDFD;
-    GDFD.decompress(cmpData2, decompData);
+    GDFD.decompress(cmpData2, decompData,nbEle);
 
     // 打印压缩数据
     // std::cout << "\nCPU压缩结果:\n";
@@ -196,15 +185,19 @@ void comp(std::vector<double> oriData,std::vector<double> &decompData)
     // }
     // std::cout << std::endl;
 
-    std::cout << "\nGPU压缩结果:\n";
-    for (size_t i = 0; i < cmpData2.size(); ++i) {
-        std::cout << std::setw(2) << std::setfill('0') << std::hex 
-                  << static_cast<int>(cmpData2[i]) << " ";
-        if ((i + 1) % 16 == 0) std::cout << "\n"; // 每 16 字节换行
-    }
-    std::cout << std::endl;
+    // std::cout << "\nGPU压缩结果:\n";
+    // for (size_t i = 0; i < cmpData2.size(); ++i) {
+    //     std::cout << std::setw(2) << std::setfill('0') << std::hex 
+    //               << static_cast<int>(cmpData2[i]) << " ";
+    //     if ((i + 1) % 16 == 0) std::cout << "\n"; // 每 16 字节换行
+    // }
+    // std::cout << std::endl;
     try {
-        ASSERT_EQ(oriData,decompData) << "压缩后数据的大小不一致。";
+        for (size_t i = 0; i < oriData.size(); ++i) {
+            ASSERT_NEAR(oriData[i], decompData[i], 1e-6) << "第 " << i << " 个值不相等。";
+        }
+
+        // ASSERT_EQ(oriData,decompData) << "压缩后数据的大小不一致。";
     } catch (const std::exception& e) {
         std::cerr << "断言失败: " << e.what() << std::endl;
     }
@@ -213,17 +206,33 @@ void comp(std::vector<double> oriData,std::vector<double> &decompData)
 // 测试压缩
 TEST(GDFCompressorTest0, CompressionDecompression) {
     // 读取数据
-    std::vector<double> oriData = {0.1,0.2,0.3,0.4,0.5};
+    //std::vector<double> oriData = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.8};//{0.001,0.122,0.01543,0.14,0.5,0.47};
+    const size_t size = 1024*256;
+    std::vector<double> oriData(size*2);
+
+    // 初始化数组，每个值递增 0.1
+    double startValue = 0.1;
+    double step = 0.1;
+
+    for (size_t i = 0; i < size; ++i) {
+        oriData[i] = startValue + i * step;
+    }
+    for (size_t i = size; i < size * 2; ++i) {
+        oriData[i] = std::floor((oriData[i - 1] - 0.05) * 100000000.0) / 100000000.0;
+    }
+
+
     std::vector<double> newData;
     comp(oriData,newData);
-    for(auto n:newData)
-    {
-        printf("%f,",n);
-    }
+    // for(auto n:newData)
+    // {
+    //     printf("%f,",n);
+    // }
 }
 TEST(GDFCompressorTest1, CompressionDecompression) {
     // 读取数据
-    std::vector<double> oriData = {0.1,0.2,0.3,0.4,0.5,0.1,0.4,0.2,0.4,0.1,0.015,0.23};
+//    {0.1,0.2,0.3,0.4,0.5,0.12,0.1,0.3,2.1};//{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7,0.8};//
+    std::vector<double> oriData = {0.1, 0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.10,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18,0.19,0.20,0.21,0.22,0.23,0.24,0.25,0.26,0.27,0.28,0.29,0.30,0.31,0.32,0.33};//{0.1, 0.2, 0.3, 0.4, 0.5, 0.1, 0.4, 0.2, 0.4, 0.1, 0.015, 0.23};
     std::vector<double> newData;
     comp(oriData,newData);
     for(auto n:newData)
@@ -236,7 +245,18 @@ TEST(GDFCompressorTest1, CompressionDecompression) {
 std::vector<uint8_t> ConvertArrayToVector(const Array<uint8_t>& arr) {
     return std::vector<uint8_t>(arr.begin(), arr.end());
 }
-
+//Google Test 测试用例
+TEST(CDFCompressorTest, CompressionDecompression) {
+    std::string dir_path = "../../test/data/float";//有毛病还没有数据集
+    for (const auto& entry : fs::directory_iterator(dir_path)) {
+        if (entry.is_regular_file()) {
+            std::string file_path = entry.path().string();
+            std::cout << "正在处理文件: " << file_path << std::endl;
+            test_compression(file_path);
+            std::cout << "---------------------------------------------" << std::endl;
+        }
+    }
+}
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

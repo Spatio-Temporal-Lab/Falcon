@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 添加 ALP 库
 add_subdirectory(baseline/ALP)
+# 添加 ndzip 项目路径
+add_subdirectory(baseline/ndzip)
+
 
 # 添加 ndzip 库的路径
 # add_subdirectory(baseline/ndzip)
@@ -31,7 +34,7 @@ include_directories(${CMAKE_SOURCE_DIR}/test/baseline/ALP/include)
 include_directories(${CMAKE_SOURCE_DIR}/test/data)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/src/utils)
-# include_directories(${CMAKE_SOURCE_DIR}/test/baseline/ndzip/include)  # 添加该路径
+include_directories(${CMAKE_SOURCE_DIR}/test/baseline/ndzip/include)  # 添加该路径
 
 # 源文件
 set(SRC_CPU
@@ -56,12 +59,12 @@ set(TEST_SOURCES_CPU
 )
 
 set(TEST_SOURCES_GPU
-    GDF_test.cpp
+        GDF_test.cu
     data/dataset_utils.cpp
 )
 
 set(BENCHMARK_SOURCES
-    benchmark.cpp
+        benchmark.cu
     data/dataset_utils.cpp
 )
 
@@ -73,14 +76,14 @@ cuda_add_executable(test_gpu ${SRC_GPU} ${TEST_SOURCES_GPU})
 
 cuda_add_executable(benchmark_tests ${SRC_CPU} ${SRC_GPU} ${BENCHMARK_SOURCES})
 add_executable(test_ALP test_ALP.cpp data/dataset_utils.cpp ${SRC_CPU})
-# cuda_add_executable(test_ndzip test_ndzip.cpp data/dataset_utils.cpp)
+cuda_add_executable(test_ndzip test_ndzip.cpp data/dataset_utils.cpp)
 
 # 链接库时使用 PRIVATE，确保符号在不同目标之间不可见
 target_link_libraries(test_cpu PRIVATE GTest::GTest GTest::Main pthread ALP)
 target_link_libraries(test_gpu ${CUDA_LIBRARIES} GTest::GTest GTest::Main pthread ALP)
 target_link_libraries(benchmark_tests ${CUDA_LIBRARIES} benchmark::benchmark GTest::GTest GTest::Main pthread ALP)
 target_link_libraries(test_ALP PRIVATE GTest::GTest GTest::Main pthread ALP)
-# target_link_libraries(test_ndzip ${CUDA_LIBRARIES} GTest::GTest io Boost::program_options GTest::Main ndzip pthread )  # 链接到 ndzip 库
+target_link_libraries(test_ndzip ${CUDA_LIBRARIES} GTest::GTest ndzip-cuda io Boost::program_options GTest::Main ndzip pthread )  # 链接到 ndzip 库
 
 # 设置 include 目录
 target_include_directories(test_cpu PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/ALP/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
@@ -88,13 +91,13 @@ target_include_directories(test_gpu PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/AL
 target_include_directories(benchmark_tests PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/ALP/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 target_include_directories(test_ALP PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/ALP/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 # 在 CMake 配置文件中为 test_ndzip 目标增加 io 目录
-# target_include_directories(test_ndzip PRIVATE
-#     ${CMAKE_SOURCE_DIR}/test/baseline/ndzip/include
-#     ${CMAKE_SOURCE_DIR}/test/baseline/ndzip/src/io  # 这里添加 io 的路径
-#     ${CMAKE_SOURCE_DIR}/test/data
-#     ${CMAKE_SOURCE_DIR}/include
-#     ${CMAKE_SOURCE_DIR}/src/utils
-# )
-
+target_include_directories(test_ndzip PRIVATE
+    ${CMAKE_SOURCE_DIR}/test/baseline/ndzip/include
+    ${CMAKE_SOURCE_DIR}/test/baseline/ndzip/src/io  # 这里添加 io 的路径
+    ${CMAKE_SOURCE_DIR}/test/data
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/src/utils
+)
 # 设置编译标准
 set_target_properties(test_cpu test_gpu benchmark_tests test_ALP PROPERTIES CXX_STANDARD 17)
+target_compile_options(test_ndzip PRIVATE ${NDZIP_CUDA_FLAGS})
