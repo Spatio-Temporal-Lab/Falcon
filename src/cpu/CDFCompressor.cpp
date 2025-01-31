@@ -4,18 +4,18 @@
 
 #include <cmath>
 #include <iostream>
-#include <iomanip>
-#include <sstream>
 #include "CDFCompressor.h"
 #include <cstring>
 #include <cstdint>
+#include <gtest/internal/gtest-internal.h>
 
 
 CDFCompressor::CDFCompressor()
 {
-    // OutputBitStream bitStream(BLOCK_SIZE * 8); // 初始化输出位流，假设缓冲区大小为 1024 * 8
-    POW_NUM = pow(2, 51) + pow(2, 52);
+    POW_NUM = pow(2, 52);
 }
+
+std::vector<int> static decCounts(64, 0);
 
 void CDFCompressor::compress(const std::vector<double>& input, std::vector<unsigned char>& output)
 {
@@ -38,12 +38,8 @@ void CDFCompressor::compress(const std::vector<double>& input, std::vector<unsig
         size_t currentBlockSize = std::min(BLOCK_SIZE, input.size() - i);
         std::vector<double> block(input.begin() + i, input.begin() + i + currentBlockSize);
         compressBlock(block, bitStream, perBlockBitSize);
-        // std::cout << std::endl << "Block size: " << block.size() << std::endl;
-
         // 将位流中的数据更新到输出缓冲区中
         bitStream.Flush();
-        // std::cout << "perBitSize " << perBitSize << std::endl;
-        // std::cout << "perBitSize " << (perBitSize + 31) / 32 * 4 << std::endl;
         Array<uint8_t> buffer = bitStream.GetBuffer((perBlockBitSize + 31) / 32 * 4);
 
         // 将压缩数据复制到输出
@@ -51,8 +47,6 @@ void CDFCompressor::compress(const std::vector<double>& input, std::vector<unsig
         {
             output.push_back(buffer[j]); // 确保类型转换
         }
-        // std::cout << output.size() << std::endl;
-        // std::cout << std::endl << "Block size: " << block.size() << std::endl;
         bitStream.Refresh();
     }
 }
@@ -63,9 +57,10 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     std::vector<long> longs;
     long firstValue;
     int maxDecimalPlaces = 0;
-    sampleBlock(block, longs, firstValue, maxDecimalPlaces);
+    int isOk;
+    sampleBlock(block, longs, firstValue, maxDecimalPlaces, isOk);
     size_t currentBlockSize = block.size();
-    
+
     //进行delta序列转化
     long lastValue = firstValue;
     std::vector<long> deltaList;
@@ -94,6 +89,7 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
         bitWeight++;
     }
 
+
     // 稀疏列的判断：从 bitWeight 向下寻找稀疏性
     int bestPoint = bitWeight;
 
@@ -105,7 +101,6 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
         }
         bestPoint = i;
     }
-
 
     // 1. 非稀疏列处理：从 0 到 bestPoint
     int numNonSparseCols = bestPoint;
@@ -120,7 +115,6 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
         {
             if (deltaList[i] & (1ULL << j))
             {
-
                 transposedNonSparse[baseIndex + i / 64] |= (1ULL << (i % 64));
             }
         }
@@ -128,7 +122,7 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
 
     // 2. 稀疏列处理：从 bestPoint + 1 到 bitWeight - 1
     int numSparseCols = bitWeight - bestPoint;
-    int sparseColSize = (currentBlockSize+7) / 8; // 每列的大小（以字节为单位）
+    int sparseColSize = (currentBlockSize + 7) / 8; // 每列的大小（以字节为单位）
     int sparseSize = numSparseCols * sparseColSize;
     std::vector<uint8_t> sparseTransposed(sparseSize, 0);
 
@@ -168,11 +162,12 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
 
     // 将 bit 位数写入输出
     // 将firstValue和位数写入输出
-    bitSize = 64 + 64 + 8 + 8 + 8 + flagArraySize * 8 + num1Value * 8 + nonSparseSize * 64;
 
-    
+    bitSize = 64 + 64 + 8 + 8 + 8 + 8 + flagArraySize * 8 + num1Value * 8 + nonSparseSize * 64;
+
     bitStream.WriteLong(bitSize, 64);
     bitStream.WriteLong(firstValue, 64);
+    bitStream.WriteInt(isOk, 8);
     bitStream.WriteInt(maxDecimalPlaces, 8);
     bitStream.WriteInt(bitWeight, 8);
     bitStream.WriteInt(bestPoint, 8);
@@ -181,51 +176,54 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     {
         bitStream.WriteByte(flag[i]);
 
-
-    }
-    
     for (int i = 0; i < sparseTransposed.size(); i++)
     {
         if (sparseTransposed[i] != 0)
         {
             bitStream.WriteByte(sparseTransposed[i]);
-           
-        }
-    }
 
     for (int i = 0; i < nonSparseSize; i++)
     {
         bitStream.WriteLong(transposedNonSparse[i], 64);
 
-        
-    }
-    
-}
 
 
 void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<long>& longs, long& firstValue,
-                                int& maxDecimalPlaces)
+                                int& maxDecimalPlaces, int& isOk)
 {
     // 将所有数转换为整数，并选取最小值和最大值，同时计算最大的小数点后位数
     int k = 0;
+    int maxBeta = 0;
     for (double val : block)
     {
+//计算起始位置sp
+        double log10v = log10(std::abs(val));
+        int sp = floor(log10v);
         // 计算当前值的小数点后位数
-        int decimalPlaces = getDecimalPlaces(val);
+        int decimalPlaces = getDecimalPlaces(val,sp);
+
+        int beta = decimalPlaces + sp + 1;
+
+        if (beta > maxBeta)
+        {
+            maxBeta = beta;
+        }
+
         if (decimalPlaces > maxDecimalPlaces)
         {
             maxDecimalPlaces = decimalPlaces;
         }
+
         k++;
-        // std::cout<<k<<" "<<val<<" "<<decimalPlaces<<std::endl;
     }
-    // std::cout << std::dec << "maxDecimalPlaces " << maxDecimalPlaces << std::endl;
-    //std::cout<<"最大小数位数"<<maxDecimalPlaces<<std::endl;
+
+
     //感觉可以优化计算方法，伪10进制转化为整数
     firstValue = static_cast<long>(block[0] * std::pow(10, maxDecimalPlaces));
 
-    if (maxDecimalPlaces > 15)
+    if (maxBeta >= 16)
     {
+        isOk = 0;
         uint64_t bits;
         std::memcpy(&bits, &block[0], sizeof(bits));
         firstValue = static_cast<long>(bits);
@@ -238,6 +236,7 @@ void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<lo
     }
     else
     {
+        isOk = 1;
         firstValue = static_cast<long>(std::round(block[0] * std::pow(10, maxDecimalPlaces)));
         for (double val : block)
         {
@@ -247,7 +246,8 @@ void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<lo
     }
 }
 
-int CDFCompressor::getDecimalPlaces(double value)//得到小数位数
+
+int CDFCompressor::getDecimalPlaces(double value, int sp) //得到小数位数
 {
     double trac = value + POW_NUM - POW_NUM;
     double temp = value;
@@ -256,12 +256,12 @@ int CDFCompressor::getDecimalPlaces(double value)//得到小数位数
     int64_t trac_temp;
     std::memcpy(&int_temp, &temp, sizeof(double));
     std::memcpy(&trac_temp, &trac, sizeof(double));
-    double log10v = log10(std::abs(value));
-    int sp = floor(log10v);
-    while (std::abs(trac_temp - int_temp) > 1 && digits < 16 - sp - 1)
+    double td;
+    double deltaBound = std::abs(value) * pow(2, -52);
+    while (std::abs(temp - trac) >=  deltaBound * td && digits < 16 - sp - 1)
     {
         digits++;
-        double td = pow(10, digits);
+        td = pow(10, digits);
         temp = value * td;
         std::memcpy(&int_temp, &temp, sizeof(double));
         trac = temp + POW_NUM - POW_NUM;
@@ -275,6 +275,4 @@ int CDFCompressor::getDecimalPlaces(double value)//得到小数位数
 unsigned long CDFCompressor::zigzag_encode(const long value)
 {
     return (value << 1) ^ (value >> (sizeof(long) * 8 - 1));
-
 }
-
