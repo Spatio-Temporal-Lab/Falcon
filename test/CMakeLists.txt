@@ -59,12 +59,12 @@ set(TEST_SOURCES_CPU
 )
 
 set(TEST_SOURCES_GPU
-    GDF_test.cpp
+        GDF_test.cu
     data/dataset_utils.cpp
 )
 
 set(BENCHMARK_SOURCES
-    benchmark.cpp
+        benchmark.cu
     data/dataset_utils.cpp
 )
 
