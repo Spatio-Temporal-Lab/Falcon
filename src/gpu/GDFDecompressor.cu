@@ -49,7 +49,7 @@ void GDFDecompressor::decompress(const std::vector<unsigned char>& compressedDat
     //printf("dataSize:%d\n",dataSize);
     int blockNumber = 0;
 
-    while(reader.getBitPos() + 64 + 64 + 8 + 8 +64 <= dataSize) { // 确保有足够的元数据
+    while(reader.getBitPos() + 64 + 64 + 8 + 8 + 8 + 64 <= dataSize) { // 确保有足够的元数据
         if(reader.getBitPos()%8!=0)
         {
             printf("Warning！！！\n");
@@ -67,6 +67,10 @@ void GDFDecompressor::decompress(const std::vector<unsigned char>& compressedDat
         // 3. 读取 maxDecimalPlaces (8 位)
         uint64_t maxDecimalPlacesRaw = reader.readBits(8);
         unsigned char maxDecimalPlaces = static_cast<unsigned char>(maxDecimalPlacesRaw);
+
+        // 3. 读取 maxBeta (8 位)
+        uint64_t maxBetaRaw = reader.readBits(8);
+        unsigned char maxBetaRawPlaces = static_cast<unsigned char>(maxBetaRaw);
 
         // 4. 读取 bitCount (8 位)
         uint64_t bitCountRaw = reader.readBits(8);
@@ -189,7 +193,7 @@ void GDFDecompressor::decompress(const std::vector<unsigned char>& compressedDat
         // 8. 转换回双精度浮点数
         for(auto val : integers) {
             double d;
-            if(maxDecimalPlaces >15) {
+            if(maxBetaRawPlaces >15) {
                 // 直接将整数位转换为 double
                 uint64_t bits = static_cast<uint64_t>(val);
                 d = bitsToDoubleHost(bits);
