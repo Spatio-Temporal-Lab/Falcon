@@ -73,7 +73,7 @@ void test_compression(const std::string& file_path) {
     // 打印压缩率
     std::cout << "压缩率: " << compression_ratio << std::endl;
     ASSERT_EQ(decompressedData.size() , oriData.size()) << "解压失败，数据不一致。";
-    for(int i=0;i<oriData[i];i++)
+    for(int i=0;i<oriData.size();i++)
     {
         // 验证解压结果是否与原始数据一致
         // std::cout << std::fixed << std::setprecision(10)<<decompressedData[i]<<" "<<oriData[i]<<std::endl;
@@ -247,7 +247,7 @@ std::vector<uint8_t> ConvertArrayToVector(const Array<uint8_t>& arr) {
 }
 //Google Test 测试用例
 TEST(CDFCompressorTest, CompressionDecompression) {
-    std::string dir_path = "../../test/data/float";//有毛病还没有数据集
+    std::string dir_path = "../../test/data/error";//有毛病还没有数据集
     for (const auto& entry : fs::directory_iterator(dir_path)) {
         if (entry.is_regular_file()) {
             std::string file_path = entry.path().string();
