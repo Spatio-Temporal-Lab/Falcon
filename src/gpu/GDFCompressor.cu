@@ -474,7 +474,7 @@ __global__ void compressBlockKernel(
         uint64_t bitSize =  64ULL +                 // bitsize
                             64ULL +                 // firstValue
                             8ULL +                  // maxDecimalPlaces
-                                8ULL +              // maxBeta
+                            8ULL +                  // maxBeta
                             8ULL +                  // bitCount
                             64ULL;                  // flag1
 
