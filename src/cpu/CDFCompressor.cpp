@@ -175,7 +175,7 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     for (int i = 0; i < flagArraySize; i++)
     {
         bitStream.WriteByte(flag[i]);
-    }
+
     for (int i = 0; i < sparseTransposed.size(); i++)
     {
         if (sparseTransposed[i] != 0)
@@ -183,6 +183,7 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
             bitStream.WriteByte(sparseTransposed[i]);
         }
     }
+
     for (int i = 0; i < nonSparseSize; i++)
     {
         bitStream.WriteLong(transposedNonSparse[i], 64);
@@ -197,7 +198,7 @@ void CDFCompressor::sampleBlock(const std::vector<double>& block, std::vector<lo
     int maxBeta = 0;
     for (double val : block)
     {
-//计算起始位置sp
+        //计算起始位置sp
         double log10v = log10(std::abs(val));
         int sp = floor(log10v);
         // 计算当前值的小数点后位数
