@@ -221,9 +221,10 @@ int main()
         cudaStreamSynchronize(streams[i]);
     }
 
+    timeElapsed = timer_GPU.GetCounter();
     printf("cuSZp compression Size: %lu\n", cmpSize);
     printf("cuSZp compression origin Size: %lu\n", (nbEle * sizeof(double)));
-    timeElapsed = timer_GPU.GetCounter();
+
     printf("cuSZp finished!\n");
     printf("cuSZp compression   end-to-end speed: %f GB/s\n", (nbEle * sizeof(double) / 1024.0 / 1024.0) / timeElapsed);
     printf("cuSZp compression ratio: %f\n", static_cast<double>(nbEle) * sizeof(double) / cmpSize);
