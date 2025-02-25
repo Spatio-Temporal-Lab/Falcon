@@ -247,7 +247,7 @@ std::vector<uint8_t> ConvertArrayToVector(const Array<uint8_t>& arr) {
 }
 //Google Test 测试用例
 TEST(CDFCompressorTest, CompressionDecompression) {
-    std::string dir_path = "../../test/data/float";//有毛病还没有数据集
+    std::string dir_path = "../test/data/float";//有毛病还没有数据集
     for (const auto& entry : fs::directory_iterator(dir_path)) {
         if (entry.is_regular_file()) {
             std::string file_path = entry.path().string();
