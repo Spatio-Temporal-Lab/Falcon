@@ -95,7 +95,7 @@ int main()
     printf("GDFC-P finished!\n");
     printf("GDFC-P compression   end-to-end speed: %f GB/s\n", (nbEle*sizeof(double)/1024.0/1024.0)/cmpTime);
     printf("GDFC-P decompression end-to-end speed: %f GB/s\n", (nbEle*sizeof(double)/1024.0/1024.0)/decTime);
-    printf("GDFC-P compression ratio: %f\n", (nbEle*sizeof(double)/1024.0/1024.0)/(cmpSize2*sizeof(unsigned char)/1024.0/1024.0));
+    printf("GDFC-P compression ratio: %f\n", (nbEle*sizeof(double)/1024.0/1024.0)/(cmpSize1*sizeof(unsigned char)/1024.0/1024.0));
     
     // Error check
     cudaMemcpy(cmpBytes, d_cmpBytes, cmpSize1*sizeof(unsigned char), cudaMemcpyDeviceToHost);
