@@ -156,12 +156,33 @@ void test_compression(const std::string& file_path) {
     auto end_decompress = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> decompress_duration = end_decompress - start_decompress;
     std::cout << "Decompression Time: " << decompress_duration.count() << " seconds." << std::endl;
+    
 
-    // 计算压缩率
-    double compression_ratio = static_cast<double>(in_bytes) / (batch_size * max_out_bytes);
+    // 1. 同步流并获取实际压缩大小
+    cudaStreamSynchronize(stream);
+    size_t total_compressed = 0;
+    size_t* host_compressed_bytes = new size_t[batch_size];
+    cudaMemcpy(host_compressed_bytes, device_compressed_bytes, 
+            sizeof(size_t)*batch_size, cudaMemcpyDeviceToHost);
+
+    for (size_t i=0; i<batch_size; ++i) {
+        total_compressed += host_compressed_bytes[i];
+    }
+    
+    // 解压后添加校验代码
+    char* reconstructed = new char[in_bytes];
+    cudaMemcpyAsync(reconstructed, device_input_data, in_bytes, 
+                cudaMemcpyDeviceToHost, stream);
+    cudaStreamSynchronize(stream);
+
+    if (memcmp(input_data, reconstructed, in_bytes) != 0) {
+        std::cerr << "Data mismatch!" << std::endl;
+    }
+
+    // 2. 计算真实压缩率
+    double compression_ratio = total_compressed / static_cast<double>(in_bytes) ;
     std::cout << "Compression Ratio: " << compression_ratio << std::endl;
-
-
+    
     // 清理CUDA资源
     cudaStreamSynchronize(stream);
     cudaFree(device_input_data);

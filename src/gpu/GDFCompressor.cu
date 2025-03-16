@@ -206,7 +206,7 @@ __global__ void compressBlockKernel(
         double log10v = log10(std::abs(value));
         int sp = floor(log10v);
 
-        double alpha = getDecimalPlaces(value, sp);
+        double alpha = getDecimalPlaces(value, sp);// 得到小数位数
         double beta =  alpha + sp + 1;
         maxBeta = device_max(maxBeta,beta);
         maxDecimalPlaces = device_max(maxDecimalPlaces, alpha);
@@ -793,10 +793,19 @@ void GDFCompressor::compress(const std::vector<double>& input, std::vector<unsig
     // 分配设备内存
     setupDeviceMemory(input, d_input, d_output, d_bitSizes);
 
-    // 启动核函数
+
     size_t sharedMemSize = 64; // 确保 SharedMemory 已正确定义
     //std::cout<<"begin2\n";
 
+    // 创建CUDA事件用于计时
+    cudaEvent_t start, stop;
+    cudaCheckError(cudaEventCreate(&start));
+    cudaCheckError(cudaEventCreate(&stop));
+
+    // 记录开始事件
+    cudaCheckError(cudaEventRecord(start));
+    
+    // 启动核函数
     compressBlockKernel<<<numBlocks, blockSize, sharedMemSize>>>(
         d_input,
         inputSize,
@@ -810,6 +819,37 @@ void GDFCompressor::compress(const std::vector<double>& input, std::vector<unsig
     cudaCheckError(cudaGetLastError());
     cudaCheckError(cudaDeviceSynchronize());
     //std::cout<<"end2\n";
+
+
+    // 记录结束事件
+    cudaCheckError(cudaEventRecord(stop));
+    cudaCheckError(cudaEventSynchronize(stop)); // 等待事件完成
+
+    // 计算耗时（毫秒）
+    float milliseconds = 0;
+    cudaCheckError(cudaEventElapsedTime(&milliseconds, start, stop));
+
+    // 计算吞吐量
+    size_t dataSizeBytes = input.size() * sizeof(double); // 原始数据量
+    float seconds = milliseconds / 1000.0f;
+
+    // MB/s = (bytes / 1e6) / seconds
+    float throughputMBs = (dataSizeBytes / 1e6) / seconds; 
+    
+    // GB/s = (bytes / 1e9) / seconds
+    float throughputGBs = (dataSizeBytes / 1e9) / seconds;
+
+    // 打印结果（保留两位小数）
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << "Throughput: "
+              << throughputMBs << " MB/s ("
+              << throughputGBs << " GB/s)" 
+              << std::endl;
+
+    // 清理事件
+    cudaCheckError(cudaEventDestroy(start));
+    cudaCheckError(cudaEventDestroy(stop));
+
 
     // 复制 bitSizes 回主机
 

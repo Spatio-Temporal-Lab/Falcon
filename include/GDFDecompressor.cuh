@@ -20,6 +20,10 @@ public:
     void decompress(const std::vector<unsigned char>& compressedData, std::vector<double>& output,int numDatas);
 };
 
+class GDFDecompressor0 {
+public:
+    void decompress(const std::vector<unsigned char>& compressedData, std::vector<double>& output,int numDatas);
+};
 // 辅助类，用于按位读取压缩数据
 class BitReader {
 public:

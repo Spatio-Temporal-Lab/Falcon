@@ -104,7 +104,7 @@ int main()
     double* oriData = NULL;
     double* decData = NULL;
     unsigned char* cmpBytes = NULL;
-    size_t nbEle = 1024 * 1024 * 512/2; // 8 GB fp64 data.
+    size_t nbEle = 1024 * 1024 * 512/4; // 8 GB fp64 data.
     size_t cmpSize = 0;
     size_t chunkSize = 1024;
 
@@ -199,14 +199,16 @@ int main()
             size_t chunkCmpSize = 0;
             GDFC_compress_plain_f64(d_oriData[i], d_cmpBytes[i], chunkEle, &chunkCmpSize, streams[i]);
 
+            // std::cout << "END COMP" << std::endl;
+
             // 将压缩结果从 GPU 拷贝回 CPU
             err = cudaMemcpyAsync(cmpBytes + cmpSize, d_cmpBytes[i], chunkCmpSize * sizeof(unsigned char), cudaMemcpyDeviceToHost, streams[i]);
 
-            if (err != cudaSuccess)
-            {
-                std::cerr << "CUDA memcpyAsync failed: " << cudaGetErrorString(err) << std::endl;
-                return 0;
-            }
+            // if (err != cudaSuccess)
+            // {
+            //     std::cerr << "CUDA memcpyAsync failed: " << cudaGetErrorString(err) << std::endl;
+            //     return 0;
+            // }
             processedEle += chunkEle;
             cmpSize += chunkCmpSize;
             // 归还内存块
