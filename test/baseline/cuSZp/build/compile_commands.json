@@ -1,0 +1,102 @@
+[
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_kernels_f32.cu -o CMakeFiles/cuSZp_static.dir/src/cuSZp_kernels_f32.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_kernels_f32.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_kernels_f64.cu -o CMakeFiles/cuSZp_static.dir/src/cuSZp_kernels_f64.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_kernels_f64.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_utility.cu -o CMakeFiles/cuSZp_static.dir/src/cuSZp_utility.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_utility.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_timer.cu -o CMakeFiles/cuSZp_static.dir/src/cuSZp_timer.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_timer.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_entry_f32.cu -o CMakeFiles/cuSZp_static.dir/src/cuSZp_entry_f32.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_entry_f32.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_entry_f64.cu -o CMakeFiles/cuSZp_static.dir/src/cuSZp_entry_f64.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_entry_f64.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp.cu -o CMakeFiles/cuSZp_static.dir/src/cuSZp.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler -DcuSZp_shared_EXPORTS -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -Xcompiler=-fPIC -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_kernels_f32.cu -o CMakeFiles/cuSZp_shared.dir/src/cuSZp_kernels_f32.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_kernels_f32.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler -DcuSZp_shared_EXPORTS -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -Xcompiler=-fPIC -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_kernels_f64.cu -o CMakeFiles/cuSZp_shared.dir/src/cuSZp_kernels_f64.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_kernels_f64.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler -DcuSZp_shared_EXPORTS -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -Xcompiler=-fPIC -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_utility.cu -o CMakeFiles/cuSZp_shared.dir/src/cuSZp_utility.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_utility.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler -DcuSZp_shared_EXPORTS -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -Xcompiler=-fPIC -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_timer.cu -o CMakeFiles/cuSZp_shared.dir/src/cuSZp_timer.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_timer.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler -DcuSZp_shared_EXPORTS -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -Xcompiler=-fPIC -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_entry_f32.cu -o CMakeFiles/cuSZp_shared.dir/src/cuSZp_entry_f32.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_entry_f32.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler -DcuSZp_shared_EXPORTS -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -Xcompiler=-fPIC -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_entry_f64.cu -o CMakeFiles/cuSZp_shared.dir/src/cuSZp_entry_f64.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp_entry_f64.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler -DcuSZp_shared_EXPORTS -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp -isystem=/usr/local/cuda/include  -Xcompiler -Wno-unused-result -O3 -DNDEBUG --generate-code=arch=compute_60,code=[compute_60,sm_60] --generate-code=arch=compute_61,code=[compute_61,sm_61] --generate-code=arch=compute_62,code=[compute_62,sm_62] --generate-code=arch=compute_70,code=[compute_70,sm_70] --generate-code=arch=compute_75,code=[compute_75,sm_75] --generate-code=arch=compute_80,code=[compute_80,sm_80] --generate-code=arch=compute_86,code=[compute_86,sm_86] -Xcompiler=-fPIC -std=c++17 -x cu -dc /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp.cu -o CMakeFiles/cuSZp_shared.dir/src/cuSZp.cu.o",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/src/cuSZp.cu"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build/examples",
+  "command": "/usr/bin/c++  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/usr/local/cuda/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp  -Wno-unused-result -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/cuSZp.dir/cuSZp.cpp.o -c /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/examples/cuSZp.cpp",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/examples/cuSZp.cpp"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build/examples",
+  "command": "/usr/bin/c++  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/usr/local/cuda/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp  -Wno-unused-result -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/cuSZp_test_f32.dir/cuSZp_test_f32.cpp.o -c /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/examples/cuSZp_test_f32.cpp",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/examples/cuSZp_test_f32.cpp"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build/examples",
+  "command": "/usr/bin/c++  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/usr/local/cuda/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp  -Wno-unused-result -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o -c /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/examples/GDFC_test_f32.cpp",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/examples/GDFC_test_f32.cpp"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build/examples",
+  "command": "/usr/bin/c++  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/usr/local/cuda/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp  -Wno-unused-result -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/GDFC_test_f64.dir/GDFC_test_f64.cpp.o -c /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/examples/GDFC_test_f64.cpp",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/examples/GDFC_test_f64.cpp"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build/examples",
+  "command": "/usr/bin/c++  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/usr/local/cuda/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp  -Wno-unused-result -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/cuSZp_test_muti_steam_f64.dir/cuSZp_test_muti_steam_f64.cpp.o -c /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/examples/cuSZp_test_muti_steam_f64.cpp",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/examples/cuSZp_test_muti_steam_f64.cpp"
+},
+{
+  "directory": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/build/examples",
+  "command": "/usr/bin/c++  -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include -I/usr/local/cuda/include -I/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/include/cuSZp  -Wno-unused-result -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/cuSZp_test_f64.dir/cuSZp_test_f64.cpp.o -c /mnt/c/Users/29836/Downloads/cuSZp/cuSZp/examples/cuSZp_test_f64.cpp",
+  "file": "/mnt/c/Users/29836/Downloads/cuSZp/cuSZp/examples/cuSZp_test_f64.cpp"
+}
+]

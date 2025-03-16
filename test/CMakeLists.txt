@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.11)
 project(CompressionTests)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Wno-deprecated-gpu-targets")
 
 # 添加 ALP 库
 add_subdirectory(baseline/ALP)
