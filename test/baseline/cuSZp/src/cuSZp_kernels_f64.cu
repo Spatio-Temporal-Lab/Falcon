@@ -457,8 +457,15 @@ __global__ void GDFC_compress_kernel_plain_f64(
                 }
                 //printf(" loop out warp:%d\n",warp);
                 excl_sum = loc_excl_sum; // 存储排他性前缀和
-                //__syncthreads(); // 这个同步有毛病，用了就卡死，同步线程，确保排他性前缀和计算完成
-                
+            }
+            __syncthreads(); // 这个同步有毛病，用了就卡死，同步线程，确保排他性前缀和计算完成
+        }
+    
+        // 2.3 更新cmpOffset数组
+        if(warp > 0)
+        {  
+            if(!lane) // 每个warp的第一个线程
+            {   
                 //printf("flag[%d] over0\n",warp);
                 // 2.3 更新cmpOffset数组
                 cmpOffset[warp] = excl_sum; // 更新当前warp的cmpOffset
@@ -489,7 +496,7 @@ __global__ void GDFC_compress_kernel_plain_f64(
         // printf("maxDecimalPlaces:%d\n",maxDecimalPlaces);
         // printf("bitCount:%d\n",bitCount);
         // printf("flag1:%016llx\n",flag1);
-        
+
 
         bitSizes[idx] = bitSize;
         // 6.1 写入 bitSize (8 字节)
