@@ -204,6 +204,34 @@ GDFC_test_f32/fast:
 .PHONY : GDFC_test_f32/fast
 
 # Convenience name for target.
+test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/rule:
+	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/rule
+.PHONY : test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/rule
+
+# Convenience name for target.
+GDFC_test_f64: test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/rule
+.PHONY : GDFC_test_f64
+
+# fast build rule for target.
+GDFC_test_f64/fast:
+	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build
+.PHONY : GDFC_test_f64/fast
+
+# Convenience name for target.
+test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/rule:
+	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/rule
+.PHONY : test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/rule
+
+# Convenience name for target.
+cuSZp_test_muti_steam_f64: test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/rule
+.PHONY : cuSZp_test_muti_steam_f64
+
+# fast build rule for target.
+cuSZp_test_muti_steam_f64/fast:
+	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build
+.PHONY : cuSZp_test_muti_steam_f64/fast
+
+# Convenience name for target.
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/rule:
 	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/rule
 .PHONY : test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/rule
@@ -240,6 +268,30 @@ GDFC_test_f32.s: GDFC_test_f32.cpp.s
 GDFC_test_f32.cpp.s:
 	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.s
 .PHONY : GDFC_test_f32.cpp.s
+
+GDFC_test_f64.o: GDFC_test_f64.cpp.o
+.PHONY : GDFC_test_f64.o
+
+# target to build an object file
+GDFC_test_f64.cpp.o:
+	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/GDFC_test_f64.cpp.o
+.PHONY : GDFC_test_f64.cpp.o
+
+GDFC_test_f64.i: GDFC_test_f64.cpp.i
+.PHONY : GDFC_test_f64.i
+
+# target to preprocess a source file
+GDFC_test_f64.cpp.i:
+	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/GDFC_test_f64.cpp.i
+.PHONY : GDFC_test_f64.cpp.i
+
+GDFC_test_f64.s: GDFC_test_f64.cpp.s
+.PHONY : GDFC_test_f64.s
+
+# target to generate assembly for a file
+GDFC_test_f64.cpp.s:
+	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/GDFC_test_f64.cpp.s
+.PHONY : GDFC_test_f64.cpp.s
 
 cuSZp.o: cuSZp.cpp.o
 .PHONY : cuSZp.o
@@ -313,6 +365,30 @@ cuSZp_test_f64.cpp.s:
 	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/cuSZp_test_f64.cpp.s
 .PHONY : cuSZp_test_f64.cpp.s
 
+cuSZp_test_muti_steam_f64.o: cuSZp_test_muti_steam_f64.cpp.o
+.PHONY : cuSZp_test_muti_steam_f64.o
+
+# target to build an object file
+cuSZp_test_muti_steam_f64.cpp.o:
+	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/cuSZp_test_muti_steam_f64.cpp.o
+.PHONY : cuSZp_test_muti_steam_f64.cpp.o
+
+cuSZp_test_muti_steam_f64.i: cuSZp_test_muti_steam_f64.cpp.i
+.PHONY : cuSZp_test_muti_steam_f64.i
+
+# target to preprocess a source file
+cuSZp_test_muti_steam_f64.cpp.i:
+	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/cuSZp_test_muti_steam_f64.cpp.i
+.PHONY : cuSZp_test_muti_steam_f64.cpp.i
+
+cuSZp_test_muti_steam_f64.s: cuSZp_test_muti_steam_f64.cpp.s
+.PHONY : cuSZp_test_muti_steam_f64.s
+
+# target to generate assembly for a file
+cuSZp_test_muti_steam_f64.cpp.s:
+	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/cuSZp_test_muti_steam_f64.cpp.s
+.PHONY : cuSZp_test_muti_steam_f64.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -326,12 +402,17 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... GDFC_test_f32"
+	@echo "... GDFC_test_f64"
 	@echo "... cuSZp"
 	@echo "... cuSZp_test_f32"
 	@echo "... cuSZp_test_f64"
+	@echo "... cuSZp_test_muti_steam_f64"
 	@echo "... GDFC_test_f32.o"
 	@echo "... GDFC_test_f32.i"
 	@echo "... GDFC_test_f32.s"
+	@echo "... GDFC_test_f64.o"
+	@echo "... GDFC_test_f64.i"
+	@echo "... GDFC_test_f64.s"
 	@echo "... cuSZp.o"
 	@echo "... cuSZp.i"
 	@echo "... cuSZp.s"
@@ -341,6 +422,9 @@ help:
 	@echo "... cuSZp_test_f64.o"
 	@echo "... cuSZp_test_f64.i"
 	@echo "... cuSZp_test_f64.s"
+	@echo "... cuSZp_test_muti_steam_f64.o"
+	@echo "... cuSZp_test_muti_steam_f64.i"
+	@echo "... cuSZp_test_muti_steam_f64.s"
 .PHONY : help
 
 

@@ -61,7 +61,7 @@ void GDFC_compress_plain_f64(double* d_oriData, unsigned char* d_cmpBytes, size_
     unsigned int* d_locOffset;
     uint64_t* d_bitSizes = nullptr;
     int* d_flag;
-    //    unsigned int glob_sync;
+    unsigned int glob_sync;
     cudaMalloc((void**)&d_cmpOffset, sizeof(unsigned int)*cmpOffSize);
     cudaMemset(d_cmpOffset, 0, sizeof(unsigned int)*cmpOffSize);
     cudaMalloc((void**)&d_locOffset, sizeof(unsigned int)*cmpOffSize);
@@ -78,17 +78,18 @@ void GDFC_compress_plain_f64(double* d_oriData, unsigned char* d_cmpBytes, size_
     GDFC_compress_kernel_plain_f64<<<gridSize, blockSize, sizeof(unsigned int)*2, stream>>>(d_oriData, d_cmpBytes, d_cmpOffset, d_locOffset, d_flag, nbEle,d_bitSizes);
 
     // Obtain compression ratio and move data back to CPU.  
-    // cudaMemcpy(&glob_sync, d_cmpOffset+cmpOffSize-1, sizeof(unsigned int), cudaMemcpyDeviceToHost);
-    // *cmpSize = (size_t)glob_sync + (nbEle+cmp_tblock_size*cmp_chunk-1)/(cmp_tblock_size*cmp_chunk)*(cmp_tblock_size*cmp_chunk)/32;
-    std::vector<uint64_t> bitSizes(numthread);
-    cudaMemcpy(bitSizes.data(), d_bitSizes, numthread * sizeof(uint64_t), cudaMemcpyDeviceToHost);
+    cudaMemcpy(&glob_sync, d_cmpOffset+cmpOffSize-1, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    *cmpSize = ((size_t)glob_sync+7)/8;//+ (nbEle+cmp_tblock_size*cmp_chunk-1)/(cmp_tblock_size*cmp_chunk)*(cmp_tblock_size*cmp_chunk)/32;
 
-    uint64_t totalCompressedBits = 0;
-    for (size_t i = 0; i < numthread; i++) {
-        totalCompressedBits += bitSizes[i];
-    }
+    // std::vector<uint64_t> bitSizes(numthread);
+    // cudaMemcpy(bitSizes.data(), d_bitSizes, numthread * sizeof(uint64_t), cudaMemcpyDeviceToHost);
 
-    *cmpSize = (totalCompressedBits + 7) / 8; // 按字节对齐
+    // uint64_t totalCompressedBits = 0;
+    // for (size_t i = 0; i < numthread; i++) {
+    //     totalCompressedBits += bitSizes[i];
+    // }
+
+    // *cmpSize = (totalCompressedBits + 7) / 8; // 按字节对齐
     // Free memory that is used.
     cudaFree(d_cmpOffset);
     cudaFree(d_locOffset);

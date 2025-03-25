@@ -110,7 +110,7 @@ int main()
 
     cudaHostAlloc((void**)&oriData, nbEle * sizeof(double), cudaHostAllocDefault);
     cudaHostAlloc((void**)&decData, nbEle * sizeof(double), cudaHostAllocDefault);
-    cudaHostAlloc((void**)&cmpBytes, nbEle * sizeof(double), cudaHostAllocDefault);
+    cudaHostAlloc((void**)&cmpBytes, nbEle * sizeof(double)*2, cudaHostAllocDefault);
 
     // Initialize oriData.
     printf("Generating test data...\n\n");
@@ -157,7 +157,7 @@ int main()
 
     size_t poolSize = freeMem * 0.4;
     poolSize = (poolSize + 1024*2*sizeof(double)-1) & ~(1024*2*sizeof(double)-1);  // 向上对齐到 256 字节
-    chunkSize = poolSize * 0.5 / sizeof(double);
+    chunkSize = poolSize * 0.5 * 0.5 / sizeof(double);
 
     MemoryPool ori_data_pool(poolSize, chunkSize * sizeof(double)); // 原始数据显存池
     MemoryPool cmp_bytes_pool(poolSize, chunkSize * sizeof(double)); // 压缩结果显存池
@@ -200,15 +200,22 @@ int main()
             GDFC_compress_plain_f64(d_oriData[i], d_cmpBytes[i], chunkEle, &chunkCmpSize, streams[i]);
 
             // std::cout << "END COMP" << std::endl;
-
+            printf("block:%d compression Size: %lu\n",i, chunkCmpSize* sizeof(unsigned char));
             // 将压缩结果从 GPU 拷贝回 CPU
-            err = cudaMemcpyAsync(cmpBytes + cmpSize, d_cmpBytes[i], chunkCmpSize * sizeof(unsigned char), cudaMemcpyDeviceToHost, streams[i]);
 
-            // if (err != cudaSuccess)
-            // {
-            //     std::cerr << "CUDA memcpyAsync failed: " << cudaGetErrorString(err) << std::endl;
+            // // 在拷贝压缩数据前
+            // if (cmpSize + chunkCmpSize > nbEle * sizeof(double) * 2) {
+            //     std::cerr << "cmpBytes buffer overflow!" << std::endl;
             //     return 0;
             // }
+
+            err = cudaMemcpyAsync(cmpBytes + cmpSize, d_cmpBytes[i], chunkCmpSize * sizeof(unsigned char), cudaMemcpyDeviceToHost, streams[i]);
+
+            if (err != cudaSuccess)
+            {
+                std::cerr << "CUDA memcpyAsync failed: " << cudaGetErrorString(err) << std::endl;
+                return 0;
+            }
             processedEle += chunkEle;
             cmpSize += chunkCmpSize;
             // 归还内存块
