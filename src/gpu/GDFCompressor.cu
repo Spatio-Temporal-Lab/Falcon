@@ -681,6 +681,7 @@ __global__ void compressBlockKernel(
         for(int i = 0; i < 8; i++) {
             output[outputIdx + 19 + i] = (flag1 >> (i * 8)) & 0xFF;
         }
+        printf("In %d  flag1 is : %llx\n",idx,flag1);
         // 6.5 写入每一列
         int flag2Byte=(numByte+7)/8;
         int ofs=outputIdx + 27;
@@ -863,6 +864,7 @@ void GDFCompressor::compress(const std::vector<double>& input, std::vector<unsig
     for (size_t i = 0; i < numthread; i++) {
         offsets[i] = totalCompressedBits;
         totalCompressedBits += bitSizes[i];
+        std::cerr << " In" << i <<" block, bitSize is : "<< bitSizes[i] <<"\n";
     }
     //    std::cout<<"end4\n";
 

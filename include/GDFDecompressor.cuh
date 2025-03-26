@@ -42,7 +42,18 @@ public:
         }
         return value;
     }
-
+    uint64_t readBits(int begin,int n) {
+        uint64_t value = 0;
+        for(int i = 0; i < n; ++i) {
+            size_t byteIdx = begin / 8;
+            size_t bitIdx = begin % 8;
+            if(byteIdx >= buffer.size()) break;
+            uint8_t bit = (buffer[byteIdx] >> bitIdx) & 1;
+            value |= (static_cast<uint64_t>(bit) << i);
+            begin++;
+        }
+        return value;
+    }
     // 跳过 n 位
     void advance(int n) {
         bitPos += n;
