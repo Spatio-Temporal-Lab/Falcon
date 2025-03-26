@@ -50,7 +50,7 @@
         size_t dataSize = compressedData.size() * 8; // 总位数
         //printf("dataSize:%d\n",dataSize);
         int blockNumber = -1;
-
+        uint64_t bitSize = -1;
         while(reader.getBitPos() + 64 + 64 + 8 + 8 + 8 +64 <= dataSize) { // 确保有足够的元数据
             blockNumber++;
             if(reader.getBitPos()%8!=0)
@@ -59,11 +59,23 @@
                 break;
             }
             // printf("reader.getBitPos():%d\n",reader.getBitPos());
-            int numData = min(numDatas, 1024);//剩余数据
-            numDatas -= 1024;
-            // 1. 读取 bitSize (64 位)
-            uint64_t bitSize = reader.readBits(64);
+            
+            int numData = min(numDatas, 1024);//当前块处理数据
 
+            numDatas -= numData;//剩余数据量
+            // 1. 读取 bitSize (64 位)
+            // if(bitSize != -1)
+            // {
+            //     //int temp1=reader.readBits(bitSize,64);
+            //     std::cerr << " in pos : "<< reader.getBitPos() << "\n";
+            // }
+            // else
+            // {
+            //     bitSize = reader.readBits(64);
+            // }   
+            std::cerr << " In" << blockNumber << " in pos : "<< reader.getBitPos() << "\n";
+            bitSize = reader.readBits(64);
+            std::cerr << " In" << blockNumber <<" block, bitSize is : "<< bitSize <<"\n";
             // 2. 读取 firstValue (64 位)
             int64_t firstValue = static_cast<int64_t>(reader.readBits(64));
 
@@ -80,7 +92,7 @@
             unsigned char bitCount = static_cast<unsigned char>(bitCountRaw);
             if(bitCount>64)
             {
-                std::cerr << "Error: bitCount is outer : " << bitCount <<" : " << bitCountRaw <<", invalid compressed data in block " << blockNumber << "." << std::endl;
+                std::cerr << "Error: bitCount is outer : " << bitCount <<" : " << bitCountRaw << " in pos : "<< reader.getBitPos() <<", invalid compressed data in block " << blockNumber << "." << std::endl;
                 break;
             }
 
@@ -92,7 +104,7 @@
 
             // 5. 读取 flag1 (64 位)
             uint64_t flag1 = reader.readBits(64);
-
+            std::cerr << " In" << blockNumber <<" block, flag1 is : "<< flag1 <<"\n";
 
             // // 计算 flag2 + data 序列的位数
             // uint64_t delta_bits = bitSize - 64ULL - 64ULL - 8ULL - 8ULL - 8NULL -64ULL;
