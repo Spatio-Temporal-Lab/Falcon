@@ -480,7 +480,7 @@ __global__ void compressBlockKernel(
 
         uint64_t flag1 = 0;              // 用于记录每一列是否为稀疏列
         uint8_t flag2[64][16];          // 对于稀疏列统计稀疏位置,最多1024个数据，所以最多1024bit，即128byte,
-        //memset(flag2, 0, sizeof(flag2));
+        memset(flag2, 0, sizeof(flag2));
                                         //每一个byte用1bit标识，所以最多16byte
         //很重要的一点：flag2是byte单位
         // for( int i=0;i<bitCount;++i)
@@ -530,14 +530,15 @@ __global__ void compressBlockKernel(
                     uint8_t current_result = result[bit][j];
                     b0 += (current_result == 0);
                     b1 += (current_result != 0);
-                    flag2[bit][m_byte] |= (current_result != 0) << m_bit;
-                    flag2[bit][m_byte] &= ~((current_result == 0) << m_bit);
+                    flag2[bit][m_byte] |= (current_result != 0) << m_bit;//设置1
+                    flag2[bit][m_byte] &= ~((current_result == 0) << m_bit);//清零
                 }
                 // 使用掩码和算术操作代替分支(有效0.0023->0.0021)
                 uint64_t is_sparse = ((numByte + 7) / 8 + b1) < numByte;
                 flag1 |= (is_sparse << bit);
                 flag1 &= ~((!is_sparse) << bit);
                 bitSize += is_sparse ? ((numByte + 7) / 8 + b1) * 8 : 8 * numByte;
+                //flag2的长度+b1或者numByte*8
             }
         }
 
@@ -681,7 +682,7 @@ __global__ void compressBlockKernel(
         for(int i = 0; i < 8; i++) {
             output[outputIdx + 19 + i] = (flag1 >> (i * 8)) & 0xFF;
         }
-        printf("In %d  flag1 is : %llx\n",idx,flag1);
+        // printf("In %d  flag1 is : %llx\n",idx,flag1);
         // 6.5 写入每一列
         int flag2Byte=(numByte+7)/8;
         int ofs=outputIdx + 27;
@@ -864,7 +865,7 @@ void GDFCompressor::compress(const std::vector<double>& input, std::vector<unsig
     for (size_t i = 0; i < numthread; i++) {
         offsets[i] = totalCompressedBits;
         totalCompressedBits += bitSizes[i];
-        std::cerr << " In" << i <<" block, bitSize is : "<< bitSizes[i] <<"\n";
+        // std::cerr << " In" << i <<" block, bitSize is : "<< bitSizes[i] <<"\n";
     }
     //    std::cout<<"end4\n";
 

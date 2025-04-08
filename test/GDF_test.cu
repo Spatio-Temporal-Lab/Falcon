@@ -59,8 +59,8 @@ void comp(std::vector<double> oriData,std::vector<double> &decompData)
     auto start_decompress = std::chrono::high_resolution_clock::now();
 
     // 比较压缩后的数据
-    GDFDecompressor0 GDFD;//cpu解压
-    // GDFDecompressor GDFD;//gpu解压
+    // GDFDecompressor0 GDFD;//cpu解压 已弃用
+    GDFDecompressor GDFD;//gpu解压
     GDFD.decompress(cmpData2, decompData,nbEle);
 
     auto end_decompress = std::chrono::high_resolution_clock::now();
@@ -138,33 +138,33 @@ TEST(GDFCompressorTest0, CompressionDecompression) {
     printf("\n");
 }
 
-// TEST(GDFCompressorTest1, CompressionDecompression) {
-//     // 读取数据
-//     //std::vector<double> oriData = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.8};//{0.001,0.122,0.01543,0.14,0.5,0.47};
-//     const size_t size = 1024*256;
-//     std::vector<double> oriData(size*2);
+TEST(GDFCompressorTest1, CompressionDecompression) {
+    // 读取数据
+    //std::vector<double> oriData = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.8};//{0.001,0.122,0.01543,0.14,0.5,0.47};
+    const size_t size = 1024*2;
+    std::vector<double> oriData(size*2);
 
-//     // 初始化数组，每个值递增 0.1
-//     double startValue = 0.0001;
-//     double step = 0.0000001;
+    // 初始化数组，每个值递增 0.1
+    double startValue = 0.0001;
+    double step = 0.00001;
 
-//     for (size_t i = 0; i < size; ++i) {
-//         oriData[i] = startValue + i * step;
-//     }
-//     for (size_t i = size; i < size * 2; ++i) {
-//         oriData[i] = std::floor((oriData[i - 1] - 0.05) * 100000000.0) / 100000000.0;
-//     }
+    for (size_t i = 0; i < size; ++i) {
+        oriData[i] = startValue + i * step;
+    }
+    for (size_t i = size; i < size * 2; ++i) {
+        oriData[i] = std::floor((oriData[i - 1] - 0.05) * 100000000.0) / 100000000.0;
+    }
 
 
-//     std::vector<double> newData;
-//     comp(oriData,newData);
+    std::vector<double> newData;
+    comp(oriData,newData);
 
-// }
+}
 
 std::vector<uint8_t> ConvertArrayToVector(const Array<uint8_t>& arr) {
     return std::vector<uint8_t>(arr.begin(), arr.end());
 }
-// //Google Test 测试用例
+//Google Test 测试用例
 TEST(CDFCompressorTest, CompressionDecompression) {
     std::string dir_path = "../test/data/temp";//有毛病还没有数据集
     for (const auto& entry : fs::directory_iterator(dir_path)) {
