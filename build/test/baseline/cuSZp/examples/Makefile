@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/e/START/GPU/CUDA/cuCompressor
+CMAKE_SOURCE_DIR = /home/longxl/cuda/cuCompressor
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/e/START/GPU/CUDA/cuCompressor/build
+CMAKE_BINARY_DIR = /home/longxl/cuda/cuCompressor/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,14 +132,14 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(CMAKE_COMMAND) -E cmake_progress_start /mnt/e/START/GPU/CUDA/cuCompressor/build/CMakeFiles /mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/examples//CMakeFiles/progress.marks
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/e/START/GPU/CUDA/cuCompressor/build/CMakeFiles 0
+	cd /home/longxl/cuda/cuCompressor/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/longxl/cuda/cuCompressor/build/CMakeFiles /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples//CMakeFiles/progress.marks
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/longxl/cuda/cuCompressor/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/clean
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/clean
 .PHONY : clean
 
 # The main clean target
@@ -148,22 +148,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/preinstall
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/preinstall
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/longxl/cuda/cuCompressor/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/rule:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/rule
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/rule
 .PHONY : test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/rule
 
 # Convenience name for target.
@@ -172,12 +172,12 @@ cuSZp: test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/rule
 
 # fast build rule for target.
 cuSZp/fast:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build
 .PHONY : cuSZp/fast
 
 # Convenience name for target.
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/rule:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/rule
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/rule
 .PHONY : test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/rule
 
 # Convenience name for target.
@@ -186,12 +186,12 @@ cuSZp_test_f32: test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/rule
 
 # fast build rule for target.
 cuSZp_test_f32/fast:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/build
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/build
 .PHONY : cuSZp_test_f32/fast
 
 # Convenience name for target.
 test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/rule:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/rule
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/rule
 .PHONY : test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/rule
 
 # Convenience name for target.
@@ -200,12 +200,12 @@ GDFC_test_f32: test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/rule
 
 # fast build rule for target.
 GDFC_test_f32/fast:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/build
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/build
 .PHONY : GDFC_test_f32/fast
 
 # Convenience name for target.
 test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/rule:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/rule
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/rule
 .PHONY : test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/rule
 
 # Convenience name for target.
@@ -214,12 +214,12 @@ GDFC_test_f64: test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/rule
 
 # fast build rule for target.
 GDFC_test_f64/fast:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build
 .PHONY : GDFC_test_f64/fast
 
 # Convenience name for target.
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/rule:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/rule
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/rule
 .PHONY : test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/rule
 
 # Convenience name for target.
@@ -228,12 +228,12 @@ cuSZp_test_muti_steam_f64: test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_mu
 
 # fast build rule for target.
 cuSZp_test_muti_steam_f64/fast:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build
 .PHONY : cuSZp_test_muti_steam_f64/fast
 
 # Convenience name for target.
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/rule:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/rule
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/rule
 .PHONY : test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/rule
 
 # Convenience name for target.
@@ -242,7 +242,7 @@ cuSZp_test_f64: test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/rule
 
 # fast build rule for target.
 cuSZp_test_f64/fast:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/build
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/build
 .PHONY : cuSZp_test_f64/fast
 
 GDFC_test_f32.o: GDFC_test_f32.cpp.o
@@ -250,7 +250,7 @@ GDFC_test_f32.o: GDFC_test_f32.cpp.o
 
 # target to build an object file
 GDFC_test_f32.cpp.o:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o
 .PHONY : GDFC_test_f32.cpp.o
 
 GDFC_test_f32.i: GDFC_test_f32.cpp.i
@@ -258,7 +258,7 @@ GDFC_test_f32.i: GDFC_test_f32.cpp.i
 
 # target to preprocess a source file
 GDFC_test_f32.cpp.i:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.i
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.i
 .PHONY : GDFC_test_f32.cpp.i
 
 GDFC_test_f32.s: GDFC_test_f32.cpp.s
@@ -266,7 +266,7 @@ GDFC_test_f32.s: GDFC_test_f32.cpp.s
 
 # target to generate assembly for a file
 GDFC_test_f32.cpp.s:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.s
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.s
 .PHONY : GDFC_test_f32.cpp.s
 
 GDFC_test_f64.o: GDFC_test_f64.cpp.o
@@ -274,7 +274,7 @@ GDFC_test_f64.o: GDFC_test_f64.cpp.o
 
 # target to build an object file
 GDFC_test_f64.cpp.o:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/GDFC_test_f64.cpp.o
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/GDFC_test_f64.cpp.o
 .PHONY : GDFC_test_f64.cpp.o
 
 GDFC_test_f64.i: GDFC_test_f64.cpp.i
@@ -282,7 +282,7 @@ GDFC_test_f64.i: GDFC_test_f64.cpp.i
 
 # target to preprocess a source file
 GDFC_test_f64.cpp.i:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/GDFC_test_f64.cpp.i
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/GDFC_test_f64.cpp.i
 .PHONY : GDFC_test_f64.cpp.i
 
 GDFC_test_f64.s: GDFC_test_f64.cpp.s
@@ -290,7 +290,7 @@ GDFC_test_f64.s: GDFC_test_f64.cpp.s
 
 # target to generate assembly for a file
 GDFC_test_f64.cpp.s:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/GDFC_test_f64.cpp.s
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f64.dir/GDFC_test_f64.cpp.s
 .PHONY : GDFC_test_f64.cpp.s
 
 cuSZp.o: cuSZp.cpp.o
@@ -298,7 +298,7 @@ cuSZp.o: cuSZp.cpp.o
 
 # target to build an object file
 cuSZp.cpp.o:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o
 .PHONY : cuSZp.cpp.o
 
 cuSZp.i: cuSZp.cpp.i
@@ -306,7 +306,7 @@ cuSZp.i: cuSZp.cpp.i
 
 # target to preprocess a source file
 cuSZp.cpp.i:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.i
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.i
 .PHONY : cuSZp.cpp.i
 
 cuSZp.s: cuSZp.cpp.s
@@ -314,7 +314,7 @@ cuSZp.s: cuSZp.cpp.s
 
 # target to generate assembly for a file
 cuSZp.cpp.s:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.s
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.s
 .PHONY : cuSZp.cpp.s
 
 cuSZp_test_f32.o: cuSZp_test_f32.cpp.o
@@ -322,7 +322,7 @@ cuSZp_test_f32.o: cuSZp_test_f32.cpp.o
 
 # target to build an object file
 cuSZp_test_f32.cpp.o:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/cuSZp_test_f32.cpp.o
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/cuSZp_test_f32.cpp.o
 .PHONY : cuSZp_test_f32.cpp.o
 
 cuSZp_test_f32.i: cuSZp_test_f32.cpp.i
@@ -330,7 +330,7 @@ cuSZp_test_f32.i: cuSZp_test_f32.cpp.i
 
 # target to preprocess a source file
 cuSZp_test_f32.cpp.i:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/cuSZp_test_f32.cpp.i
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/cuSZp_test_f32.cpp.i
 .PHONY : cuSZp_test_f32.cpp.i
 
 cuSZp_test_f32.s: cuSZp_test_f32.cpp.s
@@ -338,7 +338,7 @@ cuSZp_test_f32.s: cuSZp_test_f32.cpp.s
 
 # target to generate assembly for a file
 cuSZp_test_f32.cpp.s:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/cuSZp_test_f32.cpp.s
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f32.dir/cuSZp_test_f32.cpp.s
 .PHONY : cuSZp_test_f32.cpp.s
 
 cuSZp_test_f64.o: cuSZp_test_f64.cpp.o
@@ -346,7 +346,7 @@ cuSZp_test_f64.o: cuSZp_test_f64.cpp.o
 
 # target to build an object file
 cuSZp_test_f64.cpp.o:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/cuSZp_test_f64.cpp.o
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/cuSZp_test_f64.cpp.o
 .PHONY : cuSZp_test_f64.cpp.o
 
 cuSZp_test_f64.i: cuSZp_test_f64.cpp.i
@@ -354,7 +354,7 @@ cuSZp_test_f64.i: cuSZp_test_f64.cpp.i
 
 # target to preprocess a source file
 cuSZp_test_f64.cpp.i:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/cuSZp_test_f64.cpp.i
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/cuSZp_test_f64.cpp.i
 .PHONY : cuSZp_test_f64.cpp.i
 
 cuSZp_test_f64.s: cuSZp_test_f64.cpp.s
@@ -362,7 +362,7 @@ cuSZp_test_f64.s: cuSZp_test_f64.cpp.s
 
 # target to generate assembly for a file
 cuSZp_test_f64.cpp.s:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/cuSZp_test_f64.cpp.s
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_f64.dir/cuSZp_test_f64.cpp.s
 .PHONY : cuSZp_test_f64.cpp.s
 
 cuSZp_test_muti_steam_f64.o: cuSZp_test_muti_steam_f64.cpp.o
@@ -370,7 +370,7 @@ cuSZp_test_muti_steam_f64.o: cuSZp_test_muti_steam_f64.cpp.o
 
 # target to build an object file
 cuSZp_test_muti_steam_f64.cpp.o:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/cuSZp_test_muti_steam_f64.cpp.o
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/cuSZp_test_muti_steam_f64.cpp.o
 .PHONY : cuSZp_test_muti_steam_f64.cpp.o
 
 cuSZp_test_muti_steam_f64.i: cuSZp_test_muti_steam_f64.cpp.i
@@ -378,7 +378,7 @@ cuSZp_test_muti_steam_f64.i: cuSZp_test_muti_steam_f64.cpp.i
 
 # target to preprocess a source file
 cuSZp_test_muti_steam_f64.cpp.i:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/cuSZp_test_muti_steam_f64.cpp.i
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/cuSZp_test_muti_steam_f64.cpp.i
 .PHONY : cuSZp_test_muti_steam_f64.cpp.i
 
 cuSZp_test_muti_steam_f64.s: cuSZp_test_muti_steam_f64.cpp.s
@@ -386,7 +386,7 @@ cuSZp_test_muti_steam_f64.s: cuSZp_test_muti_steam_f64.cpp.s
 
 # target to generate assembly for a file
 cuSZp_test_muti_steam_f64.cpp.s:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/cuSZp_test_muti_steam_f64.cpp.s
+	cd /home/longxl/cuda/cuCompressor/build && $(MAKE) $(MAKESILENT) -f test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/build.make test/baseline/cuSZp/examples/CMakeFiles/cuSZp_test_muti_steam_f64.dir/cuSZp_test_muti_steam_f64.cpp.s
 .PHONY : cuSZp_test_muti_steam_f64.cpp.s
 
 # Help Target
@@ -436,6 +436,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/longxl/cuda/cuCompressor/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

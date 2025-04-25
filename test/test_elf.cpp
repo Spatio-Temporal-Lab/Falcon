@@ -6,6 +6,9 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdint> // 确保 uint8_t 等类型定义
+#include "data/dataset_utils.hpp"
+#include <filesystem>
+namespace fs = std::filesystem;
 // 数据生成模板
 std::vector<double> generate_elf_test_data(size_t size, int pattern_type) {
     std::vector<double> data(size);
@@ -105,6 +108,28 @@ TEST(ElfCompressorTest, PeriodicWithNoise) {
     test_elf_compression(data, 0.02f);
 }
 
+// 添加本地数据测试模板
+void test_elf_with_file(const std::string& file_path, double error_bound) {
+    try {
+        auto data = read_data(file_path);
+        test_elf_compression(data, error_bound);
+    } catch (const std::exception& e) {
+        FAIL() << "文件处理失败: " << e.what();
+    }
+}
+
+// 新增测试用例组
+TEST(ElfCompressorTest, LocalDataset) {
+    const std::string data_dir = "../test/data/big"; // 修改为实际路径
+    const double error_bound = 0.001; // 根据数据特性调整
+    
+    for (const auto& entry : fs::directory_iterator(data_dir)) {
+        if (entry.is_regular_file()) {
+            std::cout << "\n测试文件: " << entry.path().string() << std::endl;
+            test_elf_with_file(entry.path().string(), error_bound);
+        }
+    }
+}
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

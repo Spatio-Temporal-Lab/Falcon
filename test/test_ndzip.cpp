@@ -251,7 +251,7 @@ void test_cuda_compression(const std::string &file_path) {
 
 // Google Test 测试用例
 TEST(NDZipCudaTest, CompressionDecompression) {
-    std::string dir_path = "../test/data/float"; // 数据文件目录
+    std::string dir_path = "../test/data/big"; // 数据文件目录
     for (const auto &entry : fs::directory_iterator(dir_path)) {
         if (entry.is_regular_file()) {
             std::string file_path = entry.path().string();

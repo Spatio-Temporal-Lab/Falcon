@@ -200,7 +200,7 @@ void test_compression(const std::string& file_path) {
 // Google Test 测试用例
 TEST(LZ4CompressorTest, CompressionDecompression) {
     // 读取数据并测试压缩和解压
-    std::string dir_path = "../test/data/float"; 
+    std::string dir_path = "../test/data/big"; 
     for (const auto& entry : fs::directory_iterator(dir_path)) {
         if (entry.is_regular_file()) {
             std::string file_path = entry.path().string();

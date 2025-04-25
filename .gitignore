@@ -13,7 +13,8 @@ test_*.cmake
 *_include.cmake
 bench_*.cmake
 bench_*.hpp
-
+*.csv
+*.bin
 .idea/
 .cmake/
 _deps/
