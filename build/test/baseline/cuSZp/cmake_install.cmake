@@ -1,8 +1,8 @@
-# Install script for directory: /mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp
+# Install script for directory: /home/longxl/cuda/cuCompressor/test/baseline/cuSZp
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/mnt/e/START/GPU/CUDA/cuCompressor/install")
+  set(CMAKE_INSTALL_PREFIX "/home/longxl/cuda/cuCompressor/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -44,21 +44,21 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/examples/cmake_install.cmake")
+  include("/home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples/cmake_install.cmake")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE FILE FILES "/mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/include/cuSZp.h")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE FILE FILES "/home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include/cuSZp.h")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/cuSZp" TYPE FILE FILES
-    "/mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_entry_f32.h"
-    "/mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_entry_f64.h"
-    "/mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_kernels_f32.h"
-    "/mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_kernels_f64.h"
-    "/mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_timer.h"
-    "/mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_utility.h"
+    "/home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_entry_f32.h"
+    "/home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_entry_f64.h"
+    "/home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_kernels_f32.h"
+    "/home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_kernels_f64.h"
+    "/home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_timer.h"
+    "/home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_utility.h"
     )
 endif()
 
@@ -69,7 +69,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libcuSZp.so"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/libcuSZp.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/libcuSZp.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libcuSZp.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libcuSZp.so")
     if(CMAKE_INSTALL_DO_STRIP)
@@ -82,14 +82,14 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/libcuSZp.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/libcuSZp.a")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/cmake/cuSZpTargets.cmake")
     file(DIFFERENT EXPORT_FILE_CHANGED FILES
          "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/cmake/cuSZpTargets.cmake"
-         "/mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/CMakeFiles/Export/cmake/cuSZpTargets.cmake")
+         "/home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/CMakeFiles/Export/cmake/cuSZpTargets.cmake")
     if(EXPORT_FILE_CHANGED)
       file(GLOB OLD_CONFIG_FILES "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/cmake/cuSZpTargets-*.cmake")
       if(OLD_CONFIG_FILES)
@@ -98,16 +98,16 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
       endif()
     endif()
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/cmake" TYPE FILE FILES "/mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/CMakeFiles/Export/cmake/cuSZpTargets.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/cmake" TYPE FILE FILES "/home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/CMakeFiles/Export/cmake/cuSZpTargets.cmake")
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/cmake" TYPE FILE FILES "/mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/CMakeFiles/Export/cmake/cuSZpTargets-debug.cmake")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/cmake" TYPE FILE FILES "/home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/CMakeFiles/Export/cmake/cuSZpTargets-debug.cmake")
   endif()
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/cmake" TYPE FILE FILES
-    "/mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/cuSZpConfig.cmake"
-    "/mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/cuSZpConfigVersion.cmake"
+    "/home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/cuSZpConfig.cmake"
+    "/home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/cuSZpConfigVersion.cmake"
     )
 endif()
 

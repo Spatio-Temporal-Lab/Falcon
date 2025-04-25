@@ -7,8 +7,8 @@ set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Wno-deprecated-gpu-targets")
 
 
 # 查找 nvcomp
-find_package(nvcomp REQUIRED)
-include_directories(${nvcomp_INCLUDE_DIRS})
+# find_package(nvcomp REQUIRED)
+# include_directories(${nvcomp_INCLUDE_DIRS})
 
 # 添加 ALP 库
 add_subdirectory(baseline/ALP)

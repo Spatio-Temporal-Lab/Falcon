@@ -19,9 +19,6 @@ namespace fs = std::filesystem;
 
 #include <algorithm>
 
-
-
-
 void comp(std::vector<double> oriData,std::vector<double> &decompData)
 {
     std::vector<unsigned char> cmpData1;//cpu

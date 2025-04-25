@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/e/START/GPU/CUDA/cuCompressor
+CMAKE_SOURCE_DIR = /home/longxl/cuda/cuCompressor
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/e/START/GPU/CUDA/cuCompressor/build
+CMAKE_BINARY_DIR = /home/longxl/cuda/cuCompressor/build
 
 # Include any dependencies generated for this target.
 include test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/depend.make
@@ -72,16 +72,16 @@ include test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/flags.make
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o: test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/flags.make
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o: ../test/baseline/cuSZp/examples/cuSZp.cpp
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o: test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/START/GPU/CUDA/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o"
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o -MF CMakeFiles/cuSZp.dir/cuSZp.cpp.o.d -o CMakeFiles/cuSZp.dir/cuSZp.cpp.o -c /mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/examples/cuSZp.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/longxl/cuda/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o"
+	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o -MF CMakeFiles/cuSZp.dir/cuSZp.cpp.o.d -o CMakeFiles/cuSZp.dir/cuSZp.cpp.o -c /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/cuSZp.cpp
 
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/cuSZp.dir/cuSZp.cpp.i"
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/examples/cuSZp.cpp > CMakeFiles/cuSZp.dir/cuSZp.cpp.i
+	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/cuSZp.cpp > CMakeFiles/cuSZp.dir/cuSZp.cpp.i
 
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/cuSZp.dir/cuSZp.cpp.s"
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/examples/cuSZp.cpp -o CMakeFiles/cuSZp.dir/cuSZp.cpp.s
+	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/cuSZp.cpp -o CMakeFiles/cuSZp.dir/cuSZp.cpp.s
 
 # Object files for target cuSZp
 cuSZp_OBJECTS = \
@@ -93,10 +93,10 @@ cuSZp_EXTERNAL_OBJECTS =
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cmake_device_link.o: test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cmake_device_link.o: test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build.make
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cmake_device_link.o: test/baseline/cuSZp/libcuSZp.a
-test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cmake_device_link.o: /usr/local/cuda/lib64/libcudart.so
+test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cmake_device_link.o: /home/longxl/cuda/CUDA12.0/lib64/libcudart.so
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cmake_device_link.o: test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/dlink.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/e/START/GPU/CUDA/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CUDA device code CMakeFiles/cuSZp.dir/cmake_device_link.o"
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/examples && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/cuSZp.dir/dlink.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/longxl/cuda/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CUDA device code CMakeFiles/cuSZp.dir/cmake_device_link.o"
+	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/cuSZp.dir/dlink.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build: test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cmake_device_link.o
@@ -112,21 +112,21 @@ cuSZp_EXTERNAL_OBJECTS =
 test/baseline/cuSZp/examples/bin/cuSZp: test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o
 test/baseline/cuSZp/examples/bin/cuSZp: test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build.make
 test/baseline/cuSZp/examples/bin/cuSZp: test/baseline/cuSZp/libcuSZp.a
-test/baseline/cuSZp/examples/bin/cuSZp: /usr/local/cuda/lib64/libcudart.so
+test/baseline/cuSZp/examples/bin/cuSZp: /home/longxl/cuda/CUDA12.0/lib64/libcudart.so
 test/baseline/cuSZp/examples/bin/cuSZp: test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cmake_device_link.o
 test/baseline/cuSZp/examples/bin/cuSZp: test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/e/START/GPU/CUDA/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable bin/cuSZp"
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/examples && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/cuSZp.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/longxl/cuda/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable bin/cuSZp"
+	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/cuSZp.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build: test/baseline/cuSZp/examples/bin/cuSZp
 .PHONY : test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/build
 
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/clean:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/examples && $(CMAKE_COMMAND) -P CMakeFiles/cuSZp.dir/cmake_clean.cmake
+	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && $(CMAKE_COMMAND) -P CMakeFiles/cuSZp.dir/cmake_clean.cmake
 .PHONY : test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/clean
 
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/depend:
-	cd /mnt/e/START/GPU/CUDA/cuCompressor/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mnt/e/START/GPU/CUDA/cuCompressor /mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/examples /mnt/e/START/GPU/CUDA/cuCompressor/build /mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/examples /mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/longxl/cuda/cuCompressor/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/longxl/cuda/cuCompressor /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples /home/longxl/cuda/cuCompressor/build /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/depend
 
