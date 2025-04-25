@@ -175,7 +175,7 @@ void CDFCompressor::compressBlock(const std::vector<double>& block, OutputBitStr
     for (int i = 0; i < flagArraySize; i++)
     {
         bitStream.WriteByte(flag[i]);
-
+    }
     for (int i = 0; i < sparseTransposed.size(); i++)
     {
         if (sparseTransposed[i] != 0)

@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 #include <fstream>
 #include <cmath>
+#include <iomanip>
 #include <iostream>
 struct Column {
     uint64_t id;
@@ -23,5 +24,5 @@ struct Column {
 std::vector<Column> get_dynamic_dataset(const std::string& directory_path);
 
 // 读取浮点数数据文件
-std::vector<double> read_data(const std::string& file_path,bool a=1) ;
+std::vector<double> read_data(const std::string& file_path, bool a=1, char delimiter = ','); 
 #endif // DATASET_UTILS_HPP
