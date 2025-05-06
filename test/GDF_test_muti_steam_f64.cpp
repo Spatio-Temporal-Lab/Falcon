@@ -9,10 +9,12 @@
 #include <vector>
 #include <chrono>
 #include <random>
+#include <fstream>
 #include "data/dataset_utils.hpp"
 namespace fs = std::filesystem;
 
-#define NUM_STREAMS 16 // 使用3个CUDA Stream实现流水线
+std::string title=""; 
+#define NUM_STREAMS 16 // 使用16个CUDA Stream实现流水线
 #define cudaCheckError(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 
 inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort = true)
@@ -105,12 +107,17 @@ struct StreamTiming {
 
 // 流水线总体性能分析
 struct PipelineAnalysis {
-    float total_h2d = 0;
-    float total_comp = 0;
-    float total_d2h = 0;
+    float total_h2d = 0;    //总年
+    float total_comp = 0;   //
+    float total_d2h = 0;    //
     float end_time = 0;
     float sequential_time = 0;
     float speedup = 0;
+    float avg_h2d = 0;    // 平均H2D时间
+    float avg_comp = 0;   // 平均计算时间
+    float avg_d2h = 0;    // 平均D2H时间
+    float total_size = 0; // 数据总大小
+    size_t chunk_size = 0; // 记录块大小
 };
 
 // 流水线操作类，负责管理单个数据块的处理
@@ -207,11 +214,13 @@ public:
 };
 
 // 分析流水线性能
-void analyze_pipeline(const std::vector<StreamTiming>& timings, PipelineAnalysis& analysis) {
-    analysis.total_h2d = 0;
-    analysis.total_comp = 0;
-    analysis.total_d2h = 0;
-    analysis.end_time = 0;
+PipelineAnalysis analyze_pipeline(const std::vector<StreamTiming>& timings, size_t chunkSize, bool print_results = true) {
+    PipelineAnalysis analysis;
+    analysis.chunk_size = chunkSize;
+    
+    if (timings.empty()) {
+        return analysis;
+    }
     
     // 计算各阶段总时间和最大总时间
     for (const auto& timing : timings) {
@@ -221,19 +230,28 @@ void analyze_pipeline(const std::vector<StreamTiming>& timings, PipelineAnalysis
         analysis.end_time = std::max(analysis.end_time, timing.end_time);
     }
     
+    // 计算平均时间
+    analysis.avg_h2d = analysis.total_h2d / timings.size();
+    analysis.avg_comp = analysis.total_comp / timings.size();
+    analysis.avg_d2h = analysis.total_d2h / timings.size();
+    
     // 计算顺序执行理论时间和加速比
     analysis.sequential_time = analysis.total_h2d + analysis.total_comp + analysis.total_d2h;
     analysis.speedup = analysis.sequential_time / analysis.end_time;
     
-    // 打印流水线分析结果
-    printf("\n===== 流水线执行分析 =====\n");
-    printf("各阶段总时间:\n");
-    printf("- H2D总时间: %.2f ms\n", analysis.total_h2d);
-    printf("- 压缩计算总时间: %.2f ms\n", analysis.total_comp);
-    printf("- D2H总时间: %.2f ms\n", analysis.total_d2h);
-    printf("- 顺序执行理论时间: %.2f ms\n", analysis.sequential_time);
-    printf("- 实际并行执行时间: %.2f ms\n", analysis.end_time);
-    printf("- 流水线加速比: %.2fx\n", analysis.speedup);
+    if (print_results) {
+        // 打印流水线分析结果
+        printf("\n===== 流水线执行分析 (块大小: %zu 元素) =====\n", chunkSize);
+        printf("各阶段总时间:\n");
+        printf("- H2D总时间: %.2f ms (平均: %.2f ms/块)\n", analysis.total_h2d, analysis.avg_h2d);
+        printf("- 压缩计算总时间: %.2f ms (平均: %.2f ms/块)\n", analysis.total_comp, analysis.avg_comp);
+        printf("- D2H总时间: %.2f ms (平均: %.2f ms/块)\n", analysis.total_d2h, analysis.avg_d2h);
+        printf("- 顺序执行理论时间: %.2f ms\n", analysis.sequential_time);
+        printf("- 实际并行执行时间: %.2f ms\n", analysis.end_time);
+        printf("- 流水线加速比: %.2fx\n", analysis.speedup);
+    }
+    
+    return analysis;
 }
 
 // 可视化流水线执行时间线
@@ -412,7 +430,7 @@ size_t setup_gpu_memory_pool(size_t nbEle, size_t& chunkSize) {
 }
 
 // 执行压缩流程函数
-void execute_pipeline(ProcessedData& data, size_t chunkSize, size_t poolSize) {
+PipelineAnalysis execute_pipeline(ProcessedData& data, size_t chunkSize, size_t poolSize, bool visualize = false) {
     // 创建时间线记录事件
     cudaEventCreate(&global_start_event);  
     cudaEventCreate(&global_end_event);  
@@ -429,7 +447,6 @@ void execute_pipeline(ProcessedData& data, size_t chunkSize, size_t poolSize) {
     
     // 创建流水线分析对象
     std::vector<StreamTiming> timings;
-    PipelineAnalysis analysis;
     
     // 启动计时器
     Timer timer;
@@ -515,32 +532,93 @@ void execute_pipeline(ProcessedData& data, size_t chunkSize, size_t poolSize) {
     float totalTime = timer.Elapsed();
     
     // 分析流水线性能
-    analyze_pipeline(timings, analysis);
-    
+    PipelineAnalysis analysis = analyze_pipeline(timings, chunkSize, false);
+    analysis.total_size = data.nbEle * sizeof(double) / (1024*1024);
     // 可视化时间线
-    visualize_timeline(timings);
-    
-    // 输出统计信息
-    printf("\n===== 压缩统计 =====\n");
-    printf("压缩大小: %lu 字节\n", cmpSize);
-    printf("原始大小: %lu 字节\n", data.nbEle * sizeof(double));
-    printf("压缩比: %.2f\n", static_cast<double>(data.nbEle * sizeof(double)) / cmpSize);
-    
-    printf("\n===== 性能统计 =====\n");
-    printf("端到端总时间: %.2f ms\n", totalTime);
-    printf("压缩吞吐量: %.2f GB/s\n", 
-           (data.nbEle * sizeof(double) / 1024.0 / 1024.0 / 1024.0) / (totalTime / 1000.0));
-    printf("流水线效率: %.2f%%\n", analysis.speedup * 100.0 / NUM_STREAMS);
+    if (visualize) {
+        visualize_timeline(timings);
+        
+        // 分析流水线性能
+        analyze_pipeline(timings, chunkSize, true);
+        
+        // 输出统计信息
+        printf("\n===== 压缩统计 =====\n");
+        printf("压缩大小: %lu 字节\n", cmpSize);
+        printf("原始大小: %lu 字节\n", data.nbEle * sizeof(double));
+        printf("压缩比: %.2f\n", static_cast<double>(data.nbEle * sizeof(double)) / cmpSize);
+        
+        printf("\n===== 性能统计 =====\n");
+        printf("端到端总时间: %.2f ms\n", totalTime);
+        printf("压缩吞吐量: %.2f GB/s\n", 
+            (data.nbEle * sizeof(double) / 1024.0 / 1024.0 / 1024.0) / (totalTime / 1000.0));
+        printf("流水线效率: %.2f%%\n", analysis.speedup * 100.0 / NUM_STREAMS);
+    }
     
     // 清理事件
     cudaEventDestroy(global_start_event);
     cudaEventDestroy(global_end_event);
+    
+    return analysis;
 }
 
-// 从文件测试函数
-int test_from_file(const std::string& file_path) {
+// 输出块大小与运行时间关系的CSV文件
+void output_blocksize_timing_csv(const std::vector<PipelineAnalysis>& results, const std::string& filename) {
+    std::ofstream csv_file(filename, std::ios::app);
+    if (!csv_file.is_open()) {
+        std::cerr << "无法创建CSV文件: " << filename << std::endl;
+        return;
+    }
+    bool write_header = csv_file.tellp() == 0;
+    if (write_header) {
+    // 写入CSV头
+        csv_file << title <<"\n数据量(MB),块大小(KB),平均H2D时间(ms),平均压缩时间(ms),平均D2H时间(ms),加速比,总时间,吞吐量比例\n";
+    }
+    else
+    {
+        csv_file << "\n" << title <<"\n数据量(MB),块大小(KB),平均H2D时间(ms),平均压缩时间(ms),平均D2H时间(ms),加速比,总时间,吞吐量比例\n";
+    }
+
+    // 写入每个块大小的数据
+    for (const auto& result : results) {
+        csv_file << result.total_size << "," 
+                 << (result.chunk_size * sizeof(double) / 1024) << "," 
+                 << result.avg_h2d << "," 
+                 << result.avg_comp << "," 
+                 << result.avg_d2h << "," 
+                 << result.speedup << "," 
+                 << result.end_time << ","
+                 << (result.avg_comp > 0 ? (result.avg_h2d + result.avg_d2h) / result.avg_comp : 0) << "\n";
+    }
+    
+    csv_file.close();
+    std::cout << "已将块大小与运行时间关系保存到 " << filename << std::endl;
+}
+
+// 可视化块大小与阶段时间的关系
+void visualize_stage_timing_relationship(const std::vector<PipelineAnalysis>& results) {
+    printf("\n===== 块大小与运行时间关系分析 =====\n");
+    printf("总大小(MB) \t块大小(KB) \tH2D(ms) \tComp(ms) \tD2H(ms) \t比例(IO/Comp) \t总时间(ms) \t加速比\n");
+    printf("---------------------------------------------------------------------------\n");
+    
+    for (const auto& result : results) {
+        float io_comp_ratio = result.avg_comp > 0 ? (result.avg_h2d + result.avg_d2h) / result.avg_comp : 0;
+        
+        printf("%8.2f \t %8.2f \t%7.2f \t%7.2f \t%7.2f \t%7.2f \t%7.2f \t%7.2f\n", 
+               result.total_size,
+               (result.chunk_size * sizeof(double) / 1024.0), 
+               result.avg_h2d, 
+               result.avg_comp, 
+               result.avg_d2h,
+               io_comp_ratio,
+               result.end_time,
+               result.speedup);
+    }
+}
+
+// 从文件测试多个块大小
+int test_multiple_blocksizes(const std::string& file_path, const std::vector<size_t>& block_sizes_kb) {
     printf("=================================================\n");
-    printf("=========Testing GDFC with File Data============\n");
+    printf("=======Testing GDFC with Different Block Sizes===\n");
     printf("=================================================\n");
     
     // 准备数据
@@ -550,12 +628,34 @@ int test_from_file(const std::string& file_path) {
         return 1;
     }
     
-    // 设置GPU内存
-    size_t chunkSize;
-    size_t poolSize = setup_gpu_memory_pool(data.nbEle, chunkSize);
+    // 检查GPU可用内存
+    size_t freeMem, totalMem;
+    cudaMemGetInfo(&freeMem, &totalMem);
+    size_t poolSize = freeMem * 0.4;
+    poolSize = (poolSize + 1024*2*sizeof(double)-1) & ~(1024*2*sizeof(double)-1);  // 向上对齐
     
-    // 执行压缩
-    execute_pipeline(data, chunkSize, poolSize);
+    std::vector<PipelineAnalysis> results;
+    
+    // 对每个块大小进行测试
+    for (size_t block_size_kb : block_sizes_kb) {
+        // 将KB转换为元素数量 (double = 8 bytes)
+        size_t chunkSize = (block_size_kb * 1024) / sizeof(double);
+        
+        printf("\n[测试块大小: %zu KB (%zu 元素)]\n", block_size_kb, chunkSize);
+        
+        // 执行压缩并获取结果
+        PipelineAnalysis result = execute_pipeline(data, chunkSize, poolSize, true);
+        results.push_back(result);
+        
+        // 稍微延迟一下，让GPU冷却
+        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+    
+    // 可视化块大小与阶段时间的关系
+    visualize_stage_timing_relationship(results);
+    
+    // 输出CSV数据以便外部绘图分析
+    output_blocksize_timing_csv(results, "block_size_timing_analysis.csv");
     
     // 清理资源
     cleanup_data(data);
@@ -563,10 +663,10 @@ int test_from_file(const std::string& file_path) {
     return 0;
 }
 
-// 生成数据测试函数
-int test_with_generated_data(size_t data_size_mb, int pattern_type = 0) {
+// 生成数据测试多个块大小
+int test_multiple_blocksizes_generated(size_t data_size_mb, const std::vector<size_t>& block_sizes_kb, int pattern_type = 0) {
     printf("=================================================\n");
-    printf("=======Testing GDFC with Generated Data=========\n");
+    printf("=======Testing GDFC with Different Block Sizes===\n");
     printf("=================================================\n");
     
     // 将MB转换为元素数量 (每个元素是double类型，8字节)
@@ -579,12 +679,34 @@ int test_with_generated_data(size_t data_size_mb, int pattern_type = 0) {
         return 1;
     }
     
-    // 设置GPU内存
-    size_t chunkSize;
-    size_t poolSize = setup_gpu_memory_pool(data.nbEle, chunkSize);
+    // 检查GPU可用内存
+    size_t freeMem, totalMem;
+    cudaMemGetInfo(&freeMem, &totalMem);
+    size_t poolSize = freeMem * 0.4;
+    poolSize = (poolSize + 1024*2*sizeof(double)-1) & ~(1024*2*sizeof(double)-1);  // 向上对齐
     
-    // 执行压缩
-    execute_pipeline(data, chunkSize, poolSize);
+    std::vector<PipelineAnalysis> results;
+    
+    // 对每个块大小进行测试
+    for (size_t block_size_kb : block_sizes_kb) {
+        // 将KB转换为元素数量 (double = 8 bytes)
+        size_t chunkSize = (block_size_kb * 1024) / sizeof(double);
+        
+        printf("\n[测试块大小: %zu KB (%zu 元素)]\n", block_size_kb, chunkSize);
+        
+        // 执行压缩并获取结果
+        PipelineAnalysis result = execute_pipeline(data, chunkSize, poolSize, true);
+        results.push_back(result);
+        
+        // 稍微延迟一下，让GPU冷却
+        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+    
+    // 可视化块大小与阶段时间的关系
+    visualize_stage_timing_relationship(results);
+    
+    // 输出CSV数据以便外部绘图分析
+    output_blocksize_timing_csv(results, "block_size_timing_analysis_generated.csv");
     
     // 清理资源
     cleanup_data(data);
@@ -592,12 +714,41 @@ int test_with_generated_data(size_t data_size_mb, int pattern_type = 0) {
     return 0;
 }
 
+// 生成二次方增长的块大小序列
+std::vector<size_t> generate_power2_blocksizes(size_t min_kb, size_t max_kb) {
+    std::vector<size_t> sizes;
+    for (size_t size = min_kb; size <= max_kb; size *= 2) {
+        sizes.push_back(size);
+    }
+    return sizes;
+}
+
+// 生成线性增长的块大小序列
+std::vector<size_t> generate_linear_blocksizes(size_t min_kb, size_t max_kb, size_t step_kb) {
+    std::vector<size_t> sizes;
+    for (size_t size = min_kb; size <= max_kb; size += step_kb) {
+        sizes.push_back(size);
+    }
+    return sizes;
+}
+
 // 主要测试函数 - 支持文件路径或生成数据
 int test(const std::string& file_path = "", size_t data_size_mb = 0, int pattern_type = 0) {
     if (!file_path.empty()) {
-        return test_from_file(file_path);
+        size_t chunkSize;
+        ProcessedData data = prepare_data(file_path);
+        size_t poolSize = setup_gpu_memory_pool(data.nbEle, chunkSize);
+        execute_pipeline(data, chunkSize, poolSize, true);
+        cleanup_data(data);
+        return 0;
     } else if (data_size_mb > 0) {
-        return test_with_generated_data(data_size_mb, pattern_type);
+        size_t chunkSize;
+        size_t nbEle = (data_size_mb * 1024 * 1024) / sizeof(double);
+        ProcessedData data = prepare_data("", nbEle, pattern_type);
+        size_t poolSize = setup_gpu_memory_pool(data.nbEle, chunkSize);
+        execute_pipeline(data, chunkSize, poolSize, true);
+        cleanup_data(data);
+        return 0;
     } else {
         printf("错误: 必须提供文件路径或数据生成参数\n");
         return 1;
@@ -612,6 +763,8 @@ int main(int argc, char *argv[])
         printf("  %s --dir <directory_path> : 测试目录中所有文件\n", argv[0]);
         printf("  %s --generate <size_in_mb> [pattern_type] : 生成数据测试\n", argv[0]);
         printf("    pattern_type: 0=随机数据, 1=线性增长, 2=正弦波, 3=阶梯\n");
+        printf("  %s --analyze-blocks <file_path> : 分析不同块大小的性能\n", argv[0]);
+        printf("  %s --analyze-blocks-gen <size_in_mb> [pattern_type] : 使用生成数据分析不同块大小的性能\n", argv[0]);
         return 1;
     }
     
@@ -644,6 +797,46 @@ int main(int argc, char *argv[])
         int pattern_type = (argc >= 4) ? std::stoi(argv[3]) : 0;
         
         test("", data_size_mb, pattern_type);
+    }
+    else if (arg == "--analyze-blocks" && argc >= 3) {
+        std::string file_path = argv[2];
+        title = "analyze-blocks " + file_path;
+        // 创建不同大小的块序列
+        // 从64KB到64MB，以二次方增长
+        std::vector<size_t> block_sizes = generate_power2_blocksizes(64*1024/4, 8*65536);
+        
+        test_multiple_blocksizes(file_path, block_sizes);
+    }
+    else if (arg == "--analyze-blocks-gen" && argc >= 3) {
+        size_t data_size_mb = std::stoul(argv[2]);
+        int pattern_type = (argc >= 4) ? std::stoi(argv[3]) : 0;
+        
+        std::string pattern_str = (argc >= 4) ? argv[3] : "0";
+        title = std::string("analyze-blocks-gen ") + argv[2] + " " + pattern_str;
+        
+        // 创建不同大小的块序列
+        // 从64KB到64MB，以二次方增长
+        std::vector<size_t> block_sizes = generate_power2_blocksizes(64*1024/4, 8*65536);
+        
+        test_multiple_blocksizes_generated(data_size_mb, block_sizes, pattern_type);
+    }
+    else if (arg == "--analyze-blocks-custom" && argc >= 3) {
+        std::string file_path = argv[2];
+        
+        // 使用自定义块大小序列
+        std::vector<size_t> block_sizes;
+        
+        // 从命令行参数解析块大小
+        for (int i = 3; i < argc; i++) {
+            block_sizes.push_back(std::stoul(argv[i]));
+        }
+        
+        if (block_sizes.empty()) {
+            std::cerr << "错误: 需要至少一个块大小参数" << std::endl;
+            return 1;
+        }
+        
+        test_multiple_blocksizes(file_path, block_sizes);
     }
     else {
         printf("无效的参数. 使用 %s 查看用法\n", argv[0]);

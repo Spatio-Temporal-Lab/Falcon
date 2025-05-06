@@ -73,15 +73,15 @@ test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o: test/baseline/cuS
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o: ../test/baseline/cuSZp/examples/cuSZp.cpp
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o: test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/longxl/cuda/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o"
-	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o -MF CMakeFiles/cuSZp.dir/cuSZp.cpp.o.d -o CMakeFiles/cuSZp.dir/cuSZp.cpp.o -c /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/cuSZp.cpp
+	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.o -MF CMakeFiles/cuSZp.dir/cuSZp.cpp.o.d -o CMakeFiles/cuSZp.dir/cuSZp.cpp.o -c /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/cuSZp.cpp
 
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/cuSZp.dir/cuSZp.cpp.i"
-	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/cuSZp.cpp > CMakeFiles/cuSZp.dir/cuSZp.cpp.i
+	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/cuSZp.cpp > CMakeFiles/cuSZp.dir/cuSZp.cpp.i
 
 test/baseline/cuSZp/examples/CMakeFiles/cuSZp.dir/cuSZp.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/cuSZp.dir/cuSZp.cpp.s"
-	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/cuSZp.cpp -o CMakeFiles/cuSZp.dir/cuSZp.cpp.s
+	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/cuSZp.cpp -o CMakeFiles/cuSZp.dir/cuSZp.cpp.s
 
 # Object files for target cuSZp
 cuSZp_OBJECTS = \

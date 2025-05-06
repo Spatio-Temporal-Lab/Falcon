@@ -73,15 +73,15 @@ test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o: t
 test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o: ../test/baseline/cuSZp/examples/GDFC_test_f32.cpp
 test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o: test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/longxl/cuda/cuCompressor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o"
-	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o -MF CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o.d -o CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o -c /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/GDFC_test_f32.cpp
+	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o -MF CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o.d -o CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o -c /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/GDFC_test_f32.cpp
 
 test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.i"
-	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/GDFC_test_f32.cpp > CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.i
+	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/GDFC_test_f32.cpp > CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.i
 
 test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.s"
-	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/GDFC_test_f32.cpp -o CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.s
+	cd /home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/examples && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/GDFC_test_f32.cpp -o CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.s
 
 # Object files for target GDFC_test_f32
 GDFC_test_f32_OBJECTS = \
