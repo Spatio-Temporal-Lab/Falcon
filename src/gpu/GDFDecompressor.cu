@@ -190,3 +190,63 @@ void GDFDecompressor::decompress(const std::vector<unsigned char>& compressedDat
     cudaFree(d_output);
     cudaFree(d_offsets);
 }
+
+
+// 实现GDFC_decompress函数 - 使用CUDA流进行解压缩
+void GDFDecompressor::GDFC_decompress(double* d_decData, unsigned char* d_cmpBytes, size_t nbEle, size_t cmpSize, cudaStream_t stream) {
+    // 在设备上计算偏移
+    std::vector<unsigned char> hostCmpBytes(cmpSize);
+    cudaError_t err = cudaMemcpyAsync(hostCmpBytes.data(), d_cmpBytes, cmpSize, cudaMemcpyDeviceToHost, stream);
+    if (err != cudaSuccess) {
+        std::cerr << "CUDA Error in GDFC_decompress (cudaMemcpyAsync): " << cudaGetErrorString(err) << std::endl;
+        return;
+    }
+    err = cudaStreamSynchronize(stream);
+    if (err != cudaSuccess) {
+        std::cerr << "CUDA Error in GDFC_decompress (cudaStreamSynchronize): " << cudaGetErrorString(err) << std::endl;
+        return;
+    }
+    // 计算块偏移
+    printf("计算块偏移\n");
+    std::vector<int> offsets;
+    BitReader reader(hostCmpBytes);
+
+    size_t totalBits = cmpSize * 8;
+    int maxBlocks = (nbEle + 1023) / 1024;  // 估计的最大块数
+    
+    while (reader.getBitPos() + 64 + 64 + 8 + 8 + 64 <= cmpSize * 8 && offsets.size() < maxBlocks) {
+        offsets.push_back(reader.getBitPos() / 8);
+        uint64_t bitSize = reader.readBits(64);
+        if (bitSize < 64 || bitSize -64 > totalBits - reader.getBitPos()) {
+            std::cerr << "Error: Invalid bitSize " << bitSize << " at position " << reader.getBitPos() / 8 
+                      << " (total bits: " << totalBits << ", remaining: " << totalBits - reader.getBitPos() << ")" << std::endl;
+            break;
+        }
+        reader.advance(bitSize - 64);
+    }
+
+    int numBlocks = offsets.size();
+    if (numBlocks == 0) {
+        std::cerr << "Error: No valid blocks found in compressed data." << std::endl;
+        return;
+    }
+    std::cout << "解压块数: " << numBlocks << ", 总元素数: " << nbEle << std::endl;
+
+    // 将偏移复制到设备
+    int* d_offsets;
+    cudaMalloc(&d_offsets, offsets.size() * sizeof(int));
+    cudaMemcpyAsync(d_offsets, offsets.data(), offsets.size() * sizeof(int), cudaMemcpyHostToDevice, stream);
+
+    // 调用核函数解压
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (numBlocks + threadsPerBlock - 1) / threadsPerBlock;
+
+    decompressKernel<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+        d_cmpBytes, d_decData, d_offsets, numBlocks, nbEle);
+
+    // 异步释放内存
+    cudaFree(d_offsets);
+    
+    // 注意: 调用此函数后不需要同步，因为我们使用了异步操作
+    // 调用方应该在适当的时候同步流
+}

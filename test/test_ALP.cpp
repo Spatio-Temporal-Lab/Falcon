@@ -280,7 +280,7 @@ void test_compression(const std::string& file_path) {
 
 }
 TEST_F(alp_test,ratio){
-    std::string dir_path = "../test/data/float";//有毛病还没有数据集
+    std::string dir_path = "../test/data/big";//有毛病还没有数据集
     auto dataset = get_dynamic_dataset(dir_path);
     ASSERT_FALSE(dataset.empty()) << "Dataset is empty, check data directory!";
     int i=0;
@@ -293,14 +293,14 @@ TEST_F(alp_test,ratio){
             test_compression(file_path);
             ASSERT_NO_THROW(test_column<double>(dataset[i]));
             std::cout << "---------------------------------------------" << std::endl;
-            if(ALP_compression_ratio<compression_ratio)
+            if(ALP_compression_ratio>compression_ratio)
             {
                 ans++;
             }
         }
         i++;
     }
-    std::cout<<"\n\n "<<i<<" : "<< ans<<" \n\n";
+    std::cout<<"\n all : better\n"<<i<<" : "<< ans<<" \n\n";
 
 
 }

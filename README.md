@@ -10,3 +10,9 @@ make -j4
 ./test/test_ALP
 ./test/test_gpu
 ```
+
+**# 只运行流式压缩测试**
+./test/test_gpu  --gtest_filter=GDFStreamTest
+
+**# 只运行性能对比测试**
+./test/test_gpu --gtest_filter=*GDFPerformanceTest.*

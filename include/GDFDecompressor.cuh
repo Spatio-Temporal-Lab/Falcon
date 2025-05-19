@@ -17,6 +17,7 @@
 // 解压缩类
 class GDFDecompressor {
 public:
+    void GDFC_decompress(double* d_decData, unsigned char* d_cmpBytes, size_t nbEle, size_t cmpSize, cudaStream_t stream);
     void decompress(const std::vector<unsigned char>& compressedData, std::vector<double>& output,int numDatas);
 };
 

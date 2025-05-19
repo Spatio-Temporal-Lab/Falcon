@@ -7,8 +7,8 @@ set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Wno-deprecated-gpu-targets")
 
 
 # 查找 nvcomp
-find_package(nvcomp REQUIRED)
-include_directories(${nvcomp_INCLUDE_DIRS})
+# find_package(nvcomp REQUIRED)
+# include_directories(${nvcomp_INCLUDE_DIRS})
 
 # 添加 ALP 库
 add_subdirectory(baseline/ALP)
@@ -108,7 +108,7 @@ cuda_add_executable(test_ndzip test_ndzip.cpp data/dataset_utils.cpp)
 
 add_executable(test_cuSZp test_cuSZp.cpp data/dataset_utils.cpp)
 
-add_executable(GDF_test_muti_steam_f64 GDF_test_muti_steam_f64.cpp data/dataset_utils.cpp)
+cuda_add_executable(GDF_test_muti_steam_f64 GDF_test_muti_steam_f64.cu data/dataset_utils.cpp ${SRC_GPU} )
 
 add_executable(test_elf test_elf.cpp data/dataset_utils.cpp)
 
