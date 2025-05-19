@@ -5,6 +5,7 @@ Makefile
 !include/zstd/Makefile
 cmake_install.cmake
 build/
+build*/
 *-build/
 Testing/
 build-support/boost_*
@@ -13,7 +14,8 @@ test_*.cmake
 *_include.cmake
 bench_*.cmake
 bench_*.hpp
-
+*.csv
+*.bin
 .idea/
 .cmake/
 _deps/
