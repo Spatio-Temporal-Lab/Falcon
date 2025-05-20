@@ -1019,7 +1019,10 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
 
         std::cout << "  Compressed " << chunkEle << " elements to " << info.compressed_size 
             << " bytes (ratio: " << static_cast<double>(chunkEle * sizeof(double)) / info.compressed_size << ")" << std::endl;
-
+        
+        //释放显存
+        ori_data_pool.deallocate(d_oriData);
+        cmp_bytes_pool.deallocate(d_cmpBytes);
         // 处理下一个数据块
         processedEle += chunkEle;
         chunkIndex++;
@@ -1126,6 +1129,9 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
             info.original_size, info.compressed_size, info.compressed_offset, info.original_offset
         );
         
+        //释放显存
+        dec_data_pool.deallocate(d_decData);
+        cmp_bytes_pool.deallocate(d_cmpBytes);
         // 每处理NUM_STREAMS个块，等待最早的流完成
         if ((i + 1) >= NUM_STREAMS && (i + 1) % NUM_STREAMS == 0) {
             for (int j = 0; j < NUM_STREAMS; j++) {
