@@ -92,7 +92,9 @@ void comp(std::vector<double> oriData, std::vector<double> &decompData)
 // 新增: 使用CUDA流的压缩解压测试函数
 void comp_stream(std::vector<double> oriData, std::vector<double> &decompData)
 {
-    size_t nbEle = oriData.size();
+    // size_t nbEle = oriData.size();
+    size_t nbEle =1024*1024*3;
+    // oriData.resize(nbELe);
     size_t cmpSize = 0; // 将由压缩函数设置
 
     // 分配设备内存

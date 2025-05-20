@@ -741,7 +741,7 @@ size_t setup_gpu_memory_pool(size_t nbEle, size_t& chunkSize) {
     while (temp*2 < chunkSize) {
         temp *= 2;
     }
-    chunkSize = temp/2/2/2/2/2;//调整
+    chunkSize = temp/2/2/2;//调整
     
     return poolSize;
 }
@@ -1078,7 +1078,7 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
     
     //释放然后新建
     cmp_bytes_pool.reset();
-    ori_data_pool.reset();
+    MemoryPool dec_data_pool(poolSize, chunkSize * sizeof(double)); // 原始数据显存池
 
     // 为解压过程创建新的流
     cudaEvent_t decomp_start, decomp_end;
@@ -1105,7 +1105,7 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
         
         // 分配GPU内存
         // printf("d_decData\n");
-        double* d_decData = (double*)ori_data_pool.allocate();
+        double* d_decData = (double*)dec_data_pool.allocate();
         // printf("d_cmpBytes\n");
         unsigned char* d_cmpBytes = (unsigned char*)cmp_bytes_pool.allocate();
         

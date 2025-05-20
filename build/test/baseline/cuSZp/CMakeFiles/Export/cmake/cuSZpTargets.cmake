@@ -51,10 +51,15 @@ endif()
 # Create imported target cuSZp::cuSZp_shared
 add_library(cuSZp::cuSZp_shared SHARED IMPORTED)
 
+set_target_properties(cuSZp::cuSZp_shared PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+)
+
 # Create imported target cuSZp::cuSZp_static
 add_library(cuSZp::cuSZp_static STATIC IMPORTED)
 
 set_target_properties(cuSZp::cuSZp_static PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
   INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:CUDA::cudart>"
 )
 
