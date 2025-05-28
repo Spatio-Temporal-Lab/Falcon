@@ -1483,6 +1483,17 @@ __global__ void GDFC_compress_kernel(
     //     }
     // }
     //printf("\nofs:%d\n",ofs);
+    // if(idx==1)
+    // {
+    //     for(int i = 0; i < 10; i++) {
+    //         printf("0x%02x  ", output[i]);
+            
+    //         // 每 16 个字节换行
+    //         if ((i + 1) % 16 == 0) {
+    //             printf("\n");
+    //         }
+    //     }
+    // }
 }
 
 void GDFCompressor::GDFC_compress(double* d_oriData, unsigned char* d_cmpBytes, size_t nbEle, size_t* cmpSize, cudaStream_t stream)
@@ -1498,12 +1509,12 @@ void GDFCompressor::GDFC_compress(double* d_oriData, unsigned char* d_cmpBytes, 
     unsigned int* d_locOffset;
     int* d_flag;
     unsigned int glob_sync;
-    cudaMalloc((void**)&d_cmpOffset, sizeof(unsigned int)*cmpOffSize);
-    cudaMemset(d_cmpOffset, 0, sizeof(unsigned int)*cmpOffSize);
-    cudaMalloc((void**)&d_locOffset, sizeof(unsigned int)*cmpOffSize);
-    cudaMemset(d_locOffset, 0, sizeof(unsigned int)*cmpOffSize);
-    cudaMalloc((void**)&d_flag, sizeof(int)*cmpOffSize);
-    cudaMemset(d_flag, 0, sizeof(int)*cmpOffSize);
+    cudaMallocAsync((void**)&d_cmpOffset, sizeof(unsigned int)*cmpOffSize,stream);
+    cudaMemsetAsync(d_cmpOffset, 0, sizeof(unsigned int)*cmpOffSize,stream);
+    cudaMallocAsync((void**)&d_locOffset, sizeof(unsigned int)*cmpOffSize,stream);
+    cudaMemsetAsync(d_locOffset, 0, sizeof(unsigned int)*cmpOffSize,stream);
+    cudaMallocAsync((void**)&d_flag, sizeof(int)*cmpOffSize,stream);
+    cudaMemsetAsync(d_flag, 0, sizeof(int)*cmpOffSize,stream);
 
     // cuSZp GPU compression.
     dim3 blockSize(bsize);
@@ -1513,16 +1524,62 @@ void GDFCompressor::GDFC_compress(double* d_oriData, unsigned char* d_cmpBytes, 
     GDFC_compress_kernel<<<gridSize, blockSize, sizeof(unsigned int)*2, stream>>>(d_oriData, d_cmpBytes, d_cmpOffset, d_locOffset, d_flag, nbEle);
 
     // Obtain compression ratio and move data back to CPU.  
-    cudaMemcpy(&glob_sync, d_cmpOffset+cmpOffSize-1, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    cudaMemcpyAsync(&glob_sync, d_cmpOffset+cmpOffSize-1, sizeof(unsigned int), cudaMemcpyDeviceToHost,stream);
     
     *cmpSize = ((size_t)glob_sync+7)/8;//+ (nbEle+cmp_tblock_size*cmp_chunk-1)/(cmp_tblock_size*cmp_chunk)*(cmp_tblock_size*cmp_chunk)/32;
     
     // printf("g_offset:%d\n",cmpOffSize-1);
     // *cmpSize = (totalCompressedBits + 7) / 8; // 按字节对齐
     // Free memory that is used.
-    cudaFree(d_cmpOffset);
-    cudaFree(d_locOffset);
-    cudaFree(d_flag);
+    cudaFreeAsync(d_cmpOffset,stream);
+    cudaFreeAsync(d_locOffset,stream);
+    cudaFreeAsync(d_flag,stream);
 }
 
 
+void GDFCompressor::GDFC_compress_stream(double* d_oriData, unsigned char* d_cmpBytes, unsigned int* d2h_async_totalBits_ptr, size_t nbEle, cudaStream_t stream)
+{
+    // Data blocking.
+    int bsize = cmp_tblock_size;
+    int gsize = (nbEle + bsize * cmp_chunk - 1) / (bsize * cmp_chunk);
+    // size_t numthread = (nbEle + cmp_chunk - 1) / (cmp_chunk);
+    int cmpOffSize = gsize + 1;
+
+    // Initializing global memory for GPU compression.
+    unsigned int* d_cmpOffset;
+    unsigned int* d_locOffset;
+    int* d_flag;
+    cudaMallocAsync((void**)&d_cmpOffset, sizeof(unsigned int)*cmpOffSize,stream);
+    cudaMemsetAsync(d_cmpOffset, 0, sizeof(unsigned int)*cmpOffSize,stream);
+    cudaMallocAsync((void**)&d_locOffset, sizeof(unsigned int)*cmpOffSize,stream);
+    cudaMemsetAsync(d_locOffset, 0, sizeof(unsigned int)*cmpOffSize,stream);
+    cudaMallocAsync((void**)&d_flag, sizeof(int)*cmpOffSize,stream);
+    cudaMemsetAsync(d_flag, 0, sizeof(int)*cmpOffSize,stream);
+    // cudaMalloc((void**)&d_cmpOffset, sizeof(unsigned int)*cmpOffSize);
+    // cudaMemset(d_cmpOffset, 0, sizeof(unsigned int)*cmpOffSize);
+    // cudaMalloc((void**)&d_locOffset, sizeof(unsigned int)*cmpOffSize);
+    // cudaMemset(d_locOffset, 0, sizeof(unsigned int)*cmpOffSize);
+    // cudaMalloc((void**)&d_flag, sizeof(int)*cmpOffSize);
+    // cudaMemset(d_flag, 0, sizeof(int)*cmpOffSize);
+
+    // cuSZp GPU compression.
+    dim3 blockSize(bsize);
+    dim3 gridSize(gsize);
+
+    GDFC_compress_kernel<<<gridSize, blockSize, sizeof(unsigned int)*2, stream>>>(d_oriData, d_cmpBytes, d_cmpOffset, d_locOffset, d_flag, nbEle);
+
+
+    // Obtain compression ratio and move data back to CPU.  
+    cudaMemcpyAsync(d2h_async_totalBits_ptr, (d_cmpOffset + cmpOffSize-1), sizeof(unsigned int), cudaMemcpyDeviceToHost, stream);
+
+    // printf("g_offset:%d\n",cmpOffSize-1);
+    // *cmpSize = (totalCompressedBits + 7) / 8; // 按字节对齐
+    // Free memory that is used.
+    cudaFreeAsync(d_cmpOffset,stream);
+    cudaFreeAsync(d_locOffset,stream);
+    cudaFreeAsync(d_flag,stream);
+
+    // cudaFree(d_cmpOffset);
+    // cudaFree(d_locOffset);
+    // cudaFree(d_flag);
+}

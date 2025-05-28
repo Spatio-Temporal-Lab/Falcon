@@ -23,7 +23,7 @@ public:
 
     void compress(const std::vector<double>& input, std::vector<unsigned char>& output);
     static void GDFC_compress(double* d_oriData, unsigned char* d_cmpBytes, size_t nbEle, size_t* cmpSize, cudaStream_t stream);
-
+    static void GDFC_compress_stream(double* d_oriData, unsigned char* d_cmpBytes, unsigned int* d2h_async_totalBits_ptr, size_t nbEle, cudaStream_t stream);
 private:
 
     void setupDeviceMemory(
