@@ -1498,17 +1498,6 @@ __global__ void GDFC_compress_kernel(
     //         }
     //     }
     // }
-    // if(idx==1)
-    // {
-    //     for(int i = 0; i < 10; i++) {
-    //         printf("0x%02x  ", output[i]);
-            
-    //         // 每 16 个字节换行
-    //         if ((i + 1) % 16 == 0) {
-    //             printf("\n");
-    //         }
-    //     }
-    // }
 }
 
 void GDFCompressor::GDFC_compress(double* d_oriData, unsigned char* d_cmpBytes, size_t nbEle, size_t* cmpSize, cudaStream_t stream)
@@ -1530,12 +1519,6 @@ void GDFCompressor::GDFC_compress(double* d_oriData, unsigned char* d_cmpBytes, 
     cudaMemsetAsync(d_locOffset, 0, sizeof(unsigned int)*cmpOffSize,stream);
     cudaMallocAsync((void**)&d_flag, sizeof(int)*cmpOffSize,stream);
     cudaMemsetAsync(d_flag, 0, sizeof(int)*cmpOffSize,stream);
-    cudaMallocAsync((void**)&d_cmpOffset, sizeof(unsigned int)*cmpOffSize,stream);
-    cudaMemsetAsync(d_cmpOffset, 0, sizeof(unsigned int)*cmpOffSize,stream);
-    cudaMallocAsync((void**)&d_locOffset, sizeof(unsigned int)*cmpOffSize,stream);
-    cudaMemsetAsync(d_locOffset, 0, sizeof(unsigned int)*cmpOffSize,stream);
-    cudaMallocAsync((void**)&d_flag, sizeof(int)*cmpOffSize,stream);
-    cudaMemsetAsync(d_flag, 0, sizeof(int)*cmpOffSize,stream);
 
     // cuSZp GPU compression.
     dim3 blockSize(bsize);
@@ -1546,16 +1529,12 @@ void GDFCompressor::GDFC_compress(double* d_oriData, unsigned char* d_cmpBytes, 
 
     // Obtain compression ratio and move data back to CPU.  
     cudaMemcpyAsync(&glob_sync, d_cmpOffset+cmpOffSize-1, sizeof(unsigned int), cudaMemcpyDeviceToHost,stream);
-    cudaMemcpyAsync(&glob_sync, d_cmpOffset+cmpOffSize-1, sizeof(unsigned int), cudaMemcpyDeviceToHost,stream);
     
     *cmpSize = ((size_t)glob_sync+7)/8;//+ (nbEle+cmp_tblock_size*cmp_chunk-1)/(cmp_tblock_size*cmp_chunk)*(cmp_tblock_size*cmp_chunk)/32;
     
     // printf("g_offset:%d\n",cmpOffSize-1);
     // *cmpSize = (totalCompressedBits + 7) / 8; // 按字节对齐
     // Free memory that is used.
-    cudaFreeAsync(d_cmpOffset,stream);
-    cudaFreeAsync(d_locOffset,stream);
-    cudaFreeAsync(d_flag,stream);
     cudaFreeAsync(d_cmpOffset,stream);
     cudaFreeAsync(d_locOffset,stream);
     cudaFreeAsync(d_flag,stream);
