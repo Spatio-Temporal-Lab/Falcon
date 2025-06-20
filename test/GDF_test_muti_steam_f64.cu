@@ -1639,8 +1639,10 @@ struct ProcessedData {
 
 // 准备数据函数，支持文件和生成数据两种模式
 ProcessedData prepare_data(const std::string &source_path = "", size_t generate_size = 0, int pattern_type = 0) {
+ProcessedData prepare_data(const std::string &source_path = "", size_t generate_size = 0, int pattern_type = 0) {
     ProcessedData result;
     std::vector<double> data;
+
 
     // 决定数据来源
     if (generate_size > 0) {
@@ -1661,9 +1663,12 @@ ProcessedData prepare_data(const std::string &source_path = "", size_t generate_
         return result;
     }
 
+
     // 分配固定内存
     cudaCheckError(cudaHostAlloc(&result.oriData, result.nbEle * sizeof(double), cudaHostAllocDefault));
     cudaCheckError(cudaHostAlloc((void**)&result.cmpBytes, result.nbEle * sizeof(double) * 2, cudaHostAllocDefault));
+    cudaCheckError(cudaHostAlloc((void**)&result.cmpSize, sizeof(unsigned int), cudaHostAllocDefault));
+
     cudaCheckError(cudaHostAlloc((void**)&result.cmpSize, sizeof(unsigned int), cudaHostAllocDefault));
 
     // 将数据拷贝到固定内存
@@ -1671,6 +1676,7 @@ ProcessedData prepare_data(const std::string &source_path = "", size_t generate_
     for (size_t i = 0; i < result.nbEle; ++i) {
         result.oriData[i] = data[i];
     }
+
 
     return result;
 }
@@ -1690,19 +1696,26 @@ void cleanup_data(ProcessedData &data) {
 
 // 设置GPU内存池函数
 size_t setup_gpu_memory_pool(size_t nbEle, size_t &chunkSize) {
+size_t setup_gpu_memory_pool(size_t nbEle, size_t &chunkSize) {
     // 检查GPU可用内存
     size_t freeMem, totalMem;
     cudaMemGetInfo(&freeMem, &totalMem);
     std::cout << "GPU可用内存: " << freeMem / (1024 * 1024) << " MB / 总内存: "
             << totalMem / (1024 * 1024) << " MB" << std::endl;
 
+    std::cout << "GPU可用内存: " << freeMem / (1024 * 1024) << " MB / 总内存: "
+            << totalMem / (1024 * 1024) << " MB" << std::endl;
+
     // 设置内存池大小
     size_t poolSize = freeMem * 0.4;
     poolSize = (poolSize + 1024 * 2 * sizeof(double) - 1) & ~(1024 * 2 * sizeof(double) - 1); // 向上对齐
+    poolSize = (poolSize + 1024 * 2 * sizeof(double) - 1) & ~(1024 * 2 * sizeof(double) - 1); // 向上对齐
     chunkSize = poolSize * 0.5 * 0.5 / sizeof(double);
+
 
     // 设置分块大小为2的幂，以优化对齐
     int temp = 2;
+    while (temp * 2 < chunkSize) {
     while (temp * 2 < chunkSize) {
         temp *= 2;
     }
@@ -1908,6 +1921,7 @@ PipelineAnalysis execute_pipeline(ProcessedData &data, size_t chunkSize, bool vi
 
 // 输出块大小与运行时间关系的CSV文件
 void output_blocksize_timing_csv(const std::vector<PipelineAnalysis> &results, const std::string &filename) {
+void output_blocksize_timing_csv(const std::vector<PipelineAnalysis> &results, const std::string &filename) {
     std::ofstream csv_file(filename, std::ios::app);
     if (!csv_file.is_open()) {
         std::cerr << "无法创建CSV文件: " << filename << std::endl;
@@ -1934,6 +1948,7 @@ void output_blocksize_timing_csv(const std::vector<PipelineAnalysis> &results, c
                 << result.compression_ratio << "\n";
     }
 
+
     csv_file.close();
     std::cout << "已将块大小与运行时间关系保存到 " << filename << std::endl;
 }
@@ -1941,6 +1956,7 @@ void output_blocksize_timing_csv(const std::vector<PipelineAnalysis> &results, c
 // 可视化块大小与阶段时间的关系
 void visualize_stage_timing_relationship(const std::vector<PipelineAnalysis> &results) {
     printf("\n===== 块大小与运行时间关系分析 =====\n");
+    printf("总大小(MB) \t块大小(KB) \tH2D(ms) \tComp(ms) \tD2H(ms) \t比例(IO/Comp) \t总时间(ms) \t加速比 \t压缩率 \n");
     printf("总大小(MB) \t块大小(KB) \tH2D(ms) \tComp(ms) \tD2H(ms) \t比例(IO/Comp) \t总时间(ms) \t加速比 \t压缩率 \n");
     printf("---------------------------------------------------------------------------\n");
 
@@ -2098,6 +2114,7 @@ std::vector<size_t> generate_linear_blocksizes(size_t min_kb, size_t max_kb, siz
 }
 
 // 主要测试函数 - 支持文件路径或生成数据
+int test(const std::string &file_path = "", size_t data_size_mb = 0, int pattern_type = 0) {
 int test(const std::string &file_path = "", size_t data_size_mb = 0, int pattern_type = 0) {
     if (!file_path.empty()) {
         size_t chunkSize;

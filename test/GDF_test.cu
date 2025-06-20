@@ -94,6 +94,8 @@ void comp(std::vector<double> oriData, std::vector<double> &decompData)
 void comp_stream(std::vector<double> oriData, std::vector<double> &decompData)
 {
     size_t nbEle = oriData.size();
+    size_t nbEle = oriData.size();
+    // size_t nbEle =1024*1024*3;
     size_t cmpSize = 0; // 将由压缩函数设置
 
     // 分配设备内存
@@ -237,6 +239,24 @@ TEST(GDFStreamTest, FilePathStreamCompression) {
 
     std::string file_path = "../test/data/big/merged_all_2DWSD_2min_ALL.csv";//"../test/data/big/merged_2DWSD_2min_ALL.csv";
     // std::string file_path = "../test/data/big/merged_2DWSD_30min_ALL.csv";
+    std::cout << "正在处理文件: " << file_path << std::endl;
+    test_stream_compression(file_path);
+    std::cout << "---------------------------------------------" << std::endl;
+    // test_stream_compression(file_path);
+
+}
+void warmup()
+{
+    // 读取数据
+    std::vector<double> oriData = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.10, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.20, 0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.30, 0.31, 0.32, 0.33};
+    std::vector<double> newData;
+    comp(oriData, newData);
+}
+TEST(GDFStreamTest, FilePathStreamCompression) {
+    warmup();
+
+    // std::string file_path = "../test/data/big/merged_2DWSD_2min_ALL.csv";
+    std::string file_path = "../test/data/big/merged_2DWSD_30min_ALL.csv";
     std::cout << "正在处理文件: " << file_path << std::endl;
     test_stream_compression(file_path);
     std::cout << "---------------------------------------------" << std::endl;
