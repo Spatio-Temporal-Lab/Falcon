@@ -5,9 +5,84 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Wno-deprecated-gpu-targets")
 
+# # 添加 cmake 模块路径
+# list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+# # 查找 GDeflate
+# find_package(GDeflate)
+
+# # 如果找到 GDeflate，添加配置
+# if(GDeflate_FOUND)
+#     message(STATUS "GDeflate will be available for nvcomp")
+#     add_definitions(-DENABLE_GDEFLATE)
+# endif()
 
 # 查找 nvcomp
-# find_package(nvcomp REQUIRED)
+find_package(nvcomp CONFIG PATHS 
+    /usr/lib/x86_64-linux-gnu/nvcomp/11/cmake/nvcomp
+    /usr/lib/x86_64-linux-gnu/cmake/nvcomp
+    NO_DEFAULT_PATH
+)
+if(nvcomp_FOUND)
+    message(STATUS "Found nvcomp using CMake config")
+    set(NVCOMP_LIBRARIES nvcomp::nvcomp)
+    set(NVCOMP_INCLUDE_DIRS "")  # 由目标自己处理
+
+    # 编译对应文件
+    cuda_add_executable(test_LZ4 test_LZ4.cu data/dataset_utils.cpp)
+
+    cuda_add_executable(test_gdeflate test_gdeflate.cu data/dataset_utils.cpp)
+
+    add_executable(test_Snappy test_Snappy.cpp data/dataset_utils.cpp )
+
+    cuda_add_executable(test_bitcomp test_bitcomp.cu data/dataset_utils.cpp)
+
+    
+    target_link_libraries(test_LZ4
+    ${CUDA_LIBRARIES}
+    # nvcomp
+    ${NVCOMP_LIBRARIES}
+    GTest::GTest
+    GTest::Main
+    pthread
+    )
+
+    target_link_libraries(test_gdeflate
+    ${CUDA_LIBRARIES}
+    # nvcomp
+    ${NVCOMP_LIBRARIES}
+    GTest::GTest
+    GTest::Main
+    pthread
+    )
+
+    target_link_libraries(test_Snappy
+    ${CUDA_LIBRARIES}
+    # nvcomp
+    ${NVCOMP_LIBRARIES}
+    GTest::GTest
+    GTest::Main
+    pthread
+    )
+
+    target_link_libraries(test_bitcomp
+    ${CUDA_LIBRARIES}
+    # nvcomp
+    ${NVCOMP_LIBRARIES}
+    GTest::GTest
+    GTest::Main
+    pthread
+    )
+
+    target_include_directories(test_LZ4 PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+    target_include_directories(test_gdeflate PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+    target_include_directories(test_Snappy PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+    target_include_directories(test_bitcomp PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+
+elseif()
+    message(STATUS "CMake config not found, searching manually...")
+    # 手动查找
+endif()
 # include_directories(${nvcomp_INCLUDE_DIRS})
 
 # 添加 ALP 库
@@ -19,7 +94,7 @@ add_subdirectory(baseline/ndzip)
 add_subdirectory(baseline/cuSZp)
 
 # 添加 nvcomp 项目路径
-add_subdirectory(baseline/nvcomp)
+# add_subdirectory(baseline/nvcomp)
 
 # 添加 elf 项目路径
 add_subdirectory(baseline/elf)
@@ -51,7 +126,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/src/utils)
 include_directories(${CMAKE_SOURCE_DIR}/test/baseline/ndzip/include)
 include_directories(${CMAKE_SOURCE_DIR}/test/baseline/cuSZp/include)
-include_directories(${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include)
+# include_directories(${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include)
 include_directories(${CMAKE_SOURCE_DIR}/test/baseline/elf)
 # include_directories(${CMAKE_SOURCE_DIR}/test/baseline/mpc)
 
@@ -98,11 +173,7 @@ cuda_add_executable(benchmark_tests ${SRC_CPU} ${SRC_GPU} ${BENCHMARK_SOURCES})
 
 add_executable(test_ALP test_ALP.cpp data/dataset_utils.cpp ${SRC_CPU})
 
-cuda_add_executable(test_LZ4 test_LZ4.cu data/dataset_utils.cpp)
 
-cuda_add_executable(test_gdeflate test_gdeflate.cu data/dataset_utils.cpp)
-
-cuda_add_executable(test_bitcomp test_bitcomp.cu data/dataset_utils.cpp)
 
 cuda_add_executable(test_ndzip test_ndzip.cpp data/dataset_utils.cpp)
 
@@ -125,30 +196,6 @@ target_link_libraries(test_elf PRIVATE GTest::GTest GTest::Main pthread elf)
 # target_link_libraries(test_mpc ${CUDA_LIBRARIES} GTest::GTest GTest::Main pthread mpc)
 target_link_libraries(GDF_test_muti_steam_f64 ${CUDA_LIBRARIES}  GTest::GTest GTest::Main pthread cuSZp_shared)
 
-target_link_libraries(test_LZ4
-    ${CUDA_LIBRARIES}
-    nvcomp
-    GTest::GTest
-    GTest::Main
-    pthread
-)
-
-target_link_libraries(test_gdeflate
-    ${CUDA_LIBRARIES}
-    nvcomp
-    GTest::GTest
-    GTest::Main
-    pthread
-)
-
-target_link_libraries(test_bitcomp
-    ${CUDA_LIBRARIES}
-    nvcomp
-    GTest::GTest
-    GTest::Main
-    pthread
-)
-
 
 
 # 设置 include 目录
@@ -158,9 +205,6 @@ target_include_directories(benchmark_tests PRIVATE ${CMAKE_SOURCE_DIR}/test/base
 target_include_directories(test_ALP PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/ALP/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 target_include_directories(test_cuSZp PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/cuSZp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 target_include_directories(GDF_test_muti_steam_f64 PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/cuSZp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
-target_include_directories(test_LZ4 PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
-target_include_directories(test_gdeflate PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
-target_include_directories(test_bitcomp PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 # target_include_directories(test_mpc PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/mpc ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 target_include_directories(test_elf PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/elf ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 
@@ -175,14 +219,17 @@ target_include_directories(test_ndzip PRIVATE
 )
 
 # 设置编译标准
-set_target_properties(test_cpu 
-    GDF_test_muti_steam_f64 
-    test_gpu 
-    benchmark_tests 
-    test_elf 
-    # test_mpc
-    test_ALP 
-    # test_gdeflate test_LZ4 test_bitcomp 
-    test_cuSZp 
-    PROPERTIES CXX_STANDARD 17)
+# set_target_properties(test_cpu 
+#     GDF_test_muti_steam_f64 
+#     test_gpu 
+#     benchmark_tests 
+#     test_elf 
+#     # test_mpc
+#     test_ALP 
+#     # test_gdeflate 
+#     # test_Snappy 
+#     # test_bitcomp 
+#     # test_LZ4
+#     # test_cuSZp 
+#     PROPERTIES CXX_STANDARD 17)
 target_compile_options(test_ndzip PRIVATE ${NDZIP_CUDA_FLAGS})

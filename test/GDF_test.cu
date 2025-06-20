@@ -11,11 +11,12 @@
 #include <vector>
 #include <chrono>
 #include <iomanip>
-#include <filesystem>
+
 #include <cmath>
 #include <iostream>
 #include "alp.hpp"
 #include "data/dataset_utils.hpp"
+#include <filesystem>
 namespace fs = std::filesystem;
 
 #include <algorithm>
@@ -55,8 +56,8 @@ void comp(std::vector<double> oriData, std::vector<double> &decompData)
     std::cout << "GPU压缩时间: " 
           << std::fixed << std::setprecision(3) 
           << duration.count() << " ms" << std::endl;
-    // 打印压缩时间
-    std::cout << "GPU压缩时间: " << compress_duration.count() << " 秒" << std::endl;
+    // // 打印压缩时间
+    // std::cout << "GPU压缩时间: " << compress_duration.count() << " 秒" << std::endl;
 
     // 记录解压时间
     std::cout<<"解压开始\n";
@@ -92,9 +93,7 @@ void comp(std::vector<double> oriData, std::vector<double> &decompData)
 // 新增: 使用CUDA流的压缩解压测试函数
 void comp_stream(std::vector<double> oriData, std::vector<double> &decompData)
 {
-    // size_t nbEle = oriData.size();
-    size_t nbEle =1024*1024*3;
-    // oriData.resize(nbELe);
+    size_t nbEle = oriData.size();
     size_t cmpSize = 0; // 将由压缩函数设置
 
     // 分配设备内存
@@ -102,82 +101,123 @@ void comp_stream(std::vector<double> oriData, std::vector<double> &decompData)
     double* d_decData;
     unsigned char* d_cmpBytes;
 
-    // 为原始数据分配内存
-    cudaMalloc(&d_oriData, nbEle * sizeof(double));
-    cudaMemcpy(d_oriData, oriData.data(), nbEle * sizeof(double), cudaMemcpyHostToDevice);
-
-    // 为压缩数据分配足够大的内存 (最坏情况下与原始数据一样大)
-    cudaMalloc(&d_cmpBytes, nbEle * 2 * sizeof(double));
-    
-    // 为解压数据分配内存
-    cudaMalloc(&d_decData, nbEle * sizeof(double));
-
     // 创建CUDA流
     cudaStream_t stream;
     cudaStreamCreate(&stream);
 
-    // 记录压缩时间
-    std::cout<<"GPU流式压缩开始\n";
-    auto start_compress = std::chrono::high_resolution_clock::now();
+    // ===== 完整的压缩流程 =====
+    std::cout << "开始完整的GPU流式压缩流程\n";
+    auto start_full_compress = std::chrono::high_resolution_clock::now();
     
-    // 调用GDFC_compress
+    // 1. 为原始数据分配设备内存并从主机复制到设备
+    std::cout << "1. 复制原始数据到设备...\n";
+    cudaMalloc(&d_oriData, nbEle * sizeof(double));
+    cudaMemcpy(d_oriData, oriData.data(), nbEle * sizeof(double), cudaMemcpyHostToDevice);
+
+    // 2. 为压缩数据分配设备内存 (最坏情况下与原始数据一样大)
+    cudaMalloc(&d_cmpBytes, nbEle * 2 * sizeof(double));
+    
+    // 3. 执行GPU压缩
+    std::cout << "2. 执行GPU压缩...\n";
+    auto start_compress_kernel = std::chrono::high_resolution_clock::now();
+    
     GDFCompressor GDFC;
     GDFC.GDFC_compress(d_oriData, d_cmpBytes, nbEle, &cmpSize, stream);
     
     // 同步流以确保压缩完成
     cudaStreamSynchronize(stream);
     
-    auto end_compress = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> compress_duration = end_compress - start_compress;
-    auto duration = std::chrono::duration<double, std::milli>(end_compress - start_compress);
+    auto end_compress_kernel = std::chrono::high_resolution_clock::now();
+    auto compress_kernel_duration = std::chrono::duration<double, std::milli>(end_compress_kernel - start_compress_kernel);
     
-    std::cout << "GPU流式压缩时间: " 
-          << std::fixed << std::setprecision(3) 
-          << duration.count() << " ms" << std::endl;
+    // 4. 将压缩数据从设备复制回主机
+    std::cout << "3. 复制压缩数据回主机...\n";
+    std::vector<unsigned char> h_cmpBytes(cmpSize);
+    cudaMemcpy(h_cmpBytes.data(), d_cmpBytes, cmpSize, cudaMemcpyDeviceToHost);
+    
+    auto end_full_compress = std::chrono::high_resolution_clock::now();
+    auto full_compress_duration = std::chrono::duration<double, std::milli>(end_full_compress - start_full_compress);
     
     // 打印压缩信息
+    std::cout << "GPU流式核函数压缩时间: " 
+              << std::fixed << std::setprecision(3) 
+              << compress_kernel_duration.count() << " ms" << std::endl;
+    std::cout << "完整压缩流程时间(包含数据传输): " 
+              << std::fixed << std::setprecision(3) 
+              << full_compress_duration.count() << " ms" << std::endl;
     std::cout << "压缩后大小: " << cmpSize << " 字节" << std::endl;
     double compression_ratio = static_cast<double>(cmpSize) / (nbEle * sizeof(double));
     std::cout << "压缩率: " << compression_ratio << std::endl;
 
-    // 记录解压时间
-    std::cout<<"GPU流式解压开始\n";
-    auto start_decompress = std::chrono::high_resolution_clock::now();
+    // 释放原始数据的设备内存（模拟实际场景中的内存管理）
+    cudaFree(d_oriData);
+    cudaFree(d_cmpBytes);
+
+    // ===== 完整的解压流程 =====
+    std::cout << "\n开始完整的GPU流式解压流程\n";
+    auto start_full_decompress = std::chrono::high_resolution_clock::now();
     
-    // 调用GDFC_decompress
+    // 1. 重新分配设备内存并将压缩数据从主机复制到设备
+    std::cout << "1. 复制压缩数据到设备...\n";
+    cudaMalloc(&d_cmpBytes, cmpSize);
+    cudaMemcpy(d_cmpBytes, h_cmpBytes.data(), cmpSize, cudaMemcpyHostToDevice);
+    
+    // 2. 为解压数据分配设备内存
+    cudaMalloc(&d_decData, nbEle * sizeof(double));
+
+    // 3. 执行GPU解压
+    std::cout << "2. 执行GPU解压...\n";
+    auto start_decompress_kernel = std::chrono::high_resolution_clock::now();
+    
     GDFDecompressor GDFD;
     GDFD.GDFC_decompress(d_decData, d_cmpBytes, nbEle, cmpSize, stream);
     
     // 同步流以确保解压完成
     cudaStreamSynchronize(stream);
     
-    auto end_decompress = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> decompress_duration = end_decompress - start_decompress;
+    auto end_decompress_kernel = std::chrono::high_resolution_clock::now();
+    auto decompress_kernel_duration = std::chrono::duration<double, std::milli>(end_decompress_kernel - start_decompress_kernel);
     
-    std::cout << "GPU流式解压时间: " 
-          << std::fixed << std::setprecision(3) 
-          << std::chrono::duration<double, std::milli>(decompress_duration).count() << " ms" << std::endl;
-
-    // 将解压后的数据复制回主机
+    // 4. 将解压后的数据从设备复制回主机
+    std::cout << "3. 复制解压数据回主机...\n";
     decompData.resize(nbEle);
     cudaMemcpy(decompData.data(), d_decData, nbEle * sizeof(double), cudaMemcpyDeviceToHost);
+    
+    auto end_full_decompress = std::chrono::high_resolution_clock::now();
+    auto full_decompress_duration = std::chrono::duration<double, std::milli>(end_full_decompress - start_full_decompress);
+    
+    std::cout << "GPU流式核函数解压时间: " 
+              << std::fixed << std::setprecision(3) 
+              << decompress_kernel_duration.count() << " ms" << std::endl;
+    std::cout << "完整解压流程时间(包含数据传输): " 
+              << std::fixed << std::setprecision(3) 
+              << full_decompress_duration.count() << " ms" << std::endl;
+
+    // 计算总体性能统计
+    auto total_time = full_compress_duration.count() + full_decompress_duration.count();
+    std::cout << "\n=== 性能总结 ===" << std::endl;
+    std::cout << "总体时间(压缩+解压): " << std::fixed << std::setprecision(3) << total_time << " ms" << std::endl;
+    std::cout << "纯计算时间: " << std::fixed << std::setprecision(3) 
+              << (compress_kernel_duration.count() + decompress_kernel_duration.count()) << " ms" << std::endl;
+    double data_transfer_overhead = total_time - (compress_kernel_duration.count() + decompress_kernel_duration.count());
+    std::cout << "数据传输开销: " << std::fixed << std::setprecision(3) << data_transfer_overhead << " ms" << std::endl;
 
     // 释放设备内存和流
-    cudaFree(d_oriData);
     cudaFree(d_cmpBytes);
     cudaFree(d_decData);
     cudaStreamDestroy(stream);
 
-    // 检查解压结果是否正确
+    // 验证解压结果的正确性
+    std::cout << "\n验证解压结果正确性...\n";
     try {
         for (size_t i = 0; i < oriData.size(); ++i) {
             ASSERT_NEAR(oriData[i], decompData[i], 1e-6) << "第 " << i << " 个值不相等。";
         }
+        std::cout << "解压结果验证通过！\n";
     } catch (const std::exception& e) {
         std::cerr << "断言失败: " << e.what() << std::endl;
     }
 }
-
 // 新增: 测试流式压缩解压
 void test_stream_compression(const std::string& file_path) {
     // 读取数据
@@ -185,7 +225,24 @@ void test_stream_compression(const std::string& file_path) {
     std::vector<double> decompressedData;
     comp_stream(oriData, decompressedData);
 }
+void warmup()
+{
+    // 读取数据
+    std::vector<double> oriData = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.10, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.20, 0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.30, 0.31, 0.32, 0.33};
+    std::vector<double> newData;
+    comp(oriData, newData);
+}
+TEST(GDFStreamTest, FilePathStreamCompression) {
+    warmup();
 
+    std::string file_path = "../test/data/big/merged_all_2DWSD_2min_ALL.csv";//"../test/data/big/merged_2DWSD_2min_ALL.csv";
+    // std::string file_path = "../test/data/big/merged_2DWSD_30min_ALL.csv";
+    std::cout << "正在处理文件: " << file_path << std::endl;
+    test_stream_compression(file_path);
+    std::cout << "---------------------------------------------" << std::endl;
+    // test_stream_compression(file_path);
+
+}
 // 旧测试: 文件压缩解压缩
 void test_compression(const std::string& file_path) {
     // 读取数据
@@ -353,7 +410,10 @@ TEST(GDFCompressorTest, testbig) {
 
 // 新增:测试文件目录下的所有数据文件的流式压缩解压
 TEST(GDFStreamTest, DirectoryStreamCompression) {
+    warmup();
+    // std::string dir_path = "../test/data/big";
     std::string dir_path = "../test/data/temp";
+
     for (const auto& entry : fs::directory_iterator(dir_path)) {
         if (entry.is_regular_file()) {
             std::string file_path = entry.path().string();
@@ -425,6 +485,7 @@ std::vector<uint8_t> ConvertArrayToVector(const Array<uint8_t>& arr) {
 
 // 原有测试用例 - 保持不变
 TEST(GDFCompressorTest, testfiles) {
+    // warmup();
     std::string dir_path = "../test/data/temp";
     for (const auto& entry : fs::directory_iterator(dir_path)) {
         if (entry.is_regular_file()) {

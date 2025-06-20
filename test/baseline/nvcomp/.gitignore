@@ -1,6 +1,0 @@
-*.swp
-*.o
-build_*/
-build/
-.env
-.vscode/

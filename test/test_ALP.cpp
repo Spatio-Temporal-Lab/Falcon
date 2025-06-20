@@ -225,8 +225,16 @@ public:
 
             total_processed += tuples_count;
         }
-        //std::cout << "Encoding Time: " << encode_t.count() << " seconds." << std::endl;
-        //std::cout << "Decoding Time: " << decode_t.count() << " seconds." << std::endl;
+        // std::cout << "Encoding Time: " << encode_t.count() << " seconds." << std::endl;
+        // std::cout << "Decoding Time: " << decode_t.count() << " seconds." << std::endl;
+        std::cout << "Encoding Time: " 
+        << std::fixed << std::setprecision(3) 
+        << std::chrono::duration<double, std::milli>(encode_t).count() << " ms" << std::endl;
+
+        std::cout << "Decoding Time: " 
+        << std::fixed << std::setprecision(3) 
+        << std::chrono::duration<double, std::milli>(decode_t).count() << " ms" << std::endl;
+
         ALP_compression_ratio =  compressed_size / original_size;
         std::cout << "ALP Compression Ratio: " << ALP_compression_ratio << std::endl;
 
@@ -280,7 +288,8 @@ void test_compression(const std::string& file_path) {
 
 }
 TEST_F(alp_test,ratio){
-    std::string dir_path = "../test/data/big";//有毛病还没有数据集
+    // std::string dir_path = "../test/data/big";//有毛病还没有数据集
+    std::string dir_path = "../test/data/temp";//有毛病还没有数据集
     auto dataset = get_dynamic_dataset(dir_path);
     ASSERT_FALSE(dataset.empty()) << "Dataset is empty, check data directory!";
     int i=0;
@@ -289,8 +298,8 @@ TEST_F(alp_test,ratio){
         
         if (entry.is_regular_file()) {
             std::string file_path = entry.path().string();
-            std::cout << "正在处理文件: " << std::endl;//file_path << std::endl;
-            test_compression(file_path);
+            std::cout << "正在处理文件: " << file_path << std::endl;
+            // test_compression(file_path);
             ASSERT_NO_THROW(test_column<double>(dataset[i]));
             std::cout << "---------------------------------------------" << std::endl;
             if(ALP_compression_ratio>compression_ratio)
@@ -306,6 +315,12 @@ TEST_F(alp_test,ratio){
 }
 
 
+// TEST(GDFStreamTest, FilePathStreamCompression) {
+//     std::string file_path = "../test/data/big/merged_all_2DWSD_2min_ALL.csv";
+//     std::cout << "正在处理文件: " << file_path << std::endl;
+//     test_stream_compression(file_path);
+//     std::cout << "---------------------------------------------" << std::endl;
 
+// }
 
 

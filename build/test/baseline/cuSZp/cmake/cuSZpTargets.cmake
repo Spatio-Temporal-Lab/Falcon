@@ -45,21 +45,21 @@ unset(_expectedTargets)
 add_library(cuSZp::cuSZp_shared SHARED IMPORTED)
 
 set_target_properties(cuSZp::cuSZp_shared PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "/mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/include;/mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/include/cuSZp"
+  INTERFACE_INCLUDE_DIRECTORIES "/home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include;/home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include/cuSZp"
 )
 
 # Create imported target cuSZp::cuSZp_static
 add_library(cuSZp::cuSZp_static STATIC IMPORTED)
 
 set_target_properties(cuSZp::cuSZp_static PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "/mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/include;/mnt/e/START/GPU/CUDA/cuCompressor/test/baseline/cuSZp/include/cuSZp"
+  INTERFACE_INCLUDE_DIRECTORIES "/home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include;/home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include/cuSZp"
   INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:CUDA::cudart>"
 )
 
 # Import target "cuSZp::cuSZp_shared" for configuration "Debug"
 set_property(TARGET cuSZp::cuSZp_shared APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(cuSZp::cuSZp_shared PROPERTIES
-  IMPORTED_LOCATION_DEBUG "/mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/libcuSZp.so"
+  IMPORTED_LOCATION_DEBUG "/home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/libcuSZp.so"
   IMPORTED_SONAME_DEBUG "libcuSZp.so"
   )
 
@@ -67,7 +67,7 @@ set_target_properties(cuSZp::cuSZp_shared PROPERTIES
 set_property(TARGET cuSZp::cuSZp_static APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(cuSZp::cuSZp_static PROPERTIES
   IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "CUDA"
-  IMPORTED_LOCATION_DEBUG "/mnt/e/START/GPU/CUDA/cuCompressor/build/test/baseline/cuSZp/libcuSZp.a"
+  IMPORTED_LOCATION_DEBUG "/home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/libcuSZp.a"
   )
 
 # This file does not depend on other imported targets which have

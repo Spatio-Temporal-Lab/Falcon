@@ -79,6 +79,8 @@ void test_elf_compression(const std::vector<double>& original, double error_boun
     // std::cout << "\n压缩比率: " << std::fixed << std::setprecision(2) << compress_ratio << ":1";
     std::cout << "\n压缩吞吐: " << (original_bytes/1e9)/compress_time << " GB/s";
     std::cout << "\n解压吞吐: " << (original_bytes/1e9)/decompress_time << " GB/s\n";
+    std::cout << "\n压缩时间: " << std::chrono::duration<double, std::milli>(compress_end - compress_start).count() << " ms";
+    std::cout << "\n解压时间: " << std::chrono::duration<double, std::milli>(decompress_end - decompress_start).count() << " ms\n";
     
     // 数据验证
     ASSERT_EQ(dec_size, static_cast<ssize_t>(original.size()));
@@ -120,7 +122,9 @@ void test_elf_with_file(const std::string& file_path, double error_bound) {
 
 // 新增测试用例组
 TEST(ElfCompressorTest, LocalDataset) {
-    const std::string data_dir = "../test/data/big"; // 修改为实际路径
+    // const std::string data_dir = "../test/data/big"; // 修改为实际路径
+    const std::string data_dir = "../test/data/temp"; // 修改为实际路径
+
     const double error_bound = 0.001; // 根据数据特性调整
     
     for (const auto& entry : fs::directory_iterator(data_dir)) {

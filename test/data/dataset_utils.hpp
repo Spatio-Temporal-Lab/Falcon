@@ -9,6 +9,10 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
+#include <algorithm>
+#include <numeric>
+#include <cctype>
 struct Column {
     uint64_t id;
     std::string name;
@@ -21,7 +25,7 @@ struct Column {
     bool suitable_for_cutting = false;
 };
 
-std::vector<Column> get_dynamic_dataset(const std::string& directory_path);
+std::vector<Column> get_dynamic_dataset(const std::string& directory_path, bool show_progress = true, char delimiter = ',');
 
 // 读取浮点数数据文件
 std::vector<double> read_data(const std::string& file_path, bool a=1, char delimiter = ','); 

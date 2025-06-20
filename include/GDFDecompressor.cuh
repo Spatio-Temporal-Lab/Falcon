@@ -18,6 +18,10 @@
 class GDFDecompressor {
 public:
     void GDFC_decompress(double* d_decData, unsigned char* d_cmpBytes, size_t nbEle, size_t cmpSize, cudaStream_t stream);
+    void GDFC_decompress_op(double* d_decData, unsigned char* d_cmpBytes, 
+                                      size_t nbEle, size_t cmpSize, 
+                                      int* offsets, int numOffsets,
+                                      cudaStream_t stream) ;
     void decompress(const std::vector<unsigned char>& compressedData, std::vector<double>& output,int numDatas);
 };
 
@@ -67,4 +71,63 @@ private:
     size_t bitPos;
 };
 
+class BitReader0 {
+public:
+    // 原有的vector构造函数 - 保持向后兼容
+    BitReader0(const std::vector<unsigned char>& buffer) : 
+        bufferPtr(buffer.data()), bufferSize(buffer.size()), bitPos(0), ownsBuffer(false) {}
+    
+    // 新增的指针构造函数 - 支持直接使用指针
+    BitReader0(const unsigned char* buffer, size_t size) : 
+        bufferPtr(buffer), bufferSize(size), bitPos(0), ownsBuffer(false) {}
+
+    // 读取 n 位并作为 uint64_t 返回
+    uint64_t readBits(int n) {
+        uint64_t value = 0;
+        for(int i = 0; i < n; ++i) {
+            size_t byteIdx = bitPos / 8;
+            size_t bitIdx = bitPos % 8;
+            if(byteIdx >= bufferSize) break;
+            uint8_t bit = (bufferPtr[byteIdx] >> bitIdx) & 1;
+            value |= (static_cast<uint64_t>(bit) << i);
+            bitPos++;
+        }
+        return value;
+    }
+    
+    // 从指定位置读取 n 位
+    uint64_t readBits(int begin, int n) {
+        uint64_t value = 0;
+        for(int i = 0; i < n; ++i) {
+            size_t byteIdx = begin / 8;
+            size_t bitIdx = begin % 8;
+            if(byteIdx >= bufferSize) break;
+            uint8_t bit = (bufferPtr[byteIdx] >> bitIdx) & 1;
+            value |= (static_cast<uint64_t>(bit) << i);
+            begin++;
+        }
+        return value;
+    }
+    
+    // 跳过 n 位
+    void advance(int n) {
+        bitPos += n;
+    }
+
+    // 获取当前位位置
+    size_t getBitPos() const {
+        return bitPos;
+    }
+    
+    // 获取缓冲区大小
+    size_t getBufferSize() const {
+        return bufferSize;
+    }
+
+private:
+    const unsigned char* bufferPtr;  // 统一使用指针
+    size_t bufferSize;               // 缓冲区大小
+    size_t bitPos;                   // 当前位位置
+    bool ownsBuffer;                 // 是否拥有缓冲区（用于将来可能的内存管理）
+};
 

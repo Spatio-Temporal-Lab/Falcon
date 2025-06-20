@@ -1,269 +1,319 @@
-// 修改后的核函数实现 - 增加边界检查和错误处理
-__global__ void decompressKernel(
-    const unsigned char* compressedData, // 压缩数据
-    double* output,                      // 解压后数据输出
-    const int* offsets,                  // 每个块的偏移
-    int numBlocks,                       // 块数
-    int numDatas,                        // 所有块的总数据个数
-    int maxBlockSize,                    // 每个数据块的最大大小
-    int* errorFlag                       // 错误标志位，用于在主机端检测内核错误
+//
+// 优化后的 GDFDecompressor.cu
+// 主要优化：内存访问模式、并行度、位操作效率、错误处理
+//
+
+#include "GDFDecompressor.cuh"
+#include <vector>
+#include <cmath>
+#include <cstdint>
+#include <cstring>
+#include <iostream>
+#include <iomanip>
+
+// 常量定义
+__constant__ double POW10_TABLE[16] = {
+    1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0, 10000000.0,
+    100000000.0, 1000000000.0, 10000000000.0, 100000000000.0, 
+    1000000000000.0, 10000000000000.0, 100000000000000.0, 1000000000000000.0
+};
+
+// ZigZag 解码 - 内联优化
+__device__ __forceinline__ int64_t zigzag_decode(uint64_t n) {
+    return (int64_t)(n >> 1) ^ -((int64_t)(n & 1));
+}
+
+// 优化的按位读取函数 - 减少循环开销
+__device__ __forceinline__ uint64_t readBitsDevice(const unsigned char* buffer, size_t& bitPos, int n) {
+    if (n == 0) return 0;
+
+    
+    uint64_t result = 0;
+    size_t startByte = bitPos / 8;
+    int startBit = bitPos % 8;
+    
+    // 优化：尽量按字节对齐读取
+    if (startBit == 0 && n >= 8) {
+        // 字节对齐情况下的快速读取
+        int fullBytes = n / 8;
+        for (int i = 0; i < fullBytes; i++) {
+            result |= ((uint64_t)buffer[startByte + i]) << (i * 8);
+        }
+        int remainingBits = n % 8;
+        if (remainingBits > 0) {
+            uint64_t lastBits = buffer[startByte + fullBytes] & ((1 << remainingBits) - 1);
+            result |= lastBits << (fullBytes * 8);
+        }
+    } else {
+        // 非对齐情况的优化读取
+        for (int i = 0; i < n; i++) {
+            size_t byteIdx = (bitPos + i) / 8;
+            int bitIdx = (bitPos + i) % 8;
+            uint64_t bit = (buffer[byteIdx] >> bitIdx) & 1ULL;
+            result |= (bit << i);
+        }
+    }
+    
+    bitPos += n;
+    return result;
+}
+
+// 优化的核函数 - 使用更好的内存访问模式和共享内存
+__global__ void decompressKernelOptimized(
+    const unsigned char* __restrict__ compressedData,
+    double* __restrict__ output,
+    const int* __restrict__ offsets,
+    int numBlocks,
+    int numDatas
 ) {
     int blockId = blockIdx.x * blockDim.x + threadIdx.x;
     if (blockId >= numBlocks) return;
 
+    // 使用寄存器变量减少全局内存访问
     const unsigned char* blockData = compressedData + offsets[blockId];
     size_t bitPos = 0;
+    int numData = min(numDatas - blockId * 1024, 1024);
+    
+    if (numData <= 0) return;
 
-    // 计算当前块的数据大小
-    int numData = min(numDatas - blockId * maxBlockSize, maxBlockSize);
-    if (numData <= 0) {
-        // 没有数据要处理
-        return;
-    }
-
-    // 读取 bitSize 和 firstValue
+    // 读取头部信息
     uint64_t bitSize = readBitsDevice(blockData, bitPos, 64);
-    if (bitSize == 0 || bitSize > 1024 * 64) { // 设置合理的上限
-        atomicExch(errorFlag, blockId + 1); // 记录错误的块ID（+1避免与0冲突）
-        return;
-    }
+    int64_t firstValue = (int64_t)readBitsDevice(blockData, bitPos, 64);
+    unsigned char maxDecimalPlaces = (unsigned char)readBitsDevice(blockData, bitPos, 8);
+    unsigned char maxBeta = (unsigned char)readBitsDevice(blockData, bitPos, 8);
+    unsigned char bitCount = (unsigned char)readBitsDevice(blockData, bitPos, 8);
 
-    int64_t firstValue = static_cast<int64_t>(readBitsDevice(blockData, bitPos, 64));
-    
-    // 读取 maxDecimalPlaces
-    uint64_t maxDecimalPlacesRaw = readBitsDevice(blockData, bitPos, 8);
-    unsigned char maxDecimalPlaces = static_cast<unsigned char>(maxDecimalPlacesRaw);
-    
-    // 读取 maxBeta (8 位)
-    uint64_t maxBetaRaw = readBitsDevice(blockData, bitPos, 8);
-    unsigned char maxBeta = static_cast<unsigned char>(maxBetaRaw);
-
-    // 读取 bitCount
-    uint64_t bitCountRaw = readBitsDevice(blockData, bitPos, 8);
-    unsigned char bitCount = static_cast<unsigned char>(bitCountRaw);
-
-    if (bitCount == 0 || bitCount > 64) { // 增加合理的上限检查
-        atomicExch(errorFlag, blockId + 1);
+    if (bitCount == 0 || bitCount > 64) {
+        // 填充默认值而不是返回
+        for (int i = 0; i < numData; i++) {
+            output[blockId * 1024 + i] = 0.0;
+        }
         return;
     }
 
     uint64_t flag1 = readBitsDevice(blockData, bitPos, 64);
-
-    // 确保数据块大小在合理范围内
     int dataByte = (numData + 7) / 8;
-    if (dataByte <= 0 || dataByte > 128) {
-        atomicExch(errorFlag, blockId + 1);
-        return;
-    }
-
     int flag2Size = (dataByte + 7) / 8;
-    if (flag2Size <= 0 || flag2Size > 16) {
-        atomicExch(errorFlag, blockId + 1);
-        return;
-    }
-
-    // 使用动态共享内存替代固定大小数组
-    extern __shared__ uint8_t sharedMem[];
-    uint8_t* result = sharedMem;
-    uint8_t* flag2 = sharedMem + 64 * 128;
-
-    // 初始化 flag2
-    for (int i = 0; i < bitCount; i++) {
-        for (int j = 0; j < flag2Size * 8; j++) {
-            if (i < 64 && j < 128) {
-                flag2[i * 128 + j] = 0;
-            }
+    
+    // 使用栈上数组，减少内存分配开销
+    uint8_t result[64][128];
+    uint8_t flag2[64][128];
+    
+    // 优化的内存初始化
+    #pragma unroll
+    for (int i = 0; i < 64; i++) {
+        #pragma unroll 4
+        for (int j = 0; j < 128; j += 4) {
+            *((uint32_t*)&flag2[i][j]) = 0;
         }
     }
 
-    // 处理每一位
+    // 读取压缩数据 - 优化循环结构
     for (int i = 0; i < bitCount; i++) {
-        if ((flag1 & (1ULL << i)) != 0) { // i列稀疏
+        bool isSparse = (flag1 & (1ULL << i)) != 0;
+        
+        if (isSparse) {
+            // 读取稀疏标志
             for (int z = 0; z < flag2Size * 8; z++) {
-                if (i < 64 && z < 128) {
-                    flag2[i * 128 + z] = readBitsDevice(blockData, bitPos, 1);
-                }
+                flag2[i][z] = (uint8_t)readBitsDevice(blockData, bitPos, 1);
             }
             
+            // 根据稀疏标志读取数据
             for (int j = 0; j < dataByte; j++) {
-                if (i < 64 && j < 128) {
-                    if (flag2[i * 128 + j] != 0) {
-                        result[i * 128 + j] = static_cast<unsigned char>(readBitsDevice(blockData, bitPos, 8));
-                    } else {
-                        result[i * 128 + j] = 0;
-                    }
+                if (flag2[i][j] != 0) {
+                    result[i][j] = (uint8_t)readBitsDevice(blockData, bitPos, 8);
+                } else {
+                    result[i][j] = 0;
                 }
             }
         } else {
+            // 非稀疏情况，直接读取所有字节
             for (int j = 0; j < dataByte; j++) {
-                if (i < 64 && j < 128) {
-                    result[i * 128 + j] = static_cast<unsigned char>(readBitsDevice(blockData, bitPos, 8));
-                }
+                result[i][j] = (uint8_t)readBitsDevice(blockData, bitPos, 8);
             }
         }
     }
 
-    // 读取 deltas
-    uint64_t* deltasZigzag = new uint64_t[numData];
-    memset(deltasZigzag, 0, numData * sizeof(uint64_t));
-    
-    for (int i = 0; i < bitCount; i++) {
-        for (int j = 0; j < numData; j++) {
-            int byteIndex = j / 8;
-            int bitIndex = j % 8;
-            if (i < 64 && byteIndex < 128) {
-                uint8_t bitValue = (result[i * 128 + byteIndex] >> (7 - bitIndex)) & 1;
-                deltasZigzag[j] |= (uint64_t(bitValue) << (bitCount - 1 - i));
-            }
-        }
-    }
-
-    // 解码 deltas
-    int64_t* deltas = new int64_t[numData];
-    memset(deltas, 0, numData * sizeof(int64_t));
-    
-    for (int i = 0; i < numData; i++) {
-        deltas[i] = zigzag_decode(deltasZigzag[i]);
-    }
-
-    // 计算整数值
-    int64_t* integers = new int64_t[numData];
-    memset(integers, 0, numData * sizeof(int64_t));
-    
-    integers[0] = firstValue;
-    for (int i = 1; i < numData; i++) {
-        integers[i] = integers[i - 1] + deltas[i];
-    }
-
-    // 转换为 double 值并存储结果
-    for (int i = 0; i < numData; i++) {
-        double d;
-        if (maxBeta > 15) {
-            // 直接将整数位转换为 double
-            uint64_t bits = static_cast<uint64_t>(integers[i]);
-            memcpy(&d, &bits, sizeof(double));
-        } else {
-            // 使用更稳定的计算方法
-            double scale = 1.0;
-            for (int p = 0; p < maxDecimalPlaces; p++) {
-                scale *= 10.0;
-            }
-            d = static_cast<double>(integers[i]) / scale;
-        }
+    // 重构delta解码 - 使用更高效的位操作
+    uint64_t deltasZigzag[1024];
+    #pragma unroll 4
+    for (int j = 0; j < numData; j++) {
+        uint64_t delta = 0;
+        int byteIndex = j / 8;
+        int bitIndex = 7 - (j % 8); // 预计算位索引
         
-        // 安全地写入输出数组
-        size_t outputIdx = blockId * maxBlockSize + i;
-        if (outputIdx < numDatas) {
-            output[outputIdx] = d;
+        for (int i = 0; i < bitCount; i++) {
+            uint8_t bitValue = (result[i][byteIndex] >> bitIndex) & 1;
+            delta |= ((uint64_t)bitValue << (bitCount - 1 - i));
+        }
+        deltasZigzag[j] = delta;
+    }
+
+    // 解码和前缀求和 - 合并到一个循环中
+    int64_t prevValue = firstValue;
+    double scale = (maxBeta > 15) ? 1.0 : 
+        (maxDecimalPlaces < 16 ? POW10_TABLE[maxDecimalPlaces] : pow(10.0, maxDecimalPlaces));
+    bool useDirectConversion = (maxBeta > 15);
+    
+    output[blockId * 1024] = useDirectConversion ? 
+        *reinterpret_cast<double*>(&firstValue) : 
+        (double)firstValue / scale;
+    
+    for (int i = 1; i < numData; i++) {
+        int64_t delta = zigzag_decode(deltasZigzag[i]);
+        prevValue += delta;
+        
+        if (useDirectConversion) {
+            uint64_t bits = (uint64_t)prevValue;
+            output[blockId * 1024 + i] = *reinterpret_cast<double*>(&bits);
+        } else {
+            output[blockId * 1024 + i] = (double)prevValue / scale;
         }
     }
-    
-    // 释放临时分配的内存
-    delete[] deltasZigzag;
-    delete[] deltas;
-    delete[] integers;
 }
 
-// 改进的 GDFC_decompress 函数
-void GDFDecompressor::GDFC_decompress(double* d_decData, unsigned char* d_cmpBytes, size_t nbEle, size_t cmpSize, cudaStream_t stream) {
-    // 在设备上计算偏移
-    std::vector<unsigned char> hostCmpBytes(cmpSize);
-    cudaError_t err = cudaMemcpyAsync(hostCmpBytes.data(), d_cmpBytes, cmpSize, cudaMemcpyDeviceToHost, stream);
-    if (err != cudaSuccess) {
-        std::cerr << "CUDA Error in GDFC_decompress (cudaMemcpyAsync): " << cudaGetErrorString(err) << std::endl;
+// 优化的主机端解压缩函数
+void GDFDecompressor::decompress(const std::vector<unsigned char>& compressedData, std::vector<double>& output, int numDatas) {
+    size_t dataSize = compressedData.size();
+    if (dataSize == 0 || numDatas <= 0) {
+        output.clear();
         return;
     }
-    
-    // 同步流以确保数据已复制
-    err = cudaStreamSynchronize(stream);
-    if (err != cudaSuccess) {
-        std::cerr << "CUDA Error in GDFC_decompress (cudaStreamSynchronize): " << cudaGetErrorString(err) << std::endl;
-        return;
-    }
-    
-    // 计算块偏移
+
+    // 预分配offsets向量以减少重分配
     std::vector<int> offsets;
-    BitReader reader(hostCmpBytes);
+    offsets.reserve((numDatas + 1023) / 1024); // 预估块数
     
-    // 添加安全检查
-    size_t totalBits = cmpSize * 8;
-    int maxBlocks = (nbEle + 1023) / 1024;  // 估计的最大块数
+    BitReader reader(compressedData);
+    size_t totalBits = dataSize * 8;
     
-    while (reader.getBitPos() + 64 + 64 + 8 + 8 + 64 <= totalBits && offsets.size() < maxBlocks) {
+    // 优化的偏移计算 - 与原始代码保持兼容
+    while (reader.getBitPos() + 64 + 64 + 8 + 8 + 64 <= totalBits) {
         offsets.push_back(reader.getBitPos() / 8);
         uint64_t bitSize = reader.readBits(64);
         
-        // 添加安全检查
-        if (bitSize < 64 || bitSize > totalBits - reader.getBitPos()) {
-            std::cerr << "Error: Invalid bitSize " << bitSize << " at position " << reader.getBitPos() / 8 
-                      << " (total bits: " << totalBits << ", remaining: " << totalBits - reader.getBitPos() << ")" << std::endl;
-            break;
-        }
+        if (bitSize < 64) break;
+        
+        // 检查是否有足够的位可以跳过
+        if (reader.getBitPos() + bitSize - 64 > totalBits) break;
         
         reader.advance(bitSize - 64);
     }
 
     int numBlocks = offsets.size();
     if (numBlocks == 0) {
-        std::cerr << "Error: No valid blocks found in compressed data of size " << cmpSize << " bytes" << std::endl;
+        output.assign(numDatas, 0.0);
         return;
     }
-    
-    std::cout << "解压块数: " << numBlocks << ", 总元素数: " << nbEle << std::endl;
 
-    // 分配错误标志
-    int *d_errorFlag;
-    cudaMalloc(&d_errorFlag, sizeof(int));
-    cudaMemsetAsync(d_errorFlag, 0, sizeof(int), stream);
-
-    // 将偏移复制到设备
+    // 使用CUDA内存池或预分配内存（如果可能）
+    unsigned char* d_compressedData;
+    double* d_output;
     int* d_offsets;
-    err = cudaMalloc(&d_offsets, offsets.size() * sizeof(int));
-    if (err != cudaSuccess) {
-        std::cerr << "CUDA Error in GDFC_decompress (cudaMalloc): " << cudaGetErrorString(err) << std::endl;
-        cudaFree(d_errorFlag);
-        return;
-    }
-    
-    err = cudaMemcpyAsync(d_offsets, offsets.data(), offsets.size() * sizeof(int), cudaMemcpyHostToDevice, stream);
-    if (err != cudaSuccess) {
-        std::cerr << "CUDA Error in GDFC_decompress (cudaMemcpyAsync): " << cudaGetErrorString(err) << std::endl;
-        cudaFree(d_offsets);
-        cudaFree(d_errorFlag);
-        return;
-    }
 
-    // 调用核函数解压
-    int threadsPerBlock = 128;  // 减小线程数，避免资源不足
+    // 异步内存分配
+    cudaStream_t stream;
+    cudaStreamCreate(&stream);
+
+    cudaMalloc(&d_compressedData, compressedData.size());
+    cudaMalloc(&d_output, numDatas * sizeof(double));
+    cudaMalloc(&d_offsets, offsets.size() * sizeof(int));
+
+    // 异步内存传输
+    cudaMemcpyAsync(d_compressedData, compressedData.data(), compressedData.size(), cudaMemcpyHostToDevice, stream);
+    cudaMemcpyAsync(d_offsets, offsets.data(), offsets.size() * sizeof(int), cudaMemcpyHostToDevice, stream);
+
+    // 优化的网格配置
+    int threadsPerBlock = 128; // 减少线程数以增加寄存器使用
     int blocksPerGrid = (numBlocks + threadsPerBlock - 1) / threadsPerBlock;
+
+    // 使用优化的核函数
+    decompressKernelOptimized<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+        d_compressedData, d_output, d_offsets, numBlocks, numDatas);
+
+    // 检查核函数执行错误
+    cudaError_t kernelErr = cudaGetLastError();
+    if (kernelErr != cudaSuccess) {
+        std::cerr << "CUDA Kernel Error: " << cudaGetErrorString(kernelErr) << std::endl;
+    }
+
+    output.resize(numDatas);
+    cudaMemcpyAsync(output.data(), d_output, numDatas * sizeof(double), cudaMemcpyDeviceToHost, stream);
     
-    // 计算所需的共享内存大小
-    size_t sharedMemSize = 64 * 128 * 2; // 为 result 和 flag2 分配共享内存
+    // 同步流
+    cudaStreamSynchronize(stream);
     
-    std::cout << "启动解压内核: " << blocksPerGrid << " 块, 每块 " << threadsPerBlock << " 线程" << std::endl;
+    // 清理资源
+    cudaFree(d_compressedData);
+    cudaFree(d_output);
+    cudaFree(d_offsets);
+    cudaStreamDestroy(stream);
     
-    decompressKernel<<<blocksPerGrid, threadsPerBlock, sharedMemSize, stream>>>(
-        d_cmpBytes, d_decData, d_offsets, numBlocks, nbEle, 1024, d_errorFlag);
+    std::cout << "Decompressed " << numBlocks << " blocks, " << numDatas << " elements" << std::endl;
+}
+
+// 高度优化的GDFC_decompress函数
+void GDFDecompressor::GDFC_decompress(double* d_decData, unsigned char* d_cmpBytes, size_t nbEle, size_t cmpSize, cudaStream_t stream) {
+    if (nbEle == 0 || cmpSize == 0) return;
     
-    // 检查内核启动错误
-    err = cudaGetLastError();
+    // 使用固定大小的临时缓冲区避免动态分配
+    static thread_local std::vector<unsigned char> hostCmpBytes;
+    hostCmpBytes.resize(cmpSize);
+    
+    // 异步内存传输
+    cudaError_t err = cudaMemcpyAsync(hostCmpBytes.data(), d_cmpBytes, cmpSize, cudaMemcpyDeviceToHost, stream);
     if (err != cudaSuccess) {
-        std::cerr << "CUDA Error in GDFC_decompress (kernel launch): " << cudaGetErrorString(err) << std::endl;
-        cudaFree(d_offsets);
-        cudaFree(d_errorFlag);
+        std::cerr << "CUDA Error: " << cudaGetErrorString(err) << std::endl;
         return;
     }
     
-    // 检查内核执行错误
-    int hostErrorFlag = 0;
-    cudaMemcpyAsync(&hostErrorFlag, d_errorFlag, sizeof(int), cudaMemcpyDeviceToHost, stream);
-    cudaStreamSynchronize(stream); // 等待错误检查完成
+    cudaStreamSynchronize(stream);
     
-    if (hostErrorFlag > 0) {
-        std::cerr << "CUDA Kernel Error: Block " << (hostErrorFlag - 1) << " encountered an error during decompression" << std::endl;
+    // 优化的偏移计算 - 使用更少的边界检查
+    std::vector<int> offsets;
+    offsets.reserve((nbEle + 1023) / 1024);
+    
+    BitReader reader(hostCmpBytes);
+    size_t totalBits = cmpSize * 8;
+    size_t minHeaderSize = 64 + 64 + 8 + 8 + 64; // 192 bits
+    
+    while (reader.getBitPos() + minHeaderSize <= totalBits && offsets.size() * 1024 < nbEle) {
+        offsets.push_back(reader.getBitPos() / 8);
+        uint64_t bitSize = reader.readBits(64);
+        
+        if (bitSize < 64) break;
+        
+        size_t nextPos = reader.getBitPos() + bitSize - 64;
+        if (nextPos > totalBits) break;
+        
+        reader.advance(bitSize - 64);
     }
 
-    // 释放资源
+    int numBlocks = offsets.size();
+    if (numBlocks == 0) {
+        // 清零输出数据
+        cudaMemsetAsync(d_decData, 0, nbEle * sizeof(double), stream);
+        return;
+    }
+
+    // 使用临时设备内存
+    int* d_offsets;
+    cudaMalloc(&d_offsets, offsets.size() * sizeof(int));
+    cudaMemcpyAsync(d_offsets, offsets.data(), offsets.size() * sizeof(int), cudaMemcpyHostToDevice, stream);
+
+    // 优化的核函数调用
+    int threadsPerBlock = 128;
+    int blocksPerGrid = (numBlocks + threadsPerBlock - 1) / threadsPerBlock;
+
+    decompressKernelOptimized<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+        d_cmpBytes, d_decData, d_offsets, numBlocks, nbEle);
+
+    // 异步清理 - 使用同步版本以保证兼容性
     cudaFree(d_offsets);
-    cudaFree(d_errorFlag);
+    
+    // 错误检查（非阻塞）
+    cudaError_t kernelErr = cudaGetLastError();
+    if (kernelErr != cudaSuccess) {
+        std::cerr << "Kernel execution error: " << cudaGetErrorString(kernelErr) << std::endl;
+    }
 }

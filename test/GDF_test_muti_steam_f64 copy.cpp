@@ -48,49 +48,112 @@ class MemoryPool
 public:
     MemoryPool(size_t poolSize, size_t chunkSize) : poolSize(poolSize), chunkSize(chunkSize)
     {
-        cudaMalloc(&pool, poolSize); // 为整个内存池分配显存
-        freeList = (void**)malloc(poolSize / chunkSize * sizeof(void*)); // 用于管理空闲块
-        freeBlockCount = poolSize / chunkSize;
+        cudaError_t err = cudaMalloc(&pool, poolSize);
+        if (err != cudaSuccess) {
+            std::cerr << "CUDA malloc failed: " << cudaGetErrorString(err) << std::endl;
+            exit(EXIT_FAILURE);
+        }
 
+        freeList = (void**)malloc(poolSize / chunkSize * sizeof(void*)); // 用于管理空闲块
+        if (!freeList) {
+            std::cerr << "Failed to allocate freeList!" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        freeBlockCount = poolSize / chunkSize;
+        
         // 初始化空闲块列表
         for (size_t i = 0; i < freeBlockCount; ++i)
         {
             freeList[i] = (void*)((char*)pool + i * chunkSize);
         }
+        
+        // 初始化块状态跟踪
+        usedBlocks = (bool*)calloc(poolSize / chunkSize, sizeof(bool));
+        if (!usedBlocks) {
+            std::cerr << "Failed to allocate usedBlocks!" << std::endl;
+            exit(EXIT_FAILURE);
+        }
     }
-
+    
+    void reset() {
+        // 确保所有 GPU 操作已完成
+        cudaDeviceSynchronize();
+        // 重置内存池但要检查所有块是否已归还
+        if (freeBlockCount != poolSize / chunkSize) {
+            std::cerr << "Warning: Memory pool reset while " 
+                      << (poolSize / chunkSize - freeBlockCount) 
+                      << " blocks still in use!" << std::endl;
+        }
+        
+        freeBlockCount = poolSize / chunkSize;
+        for (size_t i = 0; i < freeBlockCount; ++i) {
+            freeList[i] = (char*)pool + i * chunkSize;
+            usedBlocks[i] = false;
+        }
+    }
+    
     // 从内存池中获取内存
     void* allocate()
     {
         if (freeBlockCount == 0)
         {
-            std::cerr << "No available memory blocks in the pool!" << std::endl;
+            std::cerr << "Error: No available memory blocks in the pool!" << std::endl;
             return nullptr;
         }
+        
         void* block = freeList[--freeBlockCount]; // 获取一个空闲块
+        
+        // 标记为已使用
+        size_t blockIndex = ((char*)block - (char*)pool) / chunkSize;
+        usedBlocks[blockIndex] = true;
+        
         return block;
     }
 
     // 归还内存块
     void deallocate(void* block)
     {
-        if (freeBlockCount >= poolSize / chunkSize)
-        {
-            std::cerr << "Memory pool is full!" << std::endl;
+        if (!block) return;
+        
+        // 确认地址在合法范围内
+        if (block < pool || block >= (void*)((char*)pool + poolSize)) {
+            std::cerr << "Error: Trying to deallocate invalid memory address!" << std::endl;
             return;
         }
-        freeList[freeBlockCount++] = block; // 将块放回空闲列表
+        
+        // 计算块索引并检查是否已经释放
+        size_t blockIndex = ((char*)block - (char*)pool) / chunkSize;
+        if (!usedBlocks[blockIndex]) {
+            std::cerr << "Error: Double free detected for block " << blockIndex << std::endl;
+            return;
+        }
+        
+        // 标记为空闲并添加到可用列表
+        usedBlocks[blockIndex] = false;
+        freeList[freeBlockCount++] = block;
+    }
+
+    // 检查内存池状态
+    void printStatus() {
+        std::cout << "Memory Pool Status: " 
+                  << freeBlockCount << "/" << (poolSize / chunkSize) 
+                  << " blocks free (" 
+                  << (100.0 * freeBlockCount / (poolSize / chunkSize)) 
+                  << "%)" << std::endl;
     }
 
     ~MemoryPool()
     {
-        cudaFree(pool); // 释放内存池
-        free(freeList); // 释放空闲列表
+        if (pool) cudaFree(pool);
+        if (freeList) free(freeList);
+        if (usedBlocks) free(usedBlocks);
     }
 
 private:
     void* pool{}; // 内存池的起始地址
     void** freeList; // 空闲块链表
+    bool* usedBlocks; // 跟踪每个块的使用情况
     size_t poolSize; // 内存池的大小
     size_t chunkSize; // 每个内存块的大小
     size_t freeBlockCount; // 当前空闲块的数量
@@ -114,6 +177,7 @@ struct PipelineAnalysis {
     float total_d2h = 0;    //
     float end_time = 0;
     float sequential_time = 0;
+    float comp_level = 0;
     float speedup = 0;
     float avg_h2d = 0;    // 平均H2D时间
     float avg_comp = 0;   // 平均计算时间
@@ -212,30 +276,76 @@ public:
         double* d_decData, unsigned char* d_cmpBytes,
         size_t chunkEle, size_t cmpSize, size_t cmpOffset, size_t decOffset) {
         
+        // 确保参数有效
+        if (chunkEle == 0 || cmpSize == 0) {
+            std::cerr << "Error: Invalid chunk parameters for decompression. chunkEle=" 
+                    << chunkEle << ", cmpSize=" << cmpSize << std::endl;
+            return;
+        }
+        
         // 记录开始事件
         cudaCheckError(cudaEventRecord(decompression_timing.start_event, stream));
         
         // 主机到设备的拷贝 (H2D) - 压缩数据
+        // std::cout << "复制压缩数据 " << cmpSize << " 字节, 从偏移 " << cmpOffset << std::endl;
+        
+        
+        // 在重要操作之前添加同步点
+        cudaStreamSynchronize(stream);
+        // HTD
         cudaCheckError(cudaMemcpyAsync(d_cmpBytes, h_cmpBytes + cmpOffset, 
-                                      cmpSize * sizeof(unsigned char),
-                                      cudaMemcpyHostToDevice, stream));
+                                    cmpSize, cudaMemcpyHostToDevice, stream));
         cudaCheckError(cudaEventRecord(decompression_timing.h2d_event, stream));
+
+        // 添加内存拷贝后的同步点，确保数据已经完全复制到GPU
+        cudaStreamSynchronize(stream);
         
         // 执行解压计算
+        // std::cout << "解压数据块: 原始大小=" << chunkEle << "元素, 压缩大小=" << cmpSize << "字节" << std::endl;
         GDFDecompressor GDFC;
-        GDFC.GDFC_decompress(d_decData, d_cmpBytes, chunkEle, cmpSize, stream);
-        cudaCheckError(cudaEventRecord(decompression_timing.comp_event, stream)); // 实际是解压操作
+        
+        // 检查解压参数有效性
+        if (d_decData == nullptr || d_cmpBytes == nullptr) {
+            std::cerr << "错误: 无效的设备内存指针用于解压" << std::endl;
+            return;
+        }
+        
+        // 使用try-catch捕获可能的解压错误
+        try {
+            GDFC.GDFC_decompress(d_decData, d_cmpBytes, chunkEle, cmpSize, stream);
+        }
+        catch (const std::exception& e) {
+            std::cerr << "解压发生异常: " << e.what() << std::endl;
+            return;
+        }
+        
+        cudaCheckError(cudaEventRecord(decompression_timing.comp_event, stream));
+        
+        // 解压后同步，确保解压已完成
+        cudaStreamSynchronize(stream);
         
         // 设备到主机的拷贝 (D2H) - 解压结果
-        cudaCheckError(cudaMemcpyAsync(h_decData + decOffset, d_decData, 
-                                      chunkEle * sizeof(double),
-                                      cudaMemcpyDeviceToHost, stream));
+        // std::cout << "复制解压数据 " << chunkEle << " 元素, 到偏移 " << decOffset << std::endl;
+        cudaError_t err = cudaMemcpyAsync(h_decData + decOffset, d_decData, 
+            chunkEle * sizeof(double),
+            cudaMemcpyDeviceToHost, stream);
+        if (err != cudaSuccess) {
+            std::cerr << "CUDA Error during D2H copy: " << cudaGetErrorString(err) 
+            << "\nOffset: " << decOffset << ", Elements: " << chunkEle 
+            << ", Device ptr: " << d_decData << ", Host ptr: " << (h_decData + decOffset) << std::endl;
+            return;
+        }
+        //decData指针传输错误
         cudaCheckError(cudaEventRecord(decompression_timing.d2h_event, stream));
         
         // 记录结束事件
         cudaCheckError(cudaEventRecord(decompression_timing.end_event, stream));
+        
+        // 最终同步，确保数据已经回到主机
+        cudaStreamSynchronize(stream);
     }
     
+
     // 计算并返回压缩阶段的时间
     StreamTiming calculate_compression_timing() {
         float tmp;
@@ -314,32 +424,62 @@ struct PipelineVerification {
 };
 
 // 验证数据块解压正确性的函数
-bool verify_chunk(double* original, double* decompressed, size_t size, double& max_error, double& avg_error) {
+bool verify_chunk(
+    const double* original,
+    const double* decompressed,
+    size_t size,
+    double& max_error,
+    double& avg_error) {
+    
+    if (!original || !decompressed) {
+        std::cerr << "验证错误: 无效的数据指针" << std::endl;
+        return false;
+    }
+    
     max_error = 0.0;
     double total_error = 0.0;
-    bool exact_match = true;
+    bool is_valid = true;
     
-    for (size_t i = 0; i < size; ++i) {
-        double error = std::abs(original[i] - decompressed[i]);
-        if (error > 0) {
-            exact_match = false;
-            max_error = std::max(max_error, error);
-            total_error += error;
+    // 为了调试，总是打印前几个元素的值
+    const int debug_count = 5;
+    for (int i = 0; i < std::min(debug_count, (int)size); i++) {
+        std::cout << "original[" << i << "]:" << original[i] 
+                  << " , decompressed[" << i << "]: " << decompressed[i] << std::endl;
+        
+        if (std::isnan(decompressed[i]) || std::isinf(decompressed[i])) {
+            std::cout << "  警告: 元素 " << i << " 包含无效值" << std::endl;
+            is_valid = false;
+        }
+    }
+    
+    // 完整验证
+    for (size_t i = 0; i < size; i++) {
+        double err = std::abs(original[i] - decompressed[i]);
+        max_error = std::max(max_error, err);
+        total_error += err;
+        
+        // 检查错误是否超过阈值
+        const double error_threshold = 1e-6;
+        if (err > error_threshold) {
+            // 如果错误超过阈值且尚未打印过这个元素，则打印详细信息
+            if (i >= debug_count && is_valid && i % 1000000 == 0) { // 只打印部分以避免大量输出
+                std::cout << "错误超过阈值: original[" << i << "]=" << original[i] 
+                          << ", decompressed[" << i << "]=" << decompressed[i] 
+                          << ", err=" << err << std::endl;
+            }
+            is_valid = false;
         }
     }
     
     avg_error = total_error / size;
-    
-    // 如果是无损压缩，应该是精确匹配；对于有损压缩，可以设置一个可接受的误差阈值
-    // 这里假设是无损压缩，期望完全匹配
-    return exact_match;
+    return is_valid;
 }
 
 // 分析流水线性能
-PipelineAnalysis analyze_pipeline(const std::vector<StreamTiming>& timings, size_t chunkSize, bool print_results = true) {
+PipelineAnalysis analyze_pipeline(const std::vector<StreamTiming>& timings, size_t chunkSize, float comp_level,bool print_results = true) {
     PipelineAnalysis analysis;
     analysis.chunk_size = chunkSize;
-    
+    analysis.comp_level =comp_level;
     if (timings.empty()) {
         return analysis;
     }
@@ -547,7 +687,7 @@ size_t setup_gpu_memory_pool(size_t nbEle, size_t& chunkSize) {
     while (temp*2 < chunkSize) {
         temp *= 2;
     }
-    chunkSize = temp/2/2;//调整
+    chunkSize = temp;//调整
     
     return poolSize;
 }
@@ -658,14 +798,14 @@ PipelineAnalysis execute_pipeline(ProcessedData& data, size_t chunkSize, size_t 
     cudaEventElapsedTime(&tmp, global_start_event, global_end_event);
 
     // 分析流水线性能
-    PipelineAnalysis analysis = analyze_pipeline(timings, chunkSize, false);
+    PipelineAnalysis analysis = analyze_pipeline(timings, chunkSize,static_cast<double>(data.nbEle * sizeof(double)) / cmpSize, false);
     analysis.total_size = data.nbEle * sizeof(double) / (1024*1024);
     // 可视化时间线
     if (visualize) {
         visualize_timeline(timings);
         
         // 分析流水线性能
-        analyze_pipeline(timings, chunkSize, true);
+        analyze_pipeline(timings, chunkSize, static_cast<double>(data.nbEle * sizeof(double)) / cmpSize,true);
         
         // 输出统计信息
         printf("\n===== 压缩统计 =====\n");
@@ -765,7 +905,7 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
     
     // 分配解压缩结果的内存（固定内存以便高效传输）
     double* decompressed_data;
-    cudaCheckError(cudaHostAlloc(&decompressed_data, data.nbEle * 2* sizeof(double), cudaHostAllocDefault));
+    cudaCheckError(cudaHostAlloc(&decompressed_data, data.nbEle * sizeof(double), cudaHostAllocDefault));
     
     // 启动计时器
     Timer timer;
@@ -778,11 +918,10 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
     
     // 阶段1: 压缩处理
     std::cout << "\n===== 阶段1: 执行压缩流水线 =====\n";
-    
+
+    cudaEventRecord(global_start_event);  //全局时间记录
+
     while (processedEle < data.nbEle) {
-        if (processedEle == 0) {  
-            cudaEventRecord(global_start_event);  //全局时间记录
-        }  
         // 计算当前块的大小
         size_t chunkEle = (data.nbEle - processedEle) > chunkSize ? chunkSize : (data.nbEle - processedEle);
         if (chunkEle == 0) break;
@@ -798,10 +937,13 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
             std::cerr << "内存池分配失败!" << std::endl;
             break;
         }
-        
-        std::cout << "处理数据块 " << chunkIndex << " (流 " << streamIdx << "): " 
-                  << processedEle << " 到 " << (processedEle + chunkEle) 
-                  << " 块大小: " << chunkEle << std::endl;
+
+        // printf("d_oriData = %p\n", d_oriData);
+        // printf("d_cmpBytes = %p\n", d_cmpBytes);
+
+        // std::cout << "处理数据块 " << chunkIndex << " (流 " << streamIdx << "): " 
+        //           << processedEle << " 到 " << (processedEle + chunkEle) 
+        //           << " 块大小: " << chunkEle << std::endl;
         
         // 设置当前块的索引
         operators[streamIdx].set_index(chunkIndex);
@@ -823,6 +965,16 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
         info.original_size = chunkEle;
         info.compressed_size = cmpSize - current_cmp_offset;
         compression_infos.push_back(info);
+
+        // std::cout << "  Compressed " << chunkEle << " elements to " << info.compressed_size 
+        //     << " bytes (ratio: " << static_cast<double>(chunkEle * sizeof(double)) / info.compressed_size << ")" << std::endl;
+        
+        cudaStreamSynchronize(operators[streamIdx].get_stream());
+        //释放显存
+        // ori_data_pool.deallocate(d_oriData);
+        // cmp_bytes_pool.deallocate(d_cmpBytes);
+        
+        // printf("data.cmpBytes:%d,%d\n",data.cmpBytes[(current_cmp_offset+7)/8],data.cmpBytes[(current_cmp_offset+7)/8+1]);
         
         // 处理下一个数据块
         processedEle += chunkEle;
@@ -859,7 +1011,9 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
             comp_timings.push_back(timing);
         }
     }
-    
+    cudaEventRecord(global_end_event);
+    cudaEventSynchronize(global_end_event);
+
     float compression_time = timer.Elapsed();
     std::cout << "压缩阶段完成，用时: " << compression_time << " ms" << std::endl;
     std::cout << "压缩大小: " << cmpSize << " 字节，原始大小: " << data.nbEle * sizeof(double) << " 字节" << std::endl;
@@ -871,10 +1025,20 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
     // 阶段2: 解压处理
     std::cout << "\n===== 阶段2: 执行解压流水线 =====\n";
     
-    // 使用和压缩相同的内存池
-    ori_data_pool = MemoryPool(poolSize, chunkSize * sizeof(double)); // 重置内存池
-    cmp_bytes_pool = MemoryPool(poolSize, chunkSize * sizeof(double));
+    // 使用和压缩相同的内存池！！！！！！不能重置，不然会有内存碎片
+    // ori_data_pool = MemoryPool(poolSize, chunkSize * sizeof(double)); // 重置内存池
+    // cmp_bytes_pool = MemoryPool(poolSize, chunkSize * sizeof(double));
+    // 为解压阶段创建新的内存池
+    // 重要提示：不要创建新对象，只需释放并重用现有的内存池
+    // 这能确保避免出现内存碎片问题 
     
+    //创建新对象会导致内存不够用！！
+    
+    //释放然后新建
+    cmp_bytes_pool.reset();
+    ori_data_pool.reset();
+    // MemoryPool dec_data_pool(poolSize, chunkSize * sizeof(double)); // 原始数据显存池
+
     // 为解压过程创建新的流
     cudaEvent_t decomp_start, decomp_end;
     cudaEventCreate(&decomp_start);
@@ -886,30 +1050,46 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
         const auto& info = compression_infos[i];
         int streamIdx = i % NUM_STREAMS;
         
-        std::cout << "解压数据块 " << i << " (流 " << streamIdx << "): 原始偏移 " 
-                  << info.original_offset << ", 压缩偏移 " << info.compressed_offset 
-                  << ", 大小: " << info.original_size << " 元素, 压缩大小: " 
-                  << info.compressed_size << " 字节" << std::endl;
+        // Validate compressed data size
+        if (info.compressed_size <= 0) {
+            std::cerr << "Error: Invalid compressed size for chunk " << i 
+                     << ": " << info.compressed_size << " bytes" << std::endl;
+            continue;
+        }
+        
+        // std::cout << "解压数据块 " << i << " (流 " << streamIdx << "): 原始偏移 " 
+        //           << info.original_offset << ", 压缩偏移 " << info.compressed_offset 
+        //           << ", 大小: " << info.original_size << " 元素, 压缩大小: " 
+        //           << info.compressed_size << " 字节" << std::endl;
         
         // 分配GPU内存
+
         double* d_decData = (double*)ori_data_pool.allocate();
+        // printf("d_decData\n");
         unsigned char* d_cmpBytes = (unsigned char*)cmp_bytes_pool.allocate();
-        
+        // printf("d_cmpBytes:\n");
         if (!d_decData || !d_cmpBytes) {
             std::cerr << "解压阶段内存池分配失败!" << std::endl;
             break;
         }
+
+        // printf("d_decData = %p\n", d_decData);
+        // printf("d_cmpBytes = %p\n", d_cmpBytes);
         
         // 设置当前块的索引
         operators[streamIdx].set_index(i);
         
         // 执行解压（异步操作）
         operators[streamIdx].decompress_chunk(
-            decompressed_data, data.cmpBytes,
-            d_decData, d_cmpBytes,
+            decompressed_data, //这个是空的。       输出结果
+            data.cmpBytes,  // 有初始值，压缩后     输入
+            d_decData,      // 它的初始值就是ori    中间
+            d_cmpBytes,     // 有初始值            中间
             info.original_size, info.compressed_size, info.compressed_offset, info.original_offset
         );
-        
+
+        cudaStreamSynchronize(operators[streamIdx].get_stream());
+        //释放显存
         // 每处理NUM_STREAMS个块，等待最早的流完成
         if ((i + 1) >= NUM_STREAMS && (i + 1) % NUM_STREAMS == 0) {
             for (int j = 0; j < NUM_STREAMS; j++) {
@@ -920,6 +1100,8 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
                 decomp_timings.push_back(timing);
                 
                 // 这里可以释放内存池资源
+                ori_data_pool.deallocate(d_decData);
+                cmp_bytes_pool.deallocate(d_cmpBytes);
             }
         }
     }
@@ -933,6 +1115,7 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
             StreamTiming timing = operators[i].calculate_decompression_timing();
             decomp_timings.push_back(timing);
         }
+        
     }
     
     cudaEventRecord(decomp_end);
@@ -940,7 +1123,7 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
     
     float decompression_time = timer.Elapsed();
     std::cout << "解压阶段完成，用时: " << decompression_time << " ms" << std::endl;
-    
+   
     // 阶段3: 验证解压结果
     std::cout << "\n===== 阶段3: 验证解压结果 =====\n";
     
@@ -972,7 +1155,7 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
         
         std::cout << "数据块 " << (&info - &compression_infos[0]) << " 验证: " 
                   << (chunk_verified ? "通过" : "失败") 
-                  << " (最大误差: " << chunk_max_error << ", 平均误差: " << chunk_avg_error << ")" << std::endl;
+                  << " ( Size : "<<info.original_size<<", 最大误差: " << chunk_max_error << ", 平均误差: " << chunk_avg_error << ")" << std::endl;
     }
     
     double avg_error = total_error / data.nbEle;
@@ -990,10 +1173,10 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
         visualize_decompression_timeline(decomp_timings);
         
         // 分析压缩流水线性能
-        analyze_pipeline(comp_timings, chunkSize, true);
+        analyze_pipeline(comp_timings, chunkSize,static_cast<double>(data.nbEle * sizeof(double)) / cmpSize, true);
         
         // 分析解压流水线性能
-        PipelineAnalysis decomp_analysis = analyze_pipeline(decomp_timings, chunkSize, false);
+        PipelineAnalysis decomp_analysis = analyze_pipeline(decomp_timings, chunkSize,static_cast<double>(data.nbEle * sizeof(double)) / cmpSize, false);
         
         printf("\n===== 解压流水线执行分析 (块大小: %zu 元素) =====\n", chunkSize);
         printf("各阶段总时间:\n");
@@ -1010,7 +1193,7 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
         printf("压缩比: %.2f\n", static_cast<double>(data.nbEle * sizeof(double)) / cmpSize);
         printf("压缩用时: %.2f ms\n", compression_time);
         printf("解压用时: %.2f ms\n", decompression_time);
-        printf("压缩/解压速度比: %.2f\n", decompression_time / compression_time);
+        printf("压缩/解压速度比: %.2f\n", compression_time / decompression_time);
         printf("验证结果: %s\n", all_verified ? "所有数据块完全匹配" : "存在不匹配的数据块");
         if (!all_verified) {
             printf("最大误差: %e\n", max_error);
@@ -1039,6 +1222,7 @@ PipelineVerification execute_pipeline_with_verification(ProcessedData& data, siz
     cudaEventDestroy(decomp_end);
     return verification;
 }
+
 // 输出块大小与运行时间关系的CSV文件
 void output_blocksize_timing_csv(const std::vector<PipelineAnalysis>& results, const std::string& filename) {
     std::ofstream csv_file(filename, std::ios::app);
@@ -1049,11 +1233,11 @@ void output_blocksize_timing_csv(const std::vector<PipelineAnalysis>& results, c
     bool write_header = csv_file.tellp() == 0;
     if (write_header) {
     // 写入CSV头
-        csv_file << title <<"\n数据量(MB),块大小(KB),平均H2D时间(ms),平均压缩时间(ms),平均D2H时间(ms),加速比,总时间,吞吐量比例\n";
+        csv_file << title <<"\n数据量(MB),块大小(KB),平均H2D时间(ms),平均压缩时间(ms),平均D2H时间(ms),加速比,总时间,吞吐量比例,压缩率\n";
     }
     else
     {
-        csv_file << "\n" << title <<"\n数据量(MB),块大小(KB),平均H2D时间(ms),平均压缩时间(ms),平均D2H时间(ms),加速比,总时间,吞吐量比例\n";
+        csv_file << "\n" << title <<"\n数据量(MB),块大小(KB),平均H2D时间(ms),平均压缩时间(ms),平均D2H时间(ms),加速比,总时间,吞吐量比例,压缩率\n";
     }
 
     // 写入每个块大小的数据
@@ -1065,7 +1249,8 @@ void output_blocksize_timing_csv(const std::vector<PipelineAnalysis>& results, c
                  << result.avg_d2h << "," 
                  << result.speedup << "," 
                  << result.end_time << ","
-                 << (result.avg_comp > 0 ? (result.avg_h2d + result.avg_d2h) / result.avg_comp : 0) << "\n";
+                 << (result.avg_comp > 0 ? (result.avg_h2d + result.avg_d2h) / result.avg_comp : 0) <<","
+                 << result.comp_level <<"\n";
     }
     
     csv_file.close();
@@ -1075,13 +1260,13 @@ void output_blocksize_timing_csv(const std::vector<PipelineAnalysis>& results, c
 // 可视化块大小与阶段时间的关系
 void visualize_stage_timing_relationship(const std::vector<PipelineAnalysis>& results) {
     printf("\n===== 块大小与运行时间关系分析 =====\n");
-    printf("总大小(MB) \t块大小(KB) \tH2D(ms) \tComp(ms) \tD2H(ms) \t比例(IO/Comp) \t总时间(ms) \t加速比\n");
+    printf("总大小(MB) \t块大小(KB) \tH2D(ms) \tComp(ms) \tD2H(ms) \t比例(IO/Comp) \t总时间(ms) \t加速比 \t压缩率 \n");
     printf("---------------------------------------------------------------------------\n");
     
     for (const auto& result : results) {
         float io_comp_ratio = result.avg_comp > 0 ? (result.avg_h2d + result.avg_d2h) / result.avg_comp : 0;
         
-        printf("%8.2f \t %8.2f \t%7.2f \t%7.2f \t%7.2f \t%7.2f \t%7.2f \t%7.2f\n", 
+        printf("%8.2f \t %8.2f \t%7.2f \t%7.2f \t%7.2f \t%7.2f \t%7.2f \t%7.2f  \t%7.2f\n", 
                result.total_size,
                (result.chunk_size * sizeof(double) / 1024.0), 
                result.avg_h2d, 
@@ -1089,7 +1274,8 @@ void visualize_stage_timing_relationship(const std::vector<PipelineAnalysis>& re
                result.avg_d2h,
                io_comp_ratio,
                result.end_time,
-               result.speedup);
+               result.speedup,
+               result.comp_level);
     }
 }
 
@@ -1235,6 +1421,7 @@ int test(const std::string& file_path = "", size_t data_size_mb = 0, int pattern
 
 int main(int argc, char *argv[])
 {
+    cudaSetDevice(0);
     if (argc < 2) {
         printf("使用方法:\n");
         printf("  %s --file <file_path> : 从文件测试\n", argv[0]);
@@ -1281,8 +1468,8 @@ int main(int argc, char *argv[])
         title = "analyze-blocks " + file_path;
         // 创建不同大小的块序列
         // 从64KB到64MB，以二次方增长
-        std::vector<size_t> block_sizes = generate_power2_blocksizes(64*1024/4, 8*65536);
-        
+        // std::vector<size_t> block_sizes = generate_power2_blocksizes(64*1024/4, 8*65536);
+        std::vector<size_t> block_sizes = generate_linear_blocksizes(16*1024,3*64*1024,1024*4);
         test_multiple_blocksizes(file_path, block_sizes);
     }
     else if (arg == "--analyze-blocks-gen" && argc >= 3) {
@@ -1294,8 +1481,10 @@ int main(int argc, char *argv[])
         
         // 创建不同大小的块序列
         // 从64KB到64MB，以二次方增长
-        std::vector<size_t> block_sizes = generate_power2_blocksizes(64*1024/4, 8*65536);
-        
+        // std::vector<size_t> block_sizes = generate_power2_blocksizes(64*1024/4, 8*65536);
+        // std::vector<size_t> block_sizes = generate_linear_blocksizes(64*1024/4,64*1024,1024*16);
+        std::vector<size_t> block_sizes = generate_linear_blocksizes(16*1024,3*64*1024,1024*4);
+
         test_multiple_blocksizes_generated(data_size_mb, block_sizes, pattern_type);
     }
     else if (arg == "--analyze-blocks-custom" && argc >= 3) {
