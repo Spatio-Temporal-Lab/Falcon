@@ -199,104 +199,55 @@ std::vector<double> read_csv_column(const std::string& file_path, const std::str
 std::vector<Column> get_dynamic_dataset(const std::string& directory_path, bool show_progress, char delimiter) {
     std::vector<Column> columns;
     
-    try {
-        if (!std::filesystem::exists(directory_path)) {
-            std::cerr << "目录不存在: " << directory_path << std::endl;
-            return columns;
-        }
-        
-        // 收集所有CSV文件
-        std::vector<std::filesystem::path> csv_files;
-        for (const auto& entry : std::filesystem::recursive_directory_iterator(directory_path)) {
-            if (entry.is_regular_file() && entry.path().extension() == ".csv") {
-                csv_files.push_back(entry.path());
-            }
-        }
-        
-        if (csv_files.empty()) {
-            std::cout << "在目录中没有找到CSV文件: " << directory_path << std::endl;
-            return columns;
-        }
-        
-        if (show_progress) {
-            std::cout << "找到 " << csv_files.size() << " 个CSV文件" << std::endl;
-        }
-        
-        uint64_t column_id = 0;
-        
-        // 处理每个CSV文件
-        for (size_t file_idx = 0; file_idx < csv_files.size(); ++file_idx) {
-            const auto& csv_file = csv_files[file_idx];
-            
-            if (show_progress) {
-                std::cout << "\r处理文件 [" << (file_idx + 1) << "/" << csv_files.size() 
-                         << "]: " << csv_file.filename().string();
-                std::cout.flush();
-            }
-            
-            // 读取CSV文件的表头
-            std::ifstream file(csv_file);
-            if (!file.is_open()) {
-                if (show_progress) {
-                    std::cout << " - 跳过（无法打开）" << std::endl;
-                }
-                continue;
-            }
-            
-            std::string header_line;
-            if (!std::getline(file, header_line)) {
-                if (show_progress) {
-                    std::cout << " - 跳过（空文件）" << std::endl;
-                }
-                continue;
-            }
-            
-            // 解析表头
-            std::vector<std::string> column_names;
-            std::stringstream ss(header_line);
-            std::string column_name;
-            
-            while (std::getline(ss, column_name, delimiter)) {
-                // 清理列名
-                column_name.erase(0, column_name.find_first_not_of(" \t\r\n\""));
-                column_name.erase(column_name.find_last_not_of(" \t\r\n\"") + 1);
-                column_names.push_back(column_name);
-            }
-            
-            // 为每个数值列创建Column对象
-            for (const auto& col_name : column_names) {
-                // 读取该列的数据样本来判断是否为数值列
-                std::vector<double> sample_data = read_csv_column(csv_file.string(), col_name, delimiter);
-                
-                if (sample_data.size() > 0) {  // 如果能成功读取到数值数据
-                    Column column;
-                    column.id = column_id++;
-                    column.name = col_name;
-                    column.csv_file_path = csv_file.string();
-                    
-                    // 生成对应的二进制文件路径
-                    std::filesystem::path binary_path = csv_file;
-                    binary_path.replace_extension("");
-                    column.binary_file_path = binary_path.string() + "_" + col_name + ".bin";
-                    
-                    // 分析数据特征并设置压缩参数
-                    analyze_column_data(column, sample_data);
-                    
-                    columns.push_back(column);
-                }
-            }
-            
-            file.close();
-        }
-        
-        if (show_progress) {
-            std::cout << std::endl << "完成！总共创建了 " << columns.size() << " 个列对象" << std::endl;
-        }
-        
-    } catch (const std::exception& e) {
-        std::cerr << "处理过程中发生错误: " << e.what() << std::endl;
+    if (!std::filesystem::exists(directory_path)) {
+        std::cerr << "目录不存在: " << directory_path << std::endl;
+        return columns;
     }
     
+    uint64_t column_id = 0;
+    
+    // 遍历目录中的所有CSV文件
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(directory_path)) {
+        if (!entry.is_regular_file() || entry.path().extension() != ".csv") {
+            continue;
+        }
+        
+        std::ifstream file(entry.path());
+        if (!file.is_open()) continue;
+        
+        std::string header_line;
+        if (!std::getline(file, header_line)) continue;
+        
+        // 解析表头获取列名
+        std::stringstream ss(header_line);
+        std::string column_name;
+        
+        while (std::getline(ss, column_name, ',')) {
+            // 清理列名
+            column_name.erase(0, column_name.find_first_not_of(" \t\r\n\""));
+            column_name.erase(column_name.find_last_not_of(" \t\r\n\"") + 1);
+            
+            if (!column_name.empty()) {
+                Column column;
+                column.id = column_id++;
+                column.name = column_name;
+                column.csv_file_path = entry.path().string();
+                
+                // 设置默认参数
+                column.factor = 10;
+                column.exponent = 11;
+                column.bit_width = 24;
+                column.exceptions_count = 10;
+                column.suitable_for_cutting = true;
+                
+                columns.push_back(column);
+            }
+        }
+        
+        file.close();
+    }
+    
+    std::cout << "找到 " << columns.size() << " 个列" << std::endl;
     return columns;
 }
 // // 统一的数据验证函数
@@ -556,7 +507,7 @@ std::vector<double> read_data(const std::string& file_path, bool show_progress, 
                     ++skipped_values;
                     // 只在调试模式或跳过数量较多时输出警告
                     // if (skipped_values % 10000 == 0) {
-                    //     std::cerr << "\n已跳过 " << skipped_values << " 个无效数值..." << std::endl;
+                        // std::cerr << "\n已跳过 " << skipped_values << " 个无效数值..." << std::endl;
                     // }
                 }
             }
@@ -593,6 +544,6 @@ std::vector<double> read_data(const std::string& file_path, bool show_progress, 
         std::cout << std::endl;
         std::cout << "跳过的无效数值: " << skipped_values << std::endl << std::endl;
     }
-
+    // printf("数据大小: %0.6f MB",result.size()*sizeof(double)/1024.0/1024.0);
     return result;
 }

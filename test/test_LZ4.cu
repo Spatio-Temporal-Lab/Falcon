@@ -229,14 +229,14 @@
 #include "data/dataset_utils.hpp"
 #include <filesystem>
 namespace fs = std::filesystem;
-void comp_LZ4(std::vector<double> oriData);
-void test_compression(const std::string& file_path) {
+CompressionInfo comp_LZ4(std::vector<double> oriData);
+CompressionInfo test_compression(const std::string& file_path) {
     // 读取数据
     std::vector<double> oriData = read_data(file_path);
-    comp_LZ4(oriData);
+    return comp_LZ4(oriData);
 }
 
-void comp_LZ4(std::vector<double> oriData)
+CompressionInfo comp_LZ4(std::vector<double> oriData)
 {
     // 获取数据大小
     size_t in_bytes = oriData.size() * sizeof(double);
@@ -326,7 +326,7 @@ void comp_LZ4(std::vector<double> oriData)
     cudaMalloc(&device_compressed_bytes, sizeof(size_t) * batch_size);
 
     // ======================== 压缩阶段 ========================
-    std::cout << "=== Compression Phase ===" << std::endl;
+    // std::cout << "=== Compression Phase ===" << std::endl;
     
     // 记录整个压缩阶段开始
     cudaEventRecord(start_event, stream);
@@ -390,12 +390,7 @@ void comp_LZ4(std::vector<double> oriData)
     cudaEventElapsedTime(&compress_d2h_time, compress_d2h_start, compress_d2h_end);
     
     float total_compress_time = compress_h2d_time + compress_kernel_time + compress_d2h_time;
-    
-    std::cout << std::fixed << std::setprecision(6);
-    std::cout << "Compression H2D Time: " << compress_h2d_time  << " ms." << std::endl;
-    std::cout << "Compression Kernel Time: " << compress_kernel_time  << " ms." << std::endl;
-    std::cout << "Compression D2H Time: " << compress_d2h_time  << " ms." << std::endl;
-    std::cout << "Total Compression Time (H2D+Kernel+D2H): " << total_compress_time  << " ms." << std::endl;
+
 
     // 计算压缩率
     size_t total_compressed = 0;
@@ -403,10 +398,9 @@ void comp_LZ4(std::vector<double> oriData)
         total_compressed += host_compressed_bytes[i];
     }
     double compression_ratio = total_compressed / static_cast<double>(in_bytes);
-    std::cout << "Compression Ratio: " << compression_ratio << std::endl;
 
     // ======================== 解压阶段 ========================
-    std::cout << "\n=== Decompression Phase ===" << std::endl;
+    // std::cout << "\n=== Decompression Phase ===" << std::endl;
     
     // 重新分配设备内存用于解压
     char* device_output_data;
@@ -498,43 +492,60 @@ void comp_LZ4(std::vector<double> oriData)
     float total_decompress_time = decompress_h2d_time + decompress_kernel_time + decompress_d2h_time;
     float total_overall_time;
     cudaEventElapsedTime(&total_overall_time, start_event, end_event);
-    
-    std::cout << "Decompression H2D Time: " << decompress_h2d_time  << " ms." << std::endl;
-    std::cout << "Decompression Kernel Time: " << decompress_kernel_time << " ms."  << std::endl;
-    std::cout << "Decompression D2H Time: " << decompress_d2h_time  << " ms." << std::endl;
-    std::cout << "Total Decompression Time (H2D+Kernel+D2H): " << total_decompress_time << " ms."  << std::endl;
-
-    // 总体时间统计
-    std::cout << "\n=== Overall Performance ===" << std::endl;
-    std::cout << "Total Overall Time (CUDA Events): " << total_overall_time << " ms."  << std::endl;
-    std::cout << "Total Sum Time (Compress + Decompress): " << (total_compress_time + total_decompress_time) << " ms."  << std::endl;
-
-    // 详细性能分析
-    std::cout << "\n=== Detailed Performance Breakdown ===" << std::endl;
-    std::cout << "Compression Phase:" << std::endl;
-    std::cout << "  - H2D: " << (compress_h2d_time / total_overall_time) * 100.0 << "%" << std::endl;
-    std::cout << "  - Kernel: " << (compress_kernel_time / total_overall_time) * 100.0 << "%" << std::endl;
-    std::cout << "  - D2H: " << (compress_d2h_time / total_overall_time) * 100.0 << "%" << std::endl;
-    std::cout << "Decompression Phase:" << std::endl;
-    std::cout << "  - H2D: " << (decompress_h2d_time / total_overall_time) * 100.0 << "%" << std::endl;
-    std::cout << "  - Kernel: " << (decompress_kernel_time / total_overall_time) * 100.0 << "%" << std::endl;
-    std::cout << "  - D2H: " << (decompress_d2h_time / total_overall_time) * 100.0 << "%" << std::endl;
-
     // 吞吐量计算
     double data_size_gb = in_bytes / (1024.0 * 1024.0 * 1024.0);
     double compress_throughput = data_size_gb / (total_compress_time / 1000.0);
     double decompress_throughput = data_size_gb / (total_decompress_time / 1000.0);
-    
-    std::cout << "\n=== Throughput Analysis ===" << std::endl;
-    std::cout << "Data Size: " << data_size_gb << " GB" << std::endl;
-    std::cout << "Compression Throughput: " << compress_throughput << " GB/s" << std::endl;
-    std::cout << "Decompression Throughput: " << decompress_throughput << " GB/s" << std::endl;
+
+    CompressionInfo a{
+        in_bytes/1024.0/1024.0,
+        total_compressed/1024.0/1024.0,
+        compression_ratio,
+        compress_kernel_time,
+        total_compress_time,
+        compress_throughput,
+        decompress_kernel_time,
+        total_decompress_time,
+        decompress_throughput
+
+    };
+    // std::cout << std::fixed << std::setprecision(6);
+    // std::cout << "Compression Ratio: " << compression_ratio << std::endl;
+    // std::cout << "Compression H2D Time: " << compress_h2d_time  << " ms." << std::endl;
+    // std::cout << "Compression Kernel Time: " << compress_kernel_time  << " ms." << std::endl;
+    // std::cout << "Compression D2H Time: " << compress_d2h_time  << " ms." << std::endl;
+    // std::cout << "Total Compression Time (H2D+Kernel+D2H): " << total_compress_time  << " ms." << std::endl;
+    // std::cout << "Decompression H2D Time: " << decompress_h2d_time  << " ms." << std::endl;
+    // std::cout << "Decompression Kernel Time: " << decompress_kernel_time << " ms."  << std::endl;
+    // std::cout << "Decompression D2H Time: " << decompress_d2h_time  << " ms." << std::endl;
+    // std::cout << "Total Decompression Time (H2D+Kernel+D2H): " << total_decompress_time << " ms."  << std::endl;
+
+    // 总体时间统计
+    // std::cout << "\n=== Overall Performance ===" << std::endl;
+    // std::cout << "Total Overall Time (CUDA Events): " << total_overall_time << " ms."  << std::endl;
+    // std::cout << "Total Sum Time (Compress + Decompress): " << (total_compress_time + total_decompress_time) << " ms."  << std::endl;
+
+    // 详细性能分析
+    // std::cout << "\n=== Detailed Performance Breakdown ===" << std::endl;
+    // std::cout << "Compression Phase:" << std::endl;
+    // std::cout << "  - H2D: " << (compress_h2d_time / total_overall_time) * 100.0 << "%" << std::endl;
+    // std::cout << "  - Kernel: " << (compress_kernel_time / total_overall_time) * 100.0 << "%" << std::endl;
+    // std::cout << "  - D2H: " << (compress_d2h_time / total_overall_time) * 100.0 << "%" << std::endl;
+    // std::cout << "Decompression Phase:" << std::endl;
+    // std::cout << "  - H2D: " << (decompress_h2d_time / total_overall_time) * 100.0 << "%" << std::endl;
+    // std::cout << "  - Kernel: " << (decompress_kernel_time / total_overall_time) * 100.0 << "%" << std::endl;
+    // std::cout << "  - D2H: " << (decompress_d2h_time / total_overall_time) * 100.0 << "%" << std::endl;
+
+    // std::cout << "\n=== Throughput Analysis ===" << std::endl;
+    // std::cout << "Data Size: " << data_size_gb << " GB" << std::endl;
+    // std::cout << "Compression Throughput: " << compress_throughput << " GB/s" << std::endl;
+    // std::cout << "Decompression Throughput: " << decompress_throughput << " GB/s" << std::endl;
 
     // 数据校验
     if (memcmp(input_data, reconstructed, in_bytes) != 0) {
         std::cerr << "Data mismatch!" << std::endl;
     } else {
-        std::cout << "\nData verification: PASSED" << std::endl;
+        // std::cout << "\nData verification: PASSED" << std::endl;
     }
 
     // 清理资源
@@ -581,13 +592,14 @@ void comp_LZ4(std::vector<double> oriData)
     cudaFreeHost(host_decompressed_ptrs);
     
     cudaStreamDestroy(stream);
+    return a;
 }
 
 // Google Test 测试用例
 TEST(LZ4CompressorTest, CompressionDecompression) {
     // 读取数据并测试压缩和解压
     // std::string dir_path = "../test/data/big"; 
-    std::string dir_path = "../test/data/temp"; 
+    std::string dir_path = "../test/data/mew_tsbs"; 
     bool warmup = 0;
 
     for (const auto& entry : fs::directory_iterator(dir_path)) {
@@ -607,7 +619,52 @@ TEST(LZ4CompressorTest, CompressionDecompression) {
     }
 }
 
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+int main(int argc, char *argv[]) {
+    
+    cudaFree(0);
+    std::string arg = argv[1];
+    
+    if (arg == "--dir" && argc >= 3) {
+
+        std::string dir_path = argv[2];
+
+        // 检查目录是否存在
+        if (!fs::exists(dir_path)) {
+            std::cerr << "指定的数据目录不存在: " << dir_path << std::endl;
+            return 1;
+        }
+        
+        bool warm=0;
+        int processed = 0;
+        for (const auto& entry : fs::directory_iterator(dir_path)) {
+            if (entry.is_regular_file()) {
+                std::string file_path = entry.path().string();
+                CompressionInfo a;
+                if(!warm)
+                {
+                    // std::cout << "\n-------------------warm-------------------------- " << file_path << std::endl;
+                    test_compression(file_path);
+                    warm=1;
+                    // std::cout << "-------------------warm_end------------------------" << std::endl;
+                }
+                std::cout << "\nProcessing file: " << file_path << std::endl;
+                for(int i=0;i<3;i++)
+                {
+                    a+=test_compression(file_path);
+                }
+                a=a/3;
+                a.print();
+                std::cout << "---------------------------------------------" << std::endl;
+                processed++;
+            }
+        }
+        
+        if (processed == 0) {
+            std::cerr << "No files found in directory: " << dir_path << std::endl;
+        }
+    }
+    else{
+        ::testing::InitGoogleTest(&argc, argv);
+        return RUN_ALL_TESTS();
+    }
 }

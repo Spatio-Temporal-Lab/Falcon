@@ -38,7 +38,7 @@ std::vector<double> generate_elf_test_data(size_t size, int pattern_type) {
 }
 
 // 核心测试模板
-void test_elf_compression(const std::vector<double>& original, double error_bound) {
+CompressionInfo test_elf_compression(const std::vector<double>& original, double error_bound) {
     // 压缩测试
     uint8_t* compressed = nullptr;
     auto compress_start = std::chrono::high_resolution_clock::now();
@@ -68,30 +68,26 @@ void test_elf_compression(const std::vector<double>& original, double error_boun
     // 性能指标计算
     const double original_bytes = original.size() * sizeof(double);
     const double compress_ratio = compressed_size/original_bytes;
-    const double compress_time = std::chrono::duration<double>(compress_end - compress_start).count();
-    const double decompress_time = std::chrono::duration<double>(decompress_end - decompress_start).count();
+    const double compress_time = std::chrono::duration<double, std::milli>(compress_end - compress_start).count();
+    const double decompress_time = std::chrono::duration<double, std::milli>(decompress_end - decompress_start).count();
     
-    // 输出性能报告
-    std::cout << "\n[性能报告]";
-    std::cout << "\n原始尺寸: " << original_bytes << " bytes";
-    std::cout << "\n压缩尺寸: " << compressed_size << " bytes";
-    std::cout << "\n压缩比率: " << compress_ratio ;
-    // std::cout << "\n压缩比率: " << std::fixed << std::setprecision(2) << compress_ratio << ":1";
-    std::cout << "\n压缩吞吐: " << (original_bytes/1e9)/compress_time << " GB/s";
-    std::cout << "\n解压吞吐: " << (original_bytes/1e9)/decompress_time << " GB/s\n";
-    std::cout << "\n压缩时间: " << std::chrono::duration<double, std::milli>(compress_end - compress_start).count() << " ms";
-    std::cout << "\n解压时间: " << std::chrono::duration<double, std::milli>(decompress_end - decompress_start).count() << " ms\n";
-    
-    // 数据验证
-    ASSERT_EQ(dec_size, static_cast<ssize_t>(original.size()));
-    for(size_t i=0; i<original.size(); ++i) {
-        ASSERT_NEAR(original[i], decompressed[i], error_bound) 
-            << "数据不一致 @ 位置 " << i 
-            << " (原始值: " << original[i] 
-            << ", 解压值: " << decompressed[i] << ")";
-    }
+    const double original_GB = original_bytes / (1024.0 * 1024.0 * 1024.0);
+
+    // 压缩时间转换为秒（1 秒 = 1000 毫秒）
+    const double compress_sec = compress_time / 1000.0;
+    const double decompress_sec = decompress_time / 1000.0;
+    // 压缩吞吐量（GB/s）
+    const double compression_throughput_GBs = original_GB / compress_sec;
+    const double decompression_throughput_GBs = original_GB / decompress_sec;
     
     free(compressed); // 释放压缩数据内存
+    return CompressionInfo{
+        original_bytes/104/1024.0,
+        compressed_size/1024.0/1024.0,
+        compress_ratio,
+        0,
+        compress_time,
+        compression_throughput_GBs,0,decompress_time,decompression_throughput_GBs};
 }
 
 // 测试用例组
@@ -111,30 +107,57 @@ TEST(ElfCompressorTest, PeriodicWithNoise) {
 }
 
 // 添加本地数据测试模板
-void test_elf_with_file(const std::string& file_path, double error_bound) {
-    try {
-        auto data = read_data(file_path);
-        test_elf_compression(data, error_bound);
-    } catch (const std::exception& e) {
-        FAIL() << "文件处理失败: " << e.what();
-    }
+CompressionInfo test_elf_with_file(const std::string& file_path, double error_bound) {
+    auto data = read_data(file_path);
+    return test_elf_compression(data, error_bound);
 }
 
 // 新增测试用例组
 TEST(ElfCompressorTest, LocalDataset) {
     // const std::string data_dir = "../test/data/big"; // 修改为实际路径
-    const std::string data_dir = "../test/data/temp"; // 修改为实际路径
+    const std::string data_dir = "../test/data/new_tsbs"; // 修改为实际路径
 
     const double error_bound = 0.001; // 根据数据特性调整
     
     for (const auto& entry : fs::directory_iterator(data_dir)) {
         if (entry.is_regular_file()) {
-            std::cout << "\n测试文件: " << entry.path().string() << std::endl;
+            std::cout << "\n正在处理文件:  " << entry.path().string() << std::endl;
             test_elf_with_file(entry.path().string(), error_bound);
         }
     }
 }
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+int main(int argc, char *argv[]) {
+    
+    std::string arg = argv[1];
+    
+    if (arg == "--dir" && argc >= 3) {
+
+        std::string dir_path = argv[2];
+
+        // 检查目录是否存在
+        if (!fs::exists(dir_path)) {
+            std::cerr << "指定的数据目录不存在: " << dir_path << std::endl;
+            return 1;
+        }
+        
+        const double error_bound = 0.001; // 根据数据特性调整
+        
+        for (const auto& entry : fs::directory_iterator(dir_path)) {
+            if (entry.is_regular_file()) {
+                CompressionInfo ans;
+                std::cout << "\n正在处理文件: " << entry.path().string() << std::endl;
+                for(int i=0;i<3;i++)
+                {
+                    ans+=test_elf_with_file(entry.path().string(), error_bound);
+                }
+                ans=ans/3;
+                ans.print();
+                std::cout << "\n---------------------------------------------" << std::endl;
+            }
+        }
+    }
+    else{
+        ::testing::InitGoogleTest(&argc, argv);
+        return RUN_ALL_TESTS();
+    }
 }

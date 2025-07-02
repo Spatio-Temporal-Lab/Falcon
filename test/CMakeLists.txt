@@ -91,7 +91,7 @@ add_subdirectory(baseline/ALP)
 add_subdirectory(baseline/ndzip)
 
 # 添加 cuSZp 项目路径
-add_subdirectory(baseline/cuSZp)
+# add_subdirectory(baseline/cuSZp)
 
 # 添加 nvcomp 项目路径
 # add_subdirectory(baseline/nvcomp)
@@ -125,7 +125,7 @@ include_directories(${CMAKE_SOURCE_DIR}/test/data)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/src/utils)
 include_directories(${CMAKE_SOURCE_DIR}/test/baseline/ndzip/include)
-include_directories(${CMAKE_SOURCE_DIR}/test/baseline/cuSZp/include)
+# include_directories(${CMAKE_SOURCE_DIR}/test/baseline/cuSZp/include)
 # include_directories(${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include)
 include_directories(${CMAKE_SOURCE_DIR}/test/baseline/elf)
 # include_directories(${CMAKE_SOURCE_DIR}/test/baseline/mpc)
@@ -167,6 +167,10 @@ set(BENCHMARK_SOURCES
 add_executable(test_cpu ${SRC_CPU} ${TEST_SOURCES_CPU})
 
 # 使用 CUDA 编译目标
+cuda_add_executable(test_gpu_nopack GDF_test_nopack.cu data/dataset_utils.cpp ${SRC_GPU})
+
+cuda_add_executable(test_gpu_br GDF_test_br.cu data/dataset_utils.cpp ${SRC_GPU})
+
 cuda_add_executable(test_gpu ${SRC_GPU} ${TEST_SOURCES_GPU})
 
 cuda_add_executable(benchmark_tests ${SRC_CPU} ${SRC_GPU} ${BENCHMARK_SOURCES})
@@ -177,9 +181,12 @@ add_executable(test_ALP test_ALP.cpp data/dataset_utils.cpp ${SRC_CPU})
 
 cuda_add_executable(test_ndzip test_ndzip.cpp data/dataset_utils.cpp)
 
-add_executable(test_cuSZp test_cuSZp.cpp data/dataset_utils.cpp)
+# add_executable(test_cuSZp test_cuSZp.cpp data/dataset_utils.cpp)
 
-cuda_add_executable(GDF_test_muti_steam_f64 GDF_test_muti_steam_f64.cu data/dataset_utils.cpp ${SRC_GPU} )
+cuda_add_executable(test_muti_stream GDF_test_muti_steam_f64.cu data/dataset_utils.cpp ${SRC_GPU} )
+cuda_add_executable(test_muti_3step muti_type1.cu data/dataset_utils.cpp ${SRC_GPU} )
+cuda_add_executable(test_muti_nofix muti_type2.cu  data/dataset_utils.cpp ${SRC_GPU} )
+
 
 add_executable(test_elf test_elf.cpp data/dataset_utils.cpp)
 
@@ -188,23 +195,33 @@ add_executable(test_elf test_elf.cpp data/dataset_utils.cpp)
 # 链接库时使用 PRIVATE，确保符号在不同目标之间不可见
 target_link_libraries(test_cpu PRIVATE GTest::GTest GTest::Main pthread ALP)
 target_link_libraries(test_gpu ${CUDA_LIBRARIES} GTest::GTest GTest::Main pthread ALP)
+target_link_libraries(test_gpu_br ${CUDA_LIBRARIES} GTest::GTest GTest::Main pthread ALP)
+target_link_libraries(test_gpu_nopack ${CUDA_LIBRARIES} GTest::GTest GTest::Main pthread ALP)
 target_link_libraries(benchmark_tests ${CUDA_LIBRARIES} benchmark::benchmark GTest::GTest GTest::Main pthread ALP)
 target_link_libraries(test_ALP PRIVATE GTest::GTest GTest::Main pthread ALP)
 target_link_libraries(test_ndzip ${CUDA_LIBRARIES} GTest::GTest ndzip-cuda io Boost::program_options GTest::Main ndzip pthread)
-target_link_libraries(test_cuSZp ${CUDA_LIBRARIES} GTest::GTest GTest::Main pthread cuSZp_shared)
+# target_link_libraries(test_cuSZp ${CUDA_LIBRARIES} GTest::GTest GTest::Main pthread cuSZp_shared)
 target_link_libraries(test_elf PRIVATE GTest::GTest GTest::Main pthread elf)
 # target_link_libraries(test_mpc ${CUDA_LIBRARIES} GTest::GTest GTest::Main pthread mpc)
-target_link_libraries(GDF_test_muti_steam_f64 ${CUDA_LIBRARIES}  GTest::GTest GTest::Main pthread cuSZp_shared)
-
+target_link_libraries(test_muti_stream ${CUDA_LIBRARIES}  GTest::GTest GTest::Main pthread )
+target_link_libraries(test_muti_3step ${CUDA_LIBRARIES}  GTest::GTest GTest::Main pthread )
+target_link_libraries(test_muti_nofix ${CUDA_LIBRARIES}  GTest::GTest GTest::Main pthread )
 
 
 # 设置 include 目录
 target_include_directories(test_cpu PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/ALP/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 target_include_directories(test_gpu PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/ALP/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+target_include_directories(test_gpu_nopack PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/ALP/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+target_include_directories(test_gpu_br PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/ALP/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+
 target_include_directories(benchmark_tests PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/ALP/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 target_include_directories(test_ALP PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/ALP/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
-target_include_directories(test_cuSZp PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/cuSZp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
-target_include_directories(GDF_test_muti_steam_f64 PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/cuSZp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+# target_include_directories(test_cuSZp PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/cuSZp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+target_include_directories(test_muti_stream PRIVATE  ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+target_include_directories(test_muti_3step PRIVATE  ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+
+target_include_directories(test_muti_nofix PRIVATE  ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+
 # target_include_directories(test_mpc PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/mpc ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 target_include_directories(test_elf PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/elf ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 

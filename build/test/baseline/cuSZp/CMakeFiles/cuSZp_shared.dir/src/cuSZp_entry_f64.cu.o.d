@@ -1,7 +1,7 @@
-test/baseline/cuSZp/CMakeFiles/cuSZp_shared.dir/src/cuSZp_entry_f64.cu.o : /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/src/cuSZp_entry_f64.cu \
+test/baseline/cuSZp/CMakeFiles/cuSZp_shared.dir/src/cuSZp_entry_f64.cu.o : /home/lizhzz/workspace/github/study/cuCompressor/test/baseline/cuSZp/src/cuSZp_entry_f64.cu \
     /usr/include/stdc-predef.h \
-    /home/longxl/cuda/CUDA12.0/include/cuda_runtime.h \
-    /home/longxl/cuda/CUDA12.0/include/crt/host_config.h \
+    /usr/include/cuda_runtime.h \
+    /usr/include/crt/host_config.h \
     /usr/include/features.h \
     /usr/include/features-time64.h \
     /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -10,11 +10,11 @@ test/baseline/cuSZp/CMakeFiles/cuSZp_shared.dir/src/cuSZp_entry_f64.cu.o : /home
     /usr/include/x86_64-linux-gnu/bits/long-double.h \
     /usr/include/x86_64-linux-gnu/gnu/stubs.h \
     /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
-    /home/longxl/cuda/CUDA12.0/include/builtin_types.h \
-    /home/longxl/cuda/CUDA12.0/include/device_types.h \
-    /home/longxl/cuda/CUDA12.0/include/crt/host_defines.h \
-    /home/longxl/cuda/CUDA12.0/include/driver_types.h \
-    /home/longxl/cuda/CUDA12.0/include/vector_types.h \
+    /usr/include/builtin_types.h \
+    /usr/include/device_types.h \
+    /usr/include/crt/host_defines.h \
+    /usr/include/driver_types.h \
+    /usr/include/vector_types.h \
     /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h \
     /usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h \
     /usr/include/limits.h \
@@ -27,12 +27,12 @@ test/baseline/cuSZp/CMakeFiles/cuSZp_shared.dir/src/cuSZp_entry_f64.cu.o : /home
     /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
     /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
     /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
-    /home/longxl/cuda/CUDA12.0/include/surface_types.h \
-    /home/longxl/cuda/CUDA12.0/include/texture_types.h \
-    /home/longxl/cuda/CUDA12.0/include/library_types.h \
-    /home/longxl/cuda/CUDA12.0/include/channel_descriptor.h \
-    /home/longxl/cuda/CUDA12.0/include/cuda_runtime_api.h \
-    /home/longxl/cuda/CUDA12.0/include/cuda_device_runtime_api.h \
+    /usr/include/surface_types.h \
+    /usr/include/texture_types.h \
+    /usr/include/library_types.h \
+    /usr/include/channel_descriptor.h \
+    /usr/include/cuda_runtime_api.h \
+    /usr/include/cuda_device_runtime_api.h \
     /usr/include/c++/11/stdlib.h \
     /usr/include/c++/11/cstdlib \
     /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
@@ -75,10 +75,10 @@ test/baseline/cuSZp/CMakeFiles/cuSZp_shared.dir/src/cuSZp_entry_f64.cu.o : /home
     /usr/include/alloca.h \
     /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
     /usr/include/c++/11/bits/std_abs.h \
-    /home/longxl/cuda/CUDA12.0/include/driver_functions.h \
-    /home/longxl/cuda/CUDA12.0/include/vector_functions.h \
-    /home/longxl/cuda/CUDA12.0/include/vector_functions.hpp \
-    /home/longxl/cuda/CUDA12.0/include/crt/common_functions.h \
+    /usr/include/driver_functions.h \
+    /usr/include/vector_functions.h \
+    /usr/include/vector_functions.hpp \
+    /usr/include/crt/common_functions.h \
     /usr/include/string.h \
     /usr/include/strings.h \
     /usr/include/time.h \
@@ -99,7 +99,7 @@ test/baseline/cuSZp/CMakeFiles/cuSZp_shared.dir/src/cuSZp_entry_f64.cu.o : /home
     /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
     /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
     /usr/include/assert.h \
-    /home/longxl/cuda/CUDA12.0/include/crt/math_functions.h \
+    /usr/include/crt/math_functions.h \
     /usr/include/c++/11/math.h \
     /usr/include/c++/11/cmath \
     /usr/include/c++/11/bits/cpp_type_traits.h \
@@ -143,48 +143,49 @@ test/baseline/cuSZp/CMakeFiles/cuSZp_shared.dir/src/cuSZp_entry_f64.cu.o : /home
     /usr/include/c++/11/tr1/poly_hermite.tcc \
     /usr/include/c++/11/tr1/poly_laguerre.tcc \
     /usr/include/c++/11/tr1/riemann_zeta.tcc \
-    /home/longxl/cuda/CUDA12.0/include/crt/math_functions.hpp \
-    /home/longxl/cuda/CUDA12.0/include/crt/device_functions.h \
-    /home/longxl/cuda/CUDA12.0/include/crt/device_functions.hpp \
-    /home/longxl/cuda/CUDA12.0/include/device_atomic_functions.h \
-    /home/longxl/cuda/CUDA12.0/include/device_atomic_functions.hpp \
-    /home/longxl/cuda/CUDA12.0/include/crt/device_double_functions.h \
-    /home/longxl/cuda/CUDA12.0/include/crt/device_double_functions.hpp \
-    /home/longxl/cuda/CUDA12.0/include/sm_20_atomic_functions.h \
-    /home/longxl/cuda/CUDA12.0/include/sm_20_atomic_functions.hpp \
-    /home/longxl/cuda/CUDA12.0/include/sm_32_atomic_functions.h \
-    /home/longxl/cuda/CUDA12.0/include/sm_32_atomic_functions.hpp \
-    /home/longxl/cuda/CUDA12.0/include/sm_35_atomic_functions.h \
-    /home/longxl/cuda/CUDA12.0/include/sm_60_atomic_functions.h \
-    /home/longxl/cuda/CUDA12.0/include/sm_60_atomic_functions.hpp \
-    /home/longxl/cuda/CUDA12.0/include/sm_20_intrinsics.h \
-    /home/longxl/cuda/CUDA12.0/include/sm_20_intrinsics.hpp \
-    /home/longxl/cuda/CUDA12.0/include/sm_30_intrinsics.h \
-    /home/longxl/cuda/CUDA12.0/include/sm_30_intrinsics.hpp \
-    /home/longxl/cuda/CUDA12.0/include/sm_32_intrinsics.h \
-    /home/longxl/cuda/CUDA12.0/include/sm_32_intrinsics.hpp \
-    /home/longxl/cuda/CUDA12.0/include/sm_35_intrinsics.h \
-    /home/longxl/cuda/CUDA12.0/include/sm_61_intrinsics.h \
-    /home/longxl/cuda/CUDA12.0/include/sm_61_intrinsics.hpp \
-    /home/longxl/cuda/CUDA12.0/include/crt/sm_70_rt.h \
-    /home/longxl/cuda/CUDA12.0/include/crt/sm_70_rt.hpp \
-    /home/longxl/cuda/CUDA12.0/include/crt/sm_80_rt.h \
-    /home/longxl/cuda/CUDA12.0/include/crt/sm_80_rt.hpp \
-    /home/longxl/cuda/CUDA12.0/include/crt/sm_90_rt.h \
-    /home/longxl/cuda/CUDA12.0/include/crt/sm_90_rt.hpp \
-    /home/longxl/cuda/CUDA12.0/include/texture_indirect_functions.h \
-    /home/longxl/cuda/CUDA12.0/include/surface_indirect_functions.h \
-    /home/longxl/cuda/CUDA12.0/include/crt/cudacc_ext.h \
-    /home/longxl/cuda/CUDA12.0/include/device_launch_parameters.h \
+    /usr/include/crt/math_functions.hpp \
+    /usr/include/crt/device_functions.h \
+    /usr/include/crt/device_functions.hpp \
+    /usr/include/device_atomic_functions.h \
+    /usr/include/device_atomic_functions.hpp \
+    /usr/include/crt/device_double_functions.h \
+    /usr/include/crt/device_double_functions.hpp \
+    /usr/include/sm_20_atomic_functions.h \
+    /usr/include/sm_20_atomic_functions.hpp \
+    /usr/include/sm_32_atomic_functions.h \
+    /usr/include/sm_32_atomic_functions.hpp \
+    /usr/include/sm_35_atomic_functions.h \
+    /usr/include/sm_60_atomic_functions.h \
+    /usr/include/sm_60_atomic_functions.hpp \
+    /usr/include/sm_20_intrinsics.h \
+    /usr/include/sm_20_intrinsics.hpp \
+    /usr/include/sm_30_intrinsics.h \
+    /usr/include/sm_30_intrinsics.hpp \
+    /usr/include/sm_32_intrinsics.h \
+    /usr/include/sm_32_intrinsics.hpp \
+    /usr/include/sm_35_intrinsics.h \
+    /usr/include/sm_61_intrinsics.h \
+    /usr/include/sm_61_intrinsics.hpp \
+    /usr/include/crt/sm_70_rt.h \
+    /usr/include/crt/sm_70_rt.hpp \
+    /usr/include/crt/sm_80_rt.h \
+    /usr/include/crt/sm_80_rt.hpp \
+    /usr/include/crt/sm_90_rt.h \
+    /usr/include/crt/sm_90_rt.hpp \
+    /usr/include/texture_indirect_functions.h \
+    /usr/include/surface_indirect_functions.h \
+    /usr/include/crt/cudacc_ext.h \
+    /usr/include/device_launch_parameters.h \
     /usr/include/c++/11/utility \
     /usr/include/c++/11/bits/stl_relops.h \
     /usr/include/c++/11/initializer_list \
-    /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_entry_f64.h \
-    /home/longxl/cuda/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_kernels_f64.h \
+    /home/lizhzz/workspace/github/study/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_entry_f64.h \
+    /home/lizhzz/workspace/github/study/cuCompressor/test/baseline/cuSZp/include/cuSZp/cuSZp_kernels_f64.h \
     /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h \
     /usr/include/stdint.h \
     /usr/include/x86_64-linux-gnu/bits/wchar.h \
     /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+    /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
     /usr/include/c++/11/vector \
     /usr/include/c++/11/bits/allocator.h \
     /usr/include/x86_64-linux-gnu/c++/11/bits/c++allocator.h \

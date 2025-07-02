@@ -8,12 +8,15 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/longxl/cuda/cuCompressor/test/baseline/cuSZp/examples/GDFC_test_f32.cpp" "test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o" "gcc" "test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o.d"
+  "/home/lizhzz/workspace/github/study/cuCompressor/test/baseline/cuSZp/examples/GDFC_test_f32.cpp" "test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o" "gcc" "test/baseline/cuSZp/examples/CMakeFiles/GDFC_test_f32.dir/GDFC_test_f32.cpp.o.d"
   )
 
-# Targets to which this target links.
-set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/home/longxl/cuda/cuCompressor/build/test/baseline/cuSZp/CMakeFiles/cuSZp_static.dir/DependInfo.cmake"
+# Targets to which this target links which contain Fortran sources.
+set(CMAKE_Fortran_TARGET_LINKED_INFO_FILES
+  )
+
+# Targets to which this target links which contain Fortran sources.
+set(CMAKE_Fortran_TARGET_FORWARD_LINKED_INFO_FILES
   )
 
 # Fortran module output directory.
