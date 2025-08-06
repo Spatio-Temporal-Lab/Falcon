@@ -9,7 +9,7 @@
 #include <iostream>
 #include <iomanip>
 
-
+#include <thread> 
 #pragma once
 #include <vector>
 #include <cstdint>
@@ -18,14 +18,27 @@
 class GDFDecompressor {
 public:
     void GDFC_decompress(double* d_decData, unsigned char* d_cmpBytes, size_t nbEle, size_t cmpSize, cudaStream_t stream);
-    void  GDFC_decompress_stream_optimized(
+    void GDFC_decompress_stream_optimized(
             double* d_decData,          // 解压输出缓冲
             unsigned char* d_cmpBytes,  // 压缩输入缓冲（设备端）
             size_t nbEle,               // 原始元素数量
             size_t cmpSize,             // 压缩数据大小
             cudaStream_t stream) ;
+    void GDFC_decompress_ultra_optimized(
+            double* d_decData,
+            unsigned char* d_cmpBytes,
+            size_t nbEle,
+            size_t cmpSize,
+            cudaStream_t stream);
     void decompress(const std::vector<unsigned char>& compressedData, std::vector<double>& output,int numDatas);
     void decompress_nopack(const std::vector<unsigned char>& compressedData, std::vector<double>& output) ;
+    void GDFC_decompress_no_pack(
+        double* d_decData,          // 解压输出缓冲
+        unsigned char* d_cmpBytes,  // 压缩输入缓冲（设备端）
+        size_t nbEle,               // 原始元素数量
+        size_t cmpSize,             // 压缩数据大小
+        cudaStream_t stream         // CUDA流
+    );
 };
 
 

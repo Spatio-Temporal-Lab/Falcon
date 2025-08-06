@@ -550,6 +550,9 @@ public:
                               sizeof(stt.fac) + sizeof(stt.exp) + 
                               sizeof(uint16_t); // 异常计数
         
+        // printf("bit_width = %d \n", bit_width);
+        
+        // printf("encoded_data_size = %d, exceptions_size = %d, positions_size = %d, metadata_size = %d \n", encoded_data_size, exceptions_size,positions_size,metadata_size);
         return encoded_data_size + exceptions_size + positions_size + metadata_size;
     }
 
@@ -574,6 +577,7 @@ public:
         // 复制数据到输入缓冲区
         for (size_t i = 0; i < batch_size; ++i) {
             input_arr[i] = static_cast<PT>(all_data[start_idx + i]);
+            // printf("%f, ",all_data[start_idx + i]);
         }
 
         alp::state<PT> stt;
@@ -644,10 +648,17 @@ public:
             // 计算压缩大小
             uint16_t exceptions_count = exc_c_arr.get()[0]; // 假设异常计数存储在第一个位置
             size_t compressed_size = calculate_compressed_size_alp(stt, batch_size, bit_width, exceptions_count);
-
+            size_t osize = batch_size*64;
             file_stats.total_encode_time += (encode_end - encode_start);
             file_stats.total_decode_time += (decode_end - decode_start);
             file_stats.total_compressed_size += static_cast<double>(compressed_size);
+            if(start_idx<3000){
+
+            size_t total_compressed_size = file_stats.total_compressed_size;
+            // printf("total_compressed_size = %d \n", total_compressed_size);
+            // printf("compressed_size = %d \n", compressed_size);
+            // printf("osize = %d \n", osize);
+            }
 
             break;
         }
@@ -675,19 +686,30 @@ public:
 
         // 按批次处理数据
         size_t data_index = 0;
+        size_t all_batch = 0;
+        // for(int i=0;(i<10);i++)
+        // {
+        //     printf("%f, ",all_data[data_index+i]);
+        // }
         while (data_index < all_data.size()) {
+
             size_t batch_size = std::min(static_cast<size_t>(alp::config::VECTOR_SIZE), 
                                        all_data.size() - data_index);
 
             try {
                 compress_data_batch<PT>(all_data, data_index, batch_size, file_stats);
+                
             } catch (const std::exception& e) {
                 std::cerr << "压缩批次 " << data_index << " 失败: " << e.what() << std::endl;
                 throw;
             }
 
             data_index += batch_size;
+            all_batch++;
         }
+        // printf("all_batch : %d \n", all_batch);
+
+        // printf("data_index : %d \n", data_index);
     }
 };
 
@@ -730,10 +752,13 @@ TEST_F(alp_test, ratio) {
             for (int run = 0; run < 3; run++) {
                 FileCompressionStats run_stats;
                 run_stats.file_path = file_path;
+
                 
                 // std::cout << "第 " << (run + 1) << " 次运行..." << std::endl;
                 test_file_data<double>(file_path, run_stats);
                 
+                size_t total_compressed_size = run_stats.total_compressed_size;
+                printf("file_stats : %d \n", total_compressed_size);
                 // 累加统计信息
                 total_stats.total_original_size += run_stats.total_original_size;
                 total_stats.total_compressed_size += run_stats.total_compressed_size;

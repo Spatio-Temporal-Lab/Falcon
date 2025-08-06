@@ -1,1 +1,0 @@
-/usr/bin/g++-11 -fPIC -shared -Wl,-soname,libcuSZp.so -o libcuSZp.so @CMakeFiles/cuSZp_shared.dir/objects1.rsp CMakeFiles/cuSZp_shared.dir/cmake_device_link.o @CMakeFiles/cuSZp_shared.dir/linkLibs.rsp -L"/usr/lib/x86_64-linux-gnu/stubs" -L"/usr/lib/x86_64-linux-gnu"

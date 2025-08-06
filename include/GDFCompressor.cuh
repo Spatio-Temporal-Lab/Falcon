@@ -4,6 +4,7 @@
 // GDFCompressor.cuh
 
 #include <cuda_runtime.h>
+#include <thread> 
 #include <vector>
 #include <cmath>
 #include <math.h>
@@ -34,7 +35,9 @@ public:
     void compress(const std::vector<double>& input, std::vector<unsigned char>& output);
     static void GDFC_compress(double* d_oriData, unsigned char* d_cmpBytes, size_t nbEle, size_t* cmpSize, cudaStream_t stream);
     static void GDFC_compress_stream(double* d_oriData, unsigned char* d_cmpBytes, unsigned int* d2h_async_totalBits_ptr, size_t nbEle, cudaStream_t stream);
+    // 分离位打包
     static void GDFC_compress_no_pack(double* d_oriData, unsigned char* d_cmpBytes, size_t nbEle, size_t* cmpSize, cudaStream_t stream);
+    // 暴力计算
     void GDFC_compress_br(double* d_oriData, unsigned char* d_cmpBytes, size_t nbEle, size_t* cmpSize, cudaStream_t stream);
 
 private:

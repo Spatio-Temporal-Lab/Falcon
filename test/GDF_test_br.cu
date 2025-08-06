@@ -80,6 +80,9 @@ CompressionInfo comp_stream(std::vector<double> oriData, std::vector<double> &de
     float total_compress_time = 0.0;
     cudaEventElapsedTime(&end_full_compress, startEvent, stopEvent);
     cudaEventElapsedTime(&total_compress_time, g_startEvent,g_stopEvent);
+
+
+
     double compression_ratio = static_cast<double>(cmpSize) / (nbEle * sizeof(double));
 
 
@@ -87,10 +90,46 @@ CompressionInfo comp_stream(std::vector<double> oriData, std::vector<double> &de
     cudaFree(d_oriData);
     cudaFree(d_cmpBytes);
 
-    size_t in_bytes = nbEle * sizeof(double);
+    // ===== 完整的解压流程 =====
+    cudaEvent_t startEvent1, stopEvent1;
+    cudaEventCreate(&startEvent1);
+    cudaEventCreate(&stopEvent1);
+    
+    cudaEvent_t g_startEvent1, g_stopEvent1;
+    cudaEventCreate(&g_startEvent1);
+    cudaEventCreate(&g_stopEvent1);
+
+    cudaEventRecord(g_startEvent1, stream);
+    
+    // 1. 重新分配设备内存并将压缩数据从主机复制到设备
+    // std::cout << "1. 复制压缩数据到设备...\n";
+    cudaMalloc(&d_cmpBytes, cmpSize);
+        // 2. 为解压数据分配设备内存
+    cudaMalloc(&d_decData, nbEle * sizeof(double));
+    cudaMemcpyAsync(d_cmpBytes, h_cmpBytes.data(), cmpSize, cudaMemcpyHostToDevice, stream);
+
+
+    // 3. 执行GPU解压
+    // std::cout << "2. 执行GPU解压...\n";
+    cudaEventRecord(startEvent1, stream);
+    GDFDecompressor GDFD;
+    GDFD.GDFC_decompress_stream_optimized(d_decData, d_cmpBytes, nbEle, cmpSize, stream);
+    cudaEventRecord(stopEvent1, stream);
+
+    // 4. 将解压后的数据从设备复制回主机
+    // std::cout << "3. 复制解压数据回主机...\n";
+    decompData.resize(nbEle);
+    cudaMemcpyAsync(decompData.data(), d_decData, nbEle * sizeof(double), cudaMemcpyDeviceToHost, stream);
+    cudaEventRecord(g_stopEvent1, stream);
+    cudaStreamSynchronize(stream);
+    float end_full_decompress=0.0;
+    float total_decompress_time = 0.0;
+    cudaEventElapsedTime(&end_full_decompress, startEvent1, stopEvent1);
+    cudaEventElapsedTime(&total_decompress_time, g_startEvent1,g_stopEvent1);
+    size_t in_bytes = oriData.size() * sizeof(double);
     double data_size_gb = in_bytes / (1024.0 * 1024.0 * 1024.0);
     double compress_throughput = data_size_gb / (total_compress_time / 1000.0);
-
+    double decompress_throughput = data_size_gb / (total_decompress_time / 1000.0);
     CompressionInfo tmp{
         in_bytes/1024.0/1024.0,
         static_cast<double>(cmpSize) /1024.0/1024.0,
@@ -98,14 +137,23 @@ CompressionInfo comp_stream(std::vector<double> oriData, std::vector<double> &de
         end_full_compress,
         total_compress_time,
         compress_throughput,
-        0,
-        0,
-        0};
+        end_full_decompress,
+        total_decompress_time,
+        decompress_throughput};
     // 释放设备内存和流
     cudaFree(d_cmpBytes);
     cudaFree(d_decData);
     cudaStreamDestroy(stream);
 
+    // // 验证解压结果的正确性
+    // for (size_t i = 0; i < oriData.size(); ++i) {
+    //     if(abs(oriData[i] -decompData[i])>1e-6) 
+    //     {
+    //         std::cout<< "第 " << i << " 个值不相等。\n";
+    //         return tmp;
+    //     }
+    // }
+    // printf("comp success\n");
     return tmp;
 }
 
@@ -174,7 +222,14 @@ int main(int argc, char *argv[]) {
                 std::cout <<"正在处理文件: " << file_path << std::endl;
                 for(int i=0;i<3;i++)
                 {
-                    a+=test_stream_compression(file_path);
+                    // 在每次测试前重置GPU状态
+                    cudaDeviceReset();
+                    // cudaFree(0); // 重新初始化
+                    
+                    a += test_stream_compression(file_path);
+                    
+                    // 强制同步并等待
+                    cudaDeviceSynchronize();
                 }
                 a=a/3;
                 a.print();

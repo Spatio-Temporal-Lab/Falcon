@@ -194,15 +194,14 @@ CompressionInfo comp_stream(std::vector<double> oriData, std::vector<double> &de
     cudaStreamDestroy(stream);
 
     // 验证解压结果的正确性
-    // std::cout << "\n验证解压结果正确性...\n";
-    // try {
-    //     for (size_t i = 0; i < oriData.size(); ++i) {
-    //         ASSERT_NEAR(oriData[i], decompData[i], 1e-6) << "第 " << i << " 个值不相等。";
+    // for (size_t i = 0; i < oriData.size(); ++i) {
+    //     if(abs(oriData[i] -decompData[i])>1e-6) 
+    //     {
+    //         std::cout<< "第 " << i << " 个值不相等。\n";
+    //         return tmp;
     //     }
-    //     std::cout << "解压结果验证通过！\n";
-    // } catch (const std::exception& e) {
-    //     std::cerr << "断言失败: " << e.what() << std::endl;
     // }
+    // printf("comp success\n");
     return tmp;
 }
 
@@ -284,7 +283,7 @@ void warmup()
     // 读取数据
     std::vector<double> oriData = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.10, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.20, 0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.30, 0.31, 0.32, 0.33};
     std::vector<double> newData;
-    comp(oriData, newData);
+    comp_stream(oriData, newData);
 }
 
 // 旧测试: 文件压缩解压缩
@@ -443,15 +442,22 @@ int main(int argc, char *argv[]) {
                 CompressionInfo a;
                 if(!warm)
                 {
-                    // std::cout << "\n-------------------warm-------------------------- " << file_path << std::endl;
+                    std::cout << "\n-------------------warm-------------------------- " << file_path << std::endl;
                     test_stream_compression(file_path);
                     warm=1;
-                    // std::cout << "-------------------warm_end------------------------" << std::endl;
+                    std::cout << "-------------------warm_end------------------------" << std::endl;
                 }
                 std::cout <<"正在处理文件: " << file_path << std::endl;
                 for(int i=0;i<3;i++)
                 {
-                    a+=test_stream_compression(file_path);
+                    // 在每次测试前重置GPU状态
+                    cudaDeviceReset();
+                    // cudaFree(0); // 重新初始化
+                    
+                    a += test_stream_compression(file_path);
+                    
+                    // 强制同步并等待
+                    cudaDeviceSynchronize(); 
                 }
                 a=a/3;
                 a.print();

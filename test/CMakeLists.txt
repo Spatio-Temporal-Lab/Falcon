@@ -99,6 +99,12 @@ add_subdirectory(baseline/ndzip)
 # 添加 elf 项目路径
 add_subdirectory(baseline/elf)
 
+# 添加 elf_star 项目路径
+add_subdirectory(baseline/elf_star)
+
+# 添加 elf_star_g 项目路径
+add_subdirectory(baseline/elf_star_g)
+
 # 添加 mpc 项目路径
 add_subdirectory(baseline/mpc)
 
@@ -128,6 +134,9 @@ include_directories(${CMAKE_SOURCE_DIR}/test/baseline/ndzip/include)
 # include_directories(${CMAKE_SOURCE_DIR}/test/baseline/cuSZp/include)
 # include_directories(${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include)
 include_directories(${CMAKE_SOURCE_DIR}/test/baseline/elf)
+include_directories(${CMAKE_SOURCE_DIR}/test/baseline/elf_star)
+include_directories(${CMAKE_SOURCE_DIR}/test/baseline/elf_star_g)
+
 # include_directories(${CMAKE_SOURCE_DIR}/test/baseline/mpc)
 
 
@@ -184,11 +193,14 @@ cuda_add_executable(test_ndzip test_ndzip.cpp data/dataset_utils.cpp)
 # add_executable(test_cuSZp test_cuSZp.cpp data/dataset_utils.cpp)
 
 cuda_add_executable(test_muti_stream GDF_test_muti_steam_f64.cu data/dataset_utils.cpp ${SRC_GPU} )
-cuda_add_executable(test_muti_3step muti_type1.cu data/dataset_utils.cpp ${SRC_GPU} )
-cuda_add_executable(test_muti_nofix muti_type2.cu  data/dataset_utils.cpp ${SRC_GPU} )
+cuda_add_executable(test_muti_3step_block muti_type_3step_block.cu data/dataset_utils.cpp ${SRC_GPU} )
+cuda_add_executable(test_muti_3step_noblock muti_type_3step_noblock.cu  data/dataset_utils.cpp ${SRC_GPU} )
 
 
 add_executable(test_elf test_elf.cpp data/dataset_utils.cpp)
+add_executable(test_elf_star test_elf_star.cpp data/dataset_utils.cpp)
+cuda_add_executable(test_elf_star_g test_elf_star_g.cu data/dataset_utils.cpp)
+
 
 # cuda_add_executable(test_mpc test_mpc.cpp data/dataset_utils.cpp)
 
@@ -202,10 +214,14 @@ target_link_libraries(test_ALP PRIVATE GTest::GTest GTest::Main pthread ALP)
 target_link_libraries(test_ndzip ${CUDA_LIBRARIES} GTest::GTest ndzip-cuda io Boost::program_options GTest::Main ndzip pthread)
 # target_link_libraries(test_cuSZp ${CUDA_LIBRARIES} GTest::GTest GTest::Main pthread cuSZp_shared)
 target_link_libraries(test_elf PRIVATE GTest::GTest GTest::Main pthread elf)
+target_link_libraries(test_elf_star PRIVATE GTest::GTest GTest::Main pthread elf_star)
+target_link_libraries(test_elf_star_g ${CUDA_LIBRARIES} GTest::GTest GTest::Main pthread elf_star_g)
+
+
 # target_link_libraries(test_mpc ${CUDA_LIBRARIES} GTest::GTest GTest::Main pthread mpc)
 target_link_libraries(test_muti_stream ${CUDA_LIBRARIES}  GTest::GTest GTest::Main pthread )
-target_link_libraries(test_muti_3step ${CUDA_LIBRARIES}  GTest::GTest GTest::Main pthread )
-target_link_libraries(test_muti_nofix ${CUDA_LIBRARIES}  GTest::GTest GTest::Main pthread )
+target_link_libraries(test_muti_3step_block ${CUDA_LIBRARIES}  GTest::GTest GTest::Main pthread )
+target_link_libraries(test_muti_3step_noblock ${CUDA_LIBRARIES}  GTest::GTest GTest::Main pthread )
 
 
 # 设置 include 目录
@@ -218,12 +234,14 @@ target_include_directories(benchmark_tests PRIVATE ${CMAKE_SOURCE_DIR}/test/base
 target_include_directories(test_ALP PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/ALP/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 # target_include_directories(test_cuSZp PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/cuSZp/include ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 target_include_directories(test_muti_stream PRIVATE  ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
-target_include_directories(test_muti_3step PRIVATE  ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+target_include_directories(test_muti_3step_block PRIVATE  ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 
-target_include_directories(test_muti_nofix PRIVATE  ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+target_include_directories(test_muti_3step_block PRIVATE  ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 
 # target_include_directories(test_mpc PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/mpc ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 target_include_directories(test_elf PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/elf ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+target_include_directories(test_elf_star PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/elf_star ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
+target_include_directories(test_elf_star_g PRIVATE ${CMAKE_SOURCE_DIR}/test/baseline/elf_star_g ${CMAKE_SOURCE_DIR}/test/data ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src/utils)
 
 
 # 在 CMake 配置文件中为 test_ndzip 目标增加 io 目录

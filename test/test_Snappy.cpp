@@ -575,9 +575,11 @@ void test_compression(const std::string& file_path,bool show=1) {
     // 读取数据
     std::vector<double> oriData = read_data(file_path);
     auto patterned_data = convert(oriData);
+    cudaDeviceReset();
     auto metrics = test_snappy_compression_core(patterned_data.data(), patterned_data.size());
     for(int i=0;i<2;i++)
     {
+        cudaDeviceReset();
         metrics += test_snappy_compression_core(patterned_data.data(), patterned_data.size());
     }
     metrics=metrics/3;

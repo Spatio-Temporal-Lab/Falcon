@@ -412,6 +412,7 @@ int main(int argc, char *argv[]) {
                 std::cout << "\nProcessing file: " << file_path << std::endl;
                 for(int i=0;i<3;i++)
                 {
+                    cudaDeviceReset();
                     a+=test_compression(file_path);
                 }
                 a=a/3;

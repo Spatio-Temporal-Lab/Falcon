@@ -1,1 +1,0 @@
-/usr/bin/c++  -Wno-unused-result -g CMakeFiles/cuSZp.dir/cuSZp.cpp.o CMakeFiles/cuSZp.dir/cmake_device_link.o -o bin/cuSZp   -L/usr/lib/x86_64-linux-gnu/stubs  ../libcuSZp.a /usr/lib/x86_64-linux-gnu/libcudart.so -lcudadevrt -lcudart_static -lrt -lpthread -ldl 

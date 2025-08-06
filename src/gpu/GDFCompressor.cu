@@ -34,6 +34,7 @@ __device__ __forceinline__ static unsigned long zigzag_encode_cuda(long value) {
     return (value << 1) ^ (value >> (sizeof(long) * 8 - 1));
 }
 
+
 __device__ static int getDecimalPlaces(double value,int sp) {
     double trac = value + POW_NUM_G - POW_NUM_G;
     double temp = value;
@@ -41,11 +42,13 @@ __device__ static int getDecimalPlaces(double value,int sp) {
     int digits = 0;
     double td = 1;
     double deltaBound = abs(value) * pow(2, -52);
+    // double deltaBound = pow(2,ilogb(temp)-52);
     while (abs(temp - trac) >= deltaBound * td && digits < 16 - sp - 1)
     {
         digits++;
         td = pow10_table[digits];
         temp = value * td;
+        // double deltaBound = pow(2,ilogb(temp)-52);
         trac = temp + POW_NUM_G - POW_NUM_G;
     }
 
@@ -53,6 +56,23 @@ __device__ static int getDecimalPlaces(double value,int sp) {
 }
 
 __device__ static int getDecimalPlaces_s(double v,int sp) {
+//     value = value < 0 ? -value : value;
+//     double trac = value + POW_NUM_G - POW_NUM_G;
+//     double temp = value;
+
+//     int digits = 0;
+//     double td = 1;
+//     double deltaBound = abs(value) * pow(2, -52);
+//     while (abs(temp - trac) == 0 && digits < 16 - sp - 1)
+//     {
+//         digits++;
+//         td = pow10_table[digits];
+//         temp = value * td;
+//         trac = temp + POW_NUM_G - POW_NUM_G;
+//     }
+
+//     return digits;
+// }
     v = v < 0 ? -v : v;
     
     int i = 0;
@@ -61,6 +81,7 @@ __device__ static int getDecimalPlaces_s(double v,int sp) {
     // 找到能精确表示为整数的最小倍数
     while (i < 17) {
         double temp = v * scale;
+        
         if (round(temp) == temp) {
 
             return i;
@@ -107,7 +128,6 @@ __device__ inline uint64_t device_min_uint64(uint64_t a, uint64_t b) {
 __device__ inline uint64_t device_max_uint64(uint64_t a, uint64_t b) {
     return (a > b) ? a : b;
 }
-
 __device__ long encodeDoubleWithSignLast(double x) {
     union {
         double d;
@@ -151,6 +171,7 @@ __global__ void compressBlockKernel(
     int startIdx = idx * DATA_PER_THREAD;
     int endIdx = min(startIdx + DATA_PER_THREAD, totalSize);
     int numDatas = endIdx - startIdx;
+    printf("idx: %d， num: %d", idx, numDatas);
     uint64_t deltas[DATA_PER_THREAD];
     //int numDeltas = numDatas - 1;
     if(numDatas<=0)
@@ -185,7 +206,10 @@ __global__ void compressBlockKernel(
         maxBeta = device_max(maxBeta,beta);
         maxDecimalPlaces = device_max(maxDecimalPlaces, alpha);
     }
-
+    if(maxBeta>15&&idx<2)
+    {
+        printf("11\n");
+    }
     uint64_t maxDelta = 0;
     firstValue = double2long(input[startIdx], maxDecimalPlaces,maxBeta); // 量化第一个
     prevQuant = firstValue;// 初始化第一个量化值
@@ -678,7 +702,7 @@ __global__ void GDFC_compress_kernel(
     int totalSize
 )
 {
-        // 共享内存，用于在线程块内共享数据
+    // 共享内存，用于在线程块内共享数据
     __shared__ unsigned int excl_sum; // 排他性前缀和，用于偏移量计算
     //__shared__ unsigned int base_idx; // 当前warp的基地址索引
 
@@ -1397,6 +1421,7 @@ __global__ void GDFC_compress_kernel_no_pack(
     {
         bitSize=0;
     }
+    bitSize=(bitSize+7)/8*8;//字节对齐
     // 5. 前缀和计算
         thread_ofs+=bitSize;//bitSize是每一个线程处理后需要写入的数据量所占的bit位
 
@@ -1550,6 +1575,7 @@ __global__ void GDFC_compress_kernel_no_pack(
         // }
 
 }
+
 // 主压缩函数
 void GDFCompressor::GDFC_compress_no_pack(double* d_oriData, unsigned char* d_cmpBytes, size_t nbEle, size_t* cmpSize, cudaStream_t stream)
 {
@@ -1638,15 +1664,22 @@ __global__ void GDFC_compress_kernel_br(
         double log10v = log10(std::abs(value));
         int sp = floor(log10v);
 
-        double alpha = getDecimalPlaces_s(value, sp);// 得到小数位数
-        double beta =  alpha + sp + 1;
-        maxBeta = device_max(maxBeta,beta);
-        maxDecimalPlaces = device_max(maxDecimalPlaces, alpha);
+        int alpha = getDecimalPlaces_s(value, sp);// 得到小数位数
+        int tmp=getDecimalPlaces(value, sp);// 得到小数位数
+        // if(alpha<tmp)
+        // {
+        //     printf("alpha:%d,tmp:%d\n",alpha,tmp);
+        // }
+        int beta =  alpha + sp + 1;
+        maxBeta = max(maxBeta,beta);
+        maxDecimalPlaces = max(maxDecimalPlaces, alpha);
     }
     //printf("maxDecimalPlaces:%d\n", maxDecimalPlaces);
     // 2. FOR + zigzag（用4向量化进行实现）
     uint64_t maxDelta = 0;
     firstValue = double2long(input[startIdx], maxDecimalPlaces,maxBeta); // 量化第一个
+    // if(idx<=2)
+    // printf("input:%f,fs:%ld,maxDecimalPlaces:%d,beta:%d\n",input[startIdx],firstValue,maxDecimalPlaces,maxBeta);
     prevQuant = firstValue;// 初始化第一个量化值
     for(int j = 0; j < (numDatas+31) / 32; j++) { // 每个线程的数量 / 一个数据批次（32）
         base_block_start_idx = startIdx + j * 32;           //每一组32个数据的起始位置

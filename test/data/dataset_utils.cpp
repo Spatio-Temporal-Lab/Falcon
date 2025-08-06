@@ -525,12 +525,10 @@ std::vector<double> read_data(const std::string& file_path, bool show_progress, 
     const size_t estimated_elements = max_rows * num_columns;
     result.reserve(estimated_elements);
     
-    for (size_t row = 0; row < max_rows; ++row) {
-        for (size_t col = 0; col < num_columns; ++col) {
+    for (size_t col = 0; col < num_columns; ++col) {
+        for (size_t row = 0; row < max_rows; ++row) {
             if (row < columns[col].size()) {
                 result.emplace_back(columns[col][row]);
-            } else {
-                // result.emplace_back(0.0);  // 如果需要填充
             }
         }
     }
