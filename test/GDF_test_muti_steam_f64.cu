@@ -112,12 +112,12 @@ ProcessedData prepare_data(const std::string &source_path = "", size_t generate_
     // 决定数据来源
     if (generate_size > 0) {
         // 生成指定大小的数据
-        printf("生成 %zu 个元素的测试数据 (模式: %d)\n", generate_size, pattern_type);
+        // printf("生成 %zu 个元素的测试数据 (模式: %d)\n", generate_size, pattern_type);
         data = generate_test_data(generate_size, pattern_type);
         result.nbEle = generate_size;
     } else if (!source_path.empty()) {
         // 从文件读取数据
-        printf("从文件加载数据: %s\n", source_path.c_str());
+        // printf("从文件加载数据: %s\n", source_path.c_str());
         data = read_data(source_path);
         result.nbEle = data.size();
     } else {
@@ -127,10 +127,10 @@ ProcessedData prepare_data(const std::string &source_path = "", size_t generate_
         result.cmpBytes = nullptr;
         return result;
     }
-if(        result.nbEle <= 0)
-{
-    printf("wrong");
-}
+    if(result.nbEle <= 0)
+    {
+        printf("wrong");
+    }
     // 分配固定内存
     cudaCheckError(cudaHostAlloc(&result.oriData, result.nbEle * sizeof(double), cudaHostAllocDefault));
     cudaCheckError(cudaHostAlloc((void**)&result.cmpBytes, result.nbEle * sizeof(double), cudaHostAllocDefault));
@@ -199,11 +199,22 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize, bool v
 
     printf("totalChunks: %d\n",totalChunks);
     // 主机侧内存分配
+    // unsigned int *locCmpSize;
+    // cudaCheckError(cudaHostAlloc((void**)&locCmpSize, sizeof(unsigned int) * totalChunks, cudaHostAllocDefault));
+    // 分配时添加保护
     unsigned int *locCmpSize;
-    cudaCheckError(cudaHostAlloc((void**)&locCmpSize, sizeof(unsigned int) * totalChunks, cudaHostAllocDefault));
-    unsigned int *h_cmp_offset;
-    cudaCheckError(cudaHostAlloc((void**)&h_cmp_offset, sizeof(unsigned int) * totalChunks + 1, cudaHostAllocDefault));
+    cudaCheckError(cudaHostAlloc((void**)&locCmpSize, 
+    sizeof(unsigned int) * (totalChunks + 2), cudaHostAllocDefault));  // +2 for guards
 
+    // 设置保护值
+    locCmpSize[0] = 0xDEADBEEF;  // 前保护
+    locCmpSize[totalChunks + 1] = 0xCAFEBABE;  // 后保护
+
+
+    
+    unsigned int *h_cmp_offset;
+    // cudaCheckError(cudaHostAlloc((void**)&h_cmp_offset, sizeof(unsigned int) * totalChunks + 1, cudaHostAllocDefault));
+    cudaCheckError(cudaHostAlloc((void**)&h_cmp_offset, sizeof(unsigned int) * (totalChunks + 1), cudaHostAllocDefault));
     // 初始化偏移量数组
     h_cmp_offset[0] = 0;
 
@@ -264,7 +275,7 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize, bool v
     cudaEventRecord(global_start_event);
 
     std::vector<int> chunkIDX(NUM_STREAMS);//和compINFO进行绑定
-    while (processedEle < data.nbEle-64 || active > 0) {
+    while (processedEle < data.nbEle || active > 0) {
         int progress=0;
         for (int s = 0; s < NUM_STREAMS; ++s) {
             switch (stage[s]) {
@@ -294,12 +305,24 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize, bool v
 
                         // cudaCheckError(cudaEventRecord(kernal_start[chunkIDX[s]], streams[s]));
                         // 调用你的压缩接口（内部处理所有临时内存）
+                        // GDFCompressor::GDFC_compress_stream(
+                        //     d_in[s],
+                        //     d_out[s],
+                        //     &locCmpSize[chunkIDX[s]],  // 直接传递压缩大小指针
+                        //     todo,
+                        //     streams[s]);
+                            // 使用时偏移
                         GDFCompressor::GDFC_compress_stream(
                             d_in[s],
                             d_out[s],
-                            &locCmpSize[chunkIDX[s]],  // 直接传递压缩大小指针
+                            &locCmpSize[chunkIDX[s] + 1],  // +1 因为有前保护
                             todo,
                             streams[s]);
+
+                        // 检查保护值
+                        if (locCmpSize[0] != 0xDEADBEEF || locCmpSize[totalChunks + 1] != 0xCAFEBABE) {
+                            printf("错误：内存保护值被覆写！\n");
+                        }
                         // cudaStreamSynchronize(streams[s]);
                         // 记录尺寸事件
                         active += 1;
@@ -334,7 +357,7 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize, bool v
                         // 计算压缩后的字节大小
                         int idx=chunkIDX[s];
                         // printf("idx: %d,stream: %d SIZE\n",idx,s);
-                        unsigned int compressedBits = locCmpSize[idx];
+                        unsigned int compressedBits = locCmpSize[idx+1];
                         unsigned int compressedBytes = (compressedBits + 7) / 8;
 
                         // 异步 D→H 拷贝结果
@@ -346,7 +369,9 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize, bool v
                             streams[s]));
 
                         // 更新偏移量
-
+                        // if (idx == 11) {
+                        //     printf("Stream %d, Chunk 11: 原始locCmpSize=%u (bits或bytes?)\n", s, compressedBits);
+                        // }
                         h_cmp_offset[idx+1] = h_cmp_offset[idx] + compressedBytes;
                         of_rd[idx+1]=true;//给下一个准备好了偏移
                         // printf("idx: %d,stream: %d offready\n",idx+1,s);
@@ -354,6 +379,10 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize, bool v
                         chunkElementCountsVec.push_back(chunkElementCounts[s]);
                         cudaCheckError(cudaEventRecord(evData[chunkIDX[s]], streams[s]));
                         stage[s] = DATA_PENDING;
+                        // if (idx < 16) {  // 只打印前几个chunk
+                        //     printf("压缩 Chunk %d: offset=%u, size=%u bytes, elements=%zu\n", 
+                        //         idx, h_cmp_offset[idx], compressedBytes, chunkElementCounts[idx]);
+                        // }
                     }
                     break;
 
@@ -361,7 +390,7 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize, bool v
                     if (cudaEventQuery(evData[chunkIDX[s]]) == cudaSuccess) {
                         // 累计压缩大小
                         // printf("idx: %d stream: %d DATA\n",chunkIDX[s],s);
-                        unsigned int compressedBytes = (locCmpSize[chunkIDX[s]] + 7) / 8;
+                        unsigned int compressedBytes = (locCmpSize[chunkIDX[s]+1] + 7) / 8;
                         totalCmpSize += compressedBytes;
                         progress=1;
                         stage[s] = IDLE;
@@ -454,9 +483,11 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize, bool v
 
     // 清理流和事件
     for (int i = 0; i < NUM_STREAMS; i++) {
+        cudaCheckError(cudaStreamDestroy(streams[i]));
+    }
+    for (int i = 0; i < MAX_EVENTS_PER_TYPE; i++) {
         cudaCheckError(cudaEventDestroy(evSize[i]));
         cudaCheckError(cudaEventDestroy(evData[i]));
-        cudaCheckError(cudaStreamDestroy(streams[i]));
     }
 
     // 释放主机内存
@@ -553,8 +584,8 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compRes
     int active = 0;
     size_t totalDecompSize = 0; // 总解压大小
     size_t compressedDataOffsets[compData.totalChunks]={0};
-    for (size_t i = 0; i < compData.totalChunks -1; ++i) {
-        compressedDataOffsets[i+1] += compData.chunkSizes[i];
+    for (size_t i = 0; i < compData.totalChunks - 1; ++i) {
+        compressedDataOffsets[i+1] = compressedDataOffsets[i] + compData.chunkSizes[i];  // 累加偏移
     }
     // 记录全局开始时间
     cudaDeviceSynchronize(); // 测量前确保稳定
@@ -600,7 +631,7 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compRes
                         // 记录压缩数据拷贝和解压完成事件
                         cudaCheckError(cudaEventRecord(evSize[s], streams[s]));
 
-                        stage[s] = SIZE_PENDING;
+                        // stage[s] = SIZE_PENDING;
                         processedChunks++;
                         processedElements += currentChunkElements;
 
@@ -616,6 +647,11 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compRes
 
                         cudaCheckError(cudaEventRecord(evData[s], streams[s]));
                         stage[s] = DATA_PENDING;
+                        // if (chunkId < 16) {
+                        //     printf("解压 Chunk %zu: input_offset=%zu, output_offset=%zu, size=%zu bytes, elements=%zu\n",
+                        //         chunkId, compressedDataOffset, outputOffset, 
+                        //         currentChunkCompressedSize, currentChunkElements);
+                        // }
                     }
                     break;
 
@@ -651,30 +687,50 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compRes
     // 创建并返回分析结果
     PipelineAnalysis result;
     result.compression_ratio =totalDecompSize/ static_cast<double>(compData.totalCompressedSize) ;
-    result.total_compressed_size = compData.totalCompressedSize/1024/1024;
-    result.total_size = totalDecompSize / 1024 / 1024;
+    result.total_compressed_size = compData.totalCompressedSize/1024.0/1024.0;
+    result.total_size = totalDecompSize / 1024.0 / 1024.0;
     result.decomp_time = totalTime;
     result.decomp_throughout=(totalDecompSize  / 1024.0 / 1024.0 / 1024.0) / (totalTime / 1000.0);
+    size_t expectedSize = compData.totalElements * sizeof(double);
+    // if (totalDecompSize != expectedSize) {
+    //     printf("警告：解压缩大小不匹配！期望: %zu, 实际: %zu\n", 
+    //         expectedSize, totalDecompSize);
+    // }
     // for(size_t i=0;i<10;i++)
     // {
     //     printf("ori: %f , dec: %f \n",decompData.oriData[i],decompData.decData[i]);
     // }
-    for(int i=0,z=0;i<compData.totalChunks ;i++)
-    {
-        for(int j=z;j<z+2;j++)
-        printf("idx: %d ,ori: %f , dec: %f \n",j,decompData.oriData[j],decompData.decData[j]);
-        z+=compData.chunkElementCounts[i];
-    }
-    printf("\n");
-    for(size_t i=0,j=0;i<10;i++)
-    {
-        while(decompData.oriData[j]==decompData.decData[j]&&j<processedElements)
+    // for(int i=0,z=0;i<compData.totalChunks ;i++)
+    // {
+    //     for(int j=z;j<z+2;j++)
+    //     printf("idx: %d ,ori: %f , dec: %f \n",j,decompData.oriData[j],decompData.decData[j]);
+    //     z+=compData.chunkElementCounts[i];
+    // }
+    // printf("\n");
+    for(int z=0,tmp=0,k=0;z<3;z++)
+    {   
+        for(size_t i=0,j=tmp;i<3;i++)
         {
+            while(decompData.oriData[j]==decompData.decData[j]&&j<processedElements)
+            {
+                j++;
+            }
+            if(j>=processedElements)
+            {
+                printf("success!!\n");   
+                break;
+            }
+            printf("idx: %d ,ori: %f , dec: %f \n",j,decompData.oriData[j],decompData.decData[j]);
             j++;
+
+            while(tmp<j)
+            {
+                tmp+=compData.chunkElementCounts[k];
+                k++;
+            }
         }
-        printf("idx: %d ,ori: %f , dec: %f \n",j,decompData.oriData[j],decompData.decData[j]);
-        j++;
     }
+    
     if (visualize) {
         std::cout << "===== 解压统计 =====" << std::endl;
         std::cout << "压缩大小: " << compData.totalCompressedSize << " 字节 ("
@@ -713,7 +769,56 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compRes
 
     return result;
 }
-
+// 单独测试chunk 11
+void test_chunk_11(ProcessedData &data) {
+    size_t chunk_start = 11 * 262144;
+    size_t chunk_size = 262144;
+    if(data.nbEle<chunk_start)
+    {
+        return;
+    }
+    // 分配设备内存
+    double *d_in, *d_out_decomp;
+    unsigned char *d_out_comp;
+    unsigned int h_comp_size;
+    
+    cudaMalloc(&d_in, chunk_size * sizeof(double));
+    cudaMalloc(&d_out_comp, chunk_size * sizeof(double));
+    cudaMalloc(&d_out_decomp, chunk_size * sizeof(double));
+    
+    // 拷贝数据
+    cudaMemcpy(d_in, data.oriData + chunk_start, 
+               chunk_size * sizeof(double), cudaMemcpyHostToDevice);
+    
+    // 压缩
+    GDFCompressor::GDFC_compress_stream(
+        d_in, d_out_comp, &h_comp_size, chunk_size, 0);
+    cudaDeviceSynchronize();
+    
+    printf("Chunk 11 单独测试: 压缩大小=%u bytes\n", (h_comp_size + 7) / 8);
+    
+    // 解压
+    GDFDecompressor GDFD;
+    GDFD.GDFC_decompress_stream_optimized(
+        d_out_decomp, d_out_comp, chunk_size, 
+        (h_comp_size + 7) / 8, 0);
+    cudaDeviceSynchronize();
+    
+    // 验证
+    double *h_decomp = new double[chunk_size];
+    cudaMemcpy(h_decomp, d_out_decomp, 
+               chunk_size * sizeof(double), cudaMemcpyDeviceToHost);
+    
+    for (size_t i = 47420; i < 47430; i++) {
+        printf("单独测试[%zu]: ori=%.10f, dec=%.10f\n", 
+               chunk_start+i, data.oriData[chunk_start + i], h_decomp[i]);
+    }
+    
+    delete[] h_decomp;
+    cudaFree(d_in);
+    cudaFree(d_out_comp);
+    cudaFree(d_out_decomp);
+}
 // 输出块大小与运行时间关系的CSV文件
 // void output_blocksize_timing_csv(const std::vector<PipelineAnalysis> &results, const std::string &filename) {
 //     std::ofstream csv_file(filename, std::ios::app);
@@ -808,7 +913,7 @@ int test_multiple_blocksizes(const std::string &file_path, const std::vector<siz
         // comp(data,chunkSize);
         for(int i=0;i<3;i++)
         {
-            cudaDeviceReset();
+            // cudaDeviceReset();
 
             CompressionResult compResult = execute_pipeline(data, chunkSize, true);
             cudaDeviceSynchronize(); 
@@ -934,23 +1039,35 @@ void warmup()
 
 int setChunk(int nbEle)
 {
-    size_t chunkSize=1;
+    size_t chunkSize=1024;
     size_t temp=nbEle/NUM_STREAMS;// (data+temp-1)/temp<NUm_streams
-    while(chunkSize<=MAX_NUMS_PER_CHUNK && chunkSize<=temp)
+    //可用的显存
+    // size_t availableMemory = getAvailableGPUMemory();
+    size_t availableMemory, totalMem;
+    cudaMemGetInfo(&availableMemory, &totalMem);
+    size_t limit=availableMemory/(4 * NUM_STREAMS * sizeof(double) * 2);
+    //最多同时有16流 chunkSize*NUM_STREAMS*8*sizeof(double) * 2<availableMemory/8*
+    while(chunkSize<=limit//MAX_NUMS_PER_CHUNK 
+            && chunkSize<=temp)
     {
         chunkSize*=2;
     }
+    // chunkSize=chunkSize/2;
+    chunkSize=chunkSize>1024?chunkSize:1024;
+    printf("chunkSize:%d\n",chunkSize);
     return chunkSize;
 }
 
 CompressionInfo test_compression(ProcessedData data, size_t chunkSize)
 {
     // cudaDeviceReset();
+    // test_chunk_11(data);
     CompressionResult compResult = execute_pipeline(data, chunkSize, false);
     cudaDeviceSynchronize(); 
 
     PipelineAnalysis decompAnalysis = execute_decompression_pipeline(compResult, data, false);
     cudaDeviceSynchronize(); 
+    // test_chunk_11(data);
     return CompressionInfo{
         decompAnalysis.total_size,
         decompAnalysis.total_compressed_size,
@@ -965,39 +1082,84 @@ CompressionInfo test_compression(ProcessedData data, size_t chunkSize)
 // 主要测试函数 - 支持文件路径或生成数据
 int test(const std::string &file_path = "", size_t data_size_mb = 0, int pattern_type = 0) {
     // warmup();
-    // cudaDeviceReset();
+    cudaDeviceReset();
 
     if (!file_path.empty()) {
-        size_t chunkSize=1;
-        ProcessedData data = prepare_data(file_path);
-        chunkSize=setChunk(data.nbEle);
+        // size_t chunkSize=1;
+        // ProcessedData data = prepare_data(file_path);
+        // chunkSize=setChunk(data.nbEle);
+        // CompressionInfo a;
+        // for(int i=0;i<3;i++)
+        // {
+        //     auto tmp=test_compression(data,chunkSize);
+        //     a+=tmp;
+        //     if(1)//(tmp.compression_ratio!=(a.compression_ratio/(i+1)))
+        //     {
+        //         printf("a:%.6f,get:%.6f\n",a.compression_ratio/(i+1),tmp.compression_ratio);
+        //     }
+        // }
+        std::vector<double> file_data = read_data(file_path);
+        size_t nbEle = file_data.size();
+        
         CompressionInfo a;
-        for(int i=0;i<3;i++)
-        {
-            auto tmp=test_compression(data,chunkSize);
-            a+=tmp;
-            if(1)//(tmp.compression_ratio!=(a.compression_ratio/(i+1)))
-            {
-                printf("a:%.6f,get:%.6f\n",a.compression_ratio/(i+1),tmp.compression_ratio);
-            }
+        for(int i = 0; i < 3; i++) {
+            // 每次循环重置GPU并重新准备数据
+            cudaDeviceReset();
+            
+            // 重新准备CUDA资源
+            ProcessedData data = prepare_data(file_path);
+            
+            // 计算chunk大小
+            size_t chunkSize = setChunk(data.nbEle);
+            
+            // 执行测试
+            auto tmp = test_compression(data, chunkSize);
+            a += tmp;
+            
+            // printf("Iteration %d - a:%.6f, get:%.6f\n", i+1, a.compression_ratio/(i+1), tmp.compression_ratio);
+            
+            // 清理本次迭代的资源
+            cleanup_data(data);
         }
         a=a/3;
         a.print();
-        cleanup_data(data);
+        // cleanup_data(data);
         return 0;
     } else if (data_size_mb > 0) {
-        size_t chunkSize;
         size_t nbEle = (data_size_mb * 1024 * 1024) / sizeof(double);
-        ProcessedData data = prepare_data("", nbEle, pattern_type);
-        chunkSize=setChunk(data.nbEle);
+        
+        // ProcessedData data = prepare_data("", nbEle, pattern_type);
+        // chunkSize=setChunk(data.nbEle);
+        // CompressionInfo a;
+        // for(int i=0;i<3;i++)
+        // {
+        //     a+=test_compression(data,chunkSize);
+        // }
+        // a=a/3;
+        // a.print();
+        // cleanup_data(data);
         CompressionInfo a;
-        for(int i=0;i<3;i++)
-        {
-            a+=test_compression(data,chunkSize);
+        for(int i = 0; i < 3; i++) {
+            // 每次循环重置GPU并重新准备数据
+            cudaDeviceReset();
+            
+            // 重新准备CUDA资源
+            ProcessedData data = prepare_data("", nbEle, pattern_type);
+            
+            // 计算chunk大小
+            size_t chunkSize = setChunk(data.nbEle);
+            
+            // 执行测试
+            auto tmp = test_compression(data, chunkSize);
+            a += tmp;
+            
+            // printf("Iteration %d - a:%.6f, get:%.6f\n", i+1, a.compression_ratio/(i+1), tmp.compression_ratio);
+            
+            // 清理本次迭代的资源
+            cleanup_data(data);
         }
         a=a/3;
         a.print();
-        cleanup_data(data);
         return 0;
     } else {
         printf("错误: 必须提供文件路径或数据生成参数\n");

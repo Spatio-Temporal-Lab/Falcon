@@ -359,6 +359,8 @@ void GDFDecompressor::GDFC_decompress(double* d_decData, unsigned char* d_cmpByt
     if (kernelErr != cudaSuccess) {
         std::cerr << "Kernel execution error: " << cudaGetErrorString(kernelErr) << std::endl;
     }
+    cudaEventDestroy(kernal_start_event);
+    cudaEventDestroy(kernal_end_event);
 }
 
 // 设备端偏移计算核函数

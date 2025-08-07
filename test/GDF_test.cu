@@ -194,14 +194,14 @@ CompressionInfo comp_stream(std::vector<double> oriData, std::vector<double> &de
     cudaStreamDestroy(stream);
 
     // 验证解压结果的正确性
-    // for (size_t i = 0; i < oriData.size(); ++i) {
-    //     if(abs(oriData[i] -decompData[i])>1e-6) 
-    //     {
-    //         std::cout<< "第 " << i << " 个值不相等。\n";
-    //         return tmp;
-    //     }
-    // }
-    // printf("comp success\n");
+    for (size_t i = 0; i < oriData.size(); ++i) {
+        if(abs(oriData[i] -decompData[i])>1e-6) 
+        {
+            std::cout<< "第 " << i << " 个值不相等。\n";
+            return tmp;
+        }
+    }
+    printf("comp success\n");
     return tmp;
 }
 
