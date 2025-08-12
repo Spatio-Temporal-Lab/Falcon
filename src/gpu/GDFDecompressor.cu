@@ -79,13 +79,13 @@ __global__ void decompressKernelOptimized(
 ) {
     int blockId = blockIdx.x * blockDim.x + threadIdx.x;
     // if (blockId >= numBlocks) return;
-
-    // 使用寄存器变量减少全局内存访问
-    const unsigned char* blockData = compressedData + offsets[blockId];
-    size_t bitPos = 0;
     int numData = min(numDatas - blockId * 1024, 1024);
     
     if (numData <= 0) return;
+    // 使用寄存器变量减少全局内存访问
+    const unsigned char* blockData = compressedData + offsets[blockId];
+    size_t bitPos = 0;
+
 
     // 读取头部信息
     uint64_t bitSize = readBitsDevice(blockData, bitPos, 64);
@@ -373,17 +373,17 @@ __global__ void calculateOffsetsKernel(const unsigned char* d_cmpBytes,
 
     size_t bitPos = 0;
     size_t totalBits = cmpSize * 8;
-    size_t minHeaderSize = 192; // 64 + 64 + 8 + 8 + 64 bits
+    size_t minHeaderSize = 216;//192; // 64 + 64 + 8 + 8 + 64 bits
     int offsetCount = 0;
     int maxBlocks = (nbEle + 1023) / 1024;
 
     while (bitPos + minHeaderSize <= totalBits && offsetCount < maxBlocks) {
-        d_offsets[offsetCount] = bitPos / 8;
+        d_offsets[offsetCount] = (bitPos+7) / 8;
 
         uint64_t bitSize = readBitsDevice(d_cmpBytes, bitPos, 64);
 
         if (bitSize < 64) break;
-
+        // printf("解压 Chunk %d: offset=%d, size= %dbytes\n",offsetCount,d_offsets[offsetCount],(bitSize+7)/8);
         size_t nextPos = bitPos + bitSize - 64;
         if (nextPos > totalBits) break;
 

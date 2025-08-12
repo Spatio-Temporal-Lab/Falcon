@@ -350,7 +350,7 @@ set_target_properties(
     test_muti_stream test_muti_3step_block test_muti_3step_noblock
     benchmark_tests test_ALP test_ndzip test_elf test_elf_star test_elf_star_g
     PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
 # ==================== 添加自定义命令用于清理 ====================

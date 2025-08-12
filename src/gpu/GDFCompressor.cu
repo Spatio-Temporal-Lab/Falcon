@@ -340,7 +340,8 @@ __global__ void compressBlockKernel(
     bitCount = min(bitCount, (int)MAX_BITCOUNT);
 
         int numByte = (numDatas + 7) / 8;
-        uint8_t result[64][128];
+        // uint8_t result[64][128];
+        uint8_t result[64][128] = {}; //0初始化
         // 初始化二维数组
 
         // 遍历每个uint64_t的数据
@@ -476,6 +477,10 @@ __global__ void compressBlockKernel(
                 flag[warp] = 2;             // 标记当前warp完成
                 __threadfence();
             }
+        }
+        else {
+            // warp==0：显式把排他前缀和置 0（由一个线程写，block 内可见）
+            if (!lane) { excl_sum = 0; }
         }
         __syncthreads(); // 同步线程，确保cmpOffset更新完成
 
@@ -717,7 +722,7 @@ __global__ void GDFC_compress_kernel(
     int startIdx = idx * DATA_PER_THREAD;
     int endIdx = min(startIdx + DATA_PER_THREAD, totalSize);
     int numDatas = endIdx - startIdx;
-    uint64_t deltas[DATA_PER_THREAD];
+    uint64_t deltas[DATA_PER_THREAD]={};
 
     int maxDecimalPlaces = 0;
     int maxBeta =0;
@@ -728,9 +733,9 @@ __global__ void GDFC_compress_kernel(
     int quant_chunk_idx;
     // int block_idx; // 如果不使用，可以移除
 
-    long currQuant;
-    long lorenQuant;
-    long prevQuant;
+    long currQuant=0;
+    long lorenQuant=0;
+    long prevQuant=0;
 
     unsigned int thread_ofs = 0;
     double4 tmp_buffer;
@@ -887,7 +892,8 @@ __global__ void GDFC_compress_kernel(
 
 
         int numByte = (numDatas + 7) / 8;
-        uint8_t result[64][128];
+        // uint8_t result[64][128];
+        uint8_t result[64][128] = {}; 
         // 初始化二维数组
 
         // 遍历每个uint64_t的数据
@@ -1046,6 +1052,10 @@ __global__ void GDFC_compress_kernel(
                 __threadfence();
             }
         }
+        else {
+            // warp==0：显式把排他前缀和置 0（由一个线程写，block 内可见）
+            if (!lane) { excl_sum = 0; }
+        }
         __syncthreads(); // 同步线程，确保cmpOffset更新完成
         if(numDatas<=0)
         {
@@ -1124,7 +1134,7 @@ __global__ void GDFC_compress_kernel(
 
 
 }
-
+//返回的cmpSize是BYTE
 void GDFCompressor::GDFC_compress(double* d_oriData, unsigned char* d_cmpBytes, size_t nbEle, size_t* cmpSize, cudaStream_t stream)
 {
 
@@ -1165,7 +1175,7 @@ void GDFCompressor::GDFC_compress(double* d_oriData, unsigned char* d_cmpBytes, 
     cudaFreeAsync(d_flag,stream);
 }
 
-
+//返回bits
 void GDFCompressor::GDFC_compress_stream(double* d_oriData, unsigned char* d_cmpBytes, unsigned int* d2h_async_totalBits_ptr, size_t nbEle, cudaStream_t stream)
 {
     // Data blocking.
@@ -1817,7 +1827,7 @@ __global__ void GDFC_compress_kernel_br(
 
 
         int numByte = (numDatas + 7) / 8;
-        uint8_t result[64][128];
+        uint8_t result[64][128]={};
         // 初始化二维数组
 
         // 遍历每个uint64_t的数据

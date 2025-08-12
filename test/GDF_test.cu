@@ -198,6 +198,7 @@ CompressionInfo comp_stream(std::vector<double> oriData, std::vector<double> &de
         if(abs(oriData[i] -decompData[i])>1e-6) 
         {
             std::cout<< "第 " << i << " 个值不相等。\n";
+            printf("ori:%.6f,dec:%.6f\n",oriData[i] ,decompData[i]);
             return tmp;
         }
     }
