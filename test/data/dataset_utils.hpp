@@ -30,6 +30,8 @@ std::vector<Column> get_dynamic_dataset(const std::string& directory_path, bool 
 // 读取浮点数数据文件
 std::vector<double> read_data(const std::string& file_path, bool a=0, char delimiter = ','); 
 
+std::vector<float> read_data_float(const std::string& file_path, bool a=0, char delimiter = ','); 
+
 struct CompressionInfo {
     // 数据大小信息 (MB)
     double original_size_mb = 0.0;        // 原始数据大小 (MB)

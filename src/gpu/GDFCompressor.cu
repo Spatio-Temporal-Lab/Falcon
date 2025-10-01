@@ -142,7 +142,7 @@ __device__ long encodeDoubleWithSignLast(double x) {
 __device__ inline long double2long(double data,int maxDecimalPlaces, int maxBeta)
 {
 
-    return (maxBeta > 15)
+    return (maxBeta > 15 ||maxDecimalPlaces>15)
     ? (encodeDoubleWithSignLast(data))
     : static_cast<long>(round(data * pow10_table[maxDecimalPlaces]));
 }
@@ -171,7 +171,6 @@ __global__ void compressBlockKernel(
     int startIdx = idx * DATA_PER_THREAD;
     int endIdx = min(startIdx + DATA_PER_THREAD, totalSize);
     int numDatas = endIdx - startIdx;
-    printf("idx: %d， num: %d", idx, numDatas);
     uint64_t deltas[DATA_PER_THREAD];
     //int numDeltas = numDatas - 1;
     if(numDatas<=0)
@@ -206,65 +205,62 @@ __global__ void compressBlockKernel(
         maxBeta = device_max(maxBeta,beta);
         maxDecimalPlaces = device_max(maxDecimalPlaces, alpha);
     }
-    if(maxBeta>15&&idx<2)
-    {
-        printf("11\n");
-    }
+    
     uint64_t maxDelta = 0;
     firstValue = double2long(input[startIdx], maxDecimalPlaces,maxBeta); // 量化第一个
     prevQuant = firstValue;// 初始化第一个量化值
-    for(int j = 0; j < (numDatas+31) / 32; j++) { // 每个线程的数量 / 一个数据批次（32）
-        base_block_start_idx = startIdx + j * 32;           //每一组32个数据的起始位置
-        base_block_end_idx = base_block_start_idx + 32;     //每一组32个数据的结束位置
+    for(int j = 0; j < (numDatas+30) / 32; j++) { // 每个线程的数量 / 一个数据批次（32）
+        base_block_start_idx = startIdx + j * 32+1;           //每一组32个数据的起始位置
+        base_block_end_idx = base_block_start_idx + 32+1;     //每一组32个数据的结束位置
 
         if(base_block_end_idx < totalSize) {
                 int i = base_block_start_idx;
-                tmp_buffer = reinterpret_cast<const double4*>(input)[i / 4];
-                quant_chunk_idx = j * 32 + (i % 32); //处理的每一组的第几个数据
+                // tmp_buffer = reinterpret_cast<const double4*>(input)[i / 4];
+                // quant_chunk_idx = j * 32 + (i % 32); //处理的每一组的第几个数据
 
-                // 处理x分量
-                if(i == startIdx) { // 针对第一个数据
+                // // 处理x分量
+                // if(i == startIdx) { // 针对第一个数据
 
-                    deltas[quant_chunk_idx] = 0;//填充第一个数据为0保证1024个数据
-                }
-                else {
-                    currQuant = double2long(tmp_buffer.x, maxDecimalPlaces,maxBeta); // 量化当前数据点
-                    lorenQuant = currQuant - prevQuant; // 计算差分
+                //     deltas[quant_chunk_idx] = 0;//填充第一个数据为0保证1024个数据
+                // }
+                // else {
+                //     currQuant = double2long(tmp_buffer.x, maxDecimalPlaces,maxBeta); // 量化当前数据点
+                //     lorenQuant = currQuant - prevQuant; // 计算差分
 
-                    deltas[quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
-                    prevQuant = currQuant; // 更新前一个量化值
-                    maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]); // 存储差分绝对值
-                }
+                //     deltas[quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
+                //     prevQuant = currQuant; // 更新前一个量化值
+                //     maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]); // 存储差分绝对值
+                // }
 
-                // 处理y分量
-                currQuant = double2long(tmp_buffer.y, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
+                // // 处理y分量
+                // currQuant = double2long(tmp_buffer.y, maxDecimalPlaces,maxBeta);
+                // lorenQuant = currQuant - prevQuant;
 
-                deltas[quant_chunk_idx + 1] = zigzag_encode_cuda(lorenQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[ quant_chunk_idx + 1]);
+                // deltas[quant_chunk_idx + 1] = zigzag_encode_cuda(lorenQuant);
+                // prevQuant = currQuant;
+                // maxDelta = device_max_uint64(maxDelta, deltas[ quant_chunk_idx + 1]);
 
-                // 处理z分量
-                currQuant = double2long(tmp_buffer.z, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
+                // // 处理z分量
+                // currQuant = double2long(tmp_buffer.z, maxDecimalPlaces,maxBeta);
+                // lorenQuant = currQuant - prevQuant;
 
-                deltas[quant_chunk_idx + 2] = zigzag_encode_cuda(lorenQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 2]);
+                // deltas[quant_chunk_idx + 2] = zigzag_encode_cuda(lorenQuant);
+                // prevQuant = currQuant;
+                // maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 2]);
 
-                // 处理w分量
-                currQuant = double2long(tmp_buffer.w, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
+                // // 处理w分量
+                // currQuant = double2long(tmp_buffer.w, maxDecimalPlaces,maxBeta);
+                // lorenQuant = currQuant - prevQuant;
 
-                deltas[quant_chunk_idx + 3] = zigzag_encode_cuda(lorenQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 3]);
-                i+=4;
-            #pragma unroll 7 //循环展开8次，就是4*8=32个数据,修改为7次，把第一次提取出来
+                // deltas[quant_chunk_idx + 3] = zigzag_encode_cuda(lorenQuant);
+                // prevQuant = currQuant;
+                // maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 3]);
+                // i+=4;
+            #pragma unroll 8 //循环展开8次，就是4*8=32个数据,修改为7次，把第一次提取出来
             for(; i < base_block_end_idx; i += 4) {
 
-                tmp_buffer = reinterpret_cast<const double4*>(input)[i / 4];
-                quant_chunk_idx = j * 32 + (i % 32); //处理的每一组的第几个数据
+                tmp_buffer = reinterpret_cast<const double4*>(input+1)[(i-1) / 4];
+                quant_chunk_idx = j * 32 + ((i-1) % 32); //处理的每一组的第几个数据
 
                 currQuant = double2long(tmp_buffer.x, maxDecimalPlaces,maxBeta); // 量化当前数据点
                 lorenQuant = currQuant - prevQuant; // 计算差分
@@ -339,7 +335,7 @@ __global__ void compressBlockKernel(
     bitCount = maxDelta > 0 ? 64 - __clzll(maxDelta) : 1;//用内置函数 替代处理循环
     bitCount = min(bitCount, (int)MAX_BITCOUNT);
 
-        int numByte = (numDatas + 7) / 8;
+        int numByte = (numDatas-1 + 7) / 8;
         // uint8_t result[64][128];
         uint8_t result[64][128] = {}; //0初始化
         // 初始化二维数组
@@ -347,7 +343,7 @@ __global__ void compressBlockKernel(
         // 遍历每个uint64_t的数据
         for (int i = 0; i < bitCount; ++i) {//行
             int j=0;
-            while(j+8<numDatas)//有效 0.0027->0.0023
+            while(j+8<numDatas-1)//有效 0.0027->0.0023
             {
                 int byteIndex = j / 8;  // 当前bit属于第几个字节
                 result[i][byteIndex] = result[i][byteIndex] |
@@ -361,7 +357,7 @@ __global__ void compressBlockKernel(
                                         (((deltas[j+7] >> (bitCount - 1 - i)) & 1) << (0));
                 j+=8;
             }
-            for (; j <numDatas ; ++j) {//列numBytes
+            for (; j <numDatas-1 ; ++j) {//列numBytes
                 int byteIndex = j / 8;  // 当前bit属于第几个字节
                 int bitIndex = j % 8;   // 当前bit在字节中的位置
 
@@ -1202,7 +1198,7 @@ void GDFCompressor::GDFC_compress_stream(double* d_oriData, unsigned char* d_cmp
 
     GDFC_compress_kernel<<<gridSize, blockSize, sizeof(unsigned int)*2, stream>>>(d_oriData, d_cmpBytes, d_cmpOffset, d_locOffset, d_flag, nbEle);
 
-
+    // printf("beta %.d ",d_cmpBytes[16]);
     // Obtain compression ratio and move data back to CPU.  
     cudaMemcpyAsync(d2h_async_totalBits_ptr, (d_cmpOffset + cmpOffSize-1), sizeof(unsigned int), cudaMemcpyDeviceToHost, stream);
     cudaFreeAsync(d_cmpOffset,stream);
@@ -1272,146 +1268,15 @@ __global__ void GDFC_compress_kernel_no_pack(
     uint64_t maxDelta = 0;
     firstValue = double2long(input[startIdx], maxDecimalPlaces,maxBeta); // 量化第一个
     prevQuant = firstValue;// 初始化第一个量化值
-    for(int j = 0; j < (numDatas+31) / 32; j++) { // 每个线程的数量 / 一个数据批次（32）
-        base_block_start_idx = startIdx + j * 32;           //每一组32个数据的起始位置
-        base_block_end_idx = base_block_start_idx + 32;     //每一组32个数据的结束位置
+    base_block_start_idx = startIdx + 1;
 
-        if(base_block_end_idx < totalSize) {
-                int i = base_block_start_idx;
-                tmp_buffer = reinterpret_cast<const double4*>(input)[i / 4];
-                quant_chunk_idx = j * 32 + (i % 32); //处理的每一组的第几个数据
-
-                // 处理x分量
-                if(i == startIdx) { // 针对第一个数据
-                    // firstValue = double2long(tmp_buffer.x, maxDecimalPlaces); // 量化当前数据点
-                    // prevQuant = firstValue;
-                    // printf("firstValue:%d\n",firstValue);
-                    deltas[quant_chunk_idx] = 0;//填充第一个数据为0保证1024个数据
-                }
-                else {
-                    currQuant = double2long(tmp_buffer.x, maxDecimalPlaces,maxBeta); // 量化当前数据点
-                    lorenQuant = currQuant - prevQuant; // 计算差分
-
-                    deltas[quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
-                    //printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx],quant_chunk_idx,lorenQuant,currQuant,prevQuant);
-                    prevQuant = currQuant; // 更新前一个量化值
-                    maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]); // 存储差分绝对值
-                }
-
-                // 处理y分量
-                currQuant = double2long(tmp_buffer.y, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
-
-                deltas[quant_chunk_idx + 1] = zigzag_encode_cuda(lorenQuant);
-                //printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+1],quant_chunk_idx+1,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[ quant_chunk_idx + 1]);
-
-                // 处理z分量
-                currQuant = double2long(tmp_buffer.z, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
-
-                deltas[quant_chunk_idx + 2] = zigzag_encode_cuda(lorenQuant);
-                // printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+2],quant_chunk_idx+2,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 2]);
-
-                // 处理w分量
-                currQuant = double2long(tmp_buffer.w, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
-
-                deltas[quant_chunk_idx + 3] = zigzag_encode_cuda(lorenQuant);
-                // printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+3],quant_chunk_idx+3,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 3]);
-                i+=4;
-            #pragma unroll 7 //循环展开8次，就是4*8=32个数据,修改为7次，把第一次提取出来
-            for(; i < base_block_end_idx; i += 4) {
-
-                tmp_buffer = reinterpret_cast<const double4*>(input)[i / 4];
-                quant_chunk_idx = j * 32 + (i % 32); //处理的每一组的第几个数据
-
-                // 处理x分量
-                // if(i == startIdx) { // 针对第一个数据
-                //     // firstValue = double2long(tmp_buffer.x, maxDecimalPlaces); // 量化当前数据点
-                //     // prevQuant = firstValue;
-                //     // printf("firstValue:%d\n",firstValue);
-                //     deltas[quant_chunk_idx] = 0;//填充第一个数据为0保证1024个数据
-                // }
-                // else {
-                currQuant = double2long(tmp_buffer.x, maxDecimalPlaces,maxBeta); // 量化当前数据点
-                lorenQuant = currQuant - prevQuant; // 计算差分
-
-                deltas[quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
-                //printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx],quant_chunk_idx,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant; // 更新前一个量化值
-                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]); // 存储差分绝对值
-                // }
-
-                // 处理y分量
-                currQuant = double2long(tmp_buffer.y, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
-
-                deltas[quant_chunk_idx + 1] = zigzag_encode_cuda(lorenQuant);
-                //printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+1],quant_chunk_idx+1,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[ quant_chunk_idx + 1]);
-
-                // 处理z分量
-                currQuant = double2long(tmp_buffer.z, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
-
-                deltas[quant_chunk_idx + 2] = zigzag_encode_cuda(lorenQuant);
-                // printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+2],quant_chunk_idx+2,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 2]);
-
-                // 处理w分量
-                currQuant = double2long(tmp_buffer.w, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
-
-                deltas[quant_chunk_idx + 3] = zigzag_encode_cuda(lorenQuant);
-                // printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+3],quant_chunk_idx+3,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 3]);
-            }
-        }
-        else {
-            // 处理当前数据块超出数据范围的情况
-            if(base_block_start_idx >= endIdx) {
-                // 如果整个数据块都超出范围，将absQuant设置为0
-                quant_chunk_idx = j * 32 + (base_block_start_idx % 32);
-                for(int i = quant_chunk_idx; i < quant_chunk_idx + 32; i++)
-                    deltas[i] = 0;
-            }
-            else {
-                // 部分数据块在范围内，部分超出范围
-                int remainbEle = totalSize - base_block_start_idx;  // 剩余有效数据元素数
-                int zeronbEle = base_block_end_idx - totalSize;     // 超出范围的数据元素数
-
-                // 处理剩余有效数据元素
-                for(int i = base_block_start_idx; i < base_block_start_idx + remainbEle; i++) {
-                    if(i==startIdx)
-                    {
-                        deltas[0]=0;
-                        continue;
-                    }
-                    quant_chunk_idx = j * 32 + (i % 32);
-                    currQuant = double2long(input[i], maxDecimalPlaces,maxBeta);
-
-                    lorenQuant = currQuant - prevQuant;
-
-                    deltas[ quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
-
-                    prevQuant = currQuant;
-                    maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]);
-                }
-
-                quant_chunk_idx = j * 32 + (totalSize % 32);
-                for(int i = quant_chunk_idx; i < quant_chunk_idx + zeronbEle; i++)
-                    deltas[i] = 0;
-            }
-        }
+    for(int i=0;i<numDatas-1;i++){
+        currQuant = double2long(input[base_block_start_idx+i], maxDecimalPlaces,maxBeta); // 量化当前数据点
+        lorenQuant = currQuant - prevQuant; // 计算差分
+        deltas[i] = zigzag_encode_cuda(lorenQuant);
+    
+        maxDelta = device_max_uint64(maxDelta, deltas[i]);
+        prevQuant = currQuant;
     }
 
     // 3. 得到编码过后的最大delta值，并且得到最大bit位
@@ -1431,7 +1296,6 @@ __global__ void GDFC_compress_kernel_no_pack(
     {
         bitSize=0;
     }
-    bitSize=(bitSize+7)/8*8;//字节对齐
     // 5. 前缀和计算
         thread_ofs+=bitSize;//bitSize是每一个线程处理后需要写入的数据量所占的bit位
 
@@ -1497,10 +1361,7 @@ __global__ void GDFC_compress_kernel_no_pack(
                 }
                 //printf(" loop out warp:%d\n",warp);
                 excl_sum = loc_excl_sum; // 存储排他性前缀和
-                //__syncthreads(); // 这个同步有毛病，用了就卡死，同步线程，确保排他性前缀和计算完成
 
-                //printf("flag[%d] over0\n",warp);
-                // 2.3 更新cmpOffset数组
                 cmpOffset[warp] = excl_sum; // 更新当前warp的cmpOffset
                 __threadfence();           // 确保写操作完成
 
@@ -1509,15 +1370,16 @@ __global__ void GDFC_compress_kernel_no_pack(
                 {
                     cmpOffset[warp + 1] = cmpOffset[warp] + locOffset[warp + 1]; // 更新最后一个warp的cmpOffset
                     __threadfence();
-                    // for(int i=0;i<=warp+1;i++)
-                    // {
-                    //     printf("cmpOffset[%d] :%d\n",i,cmpOffset[i]);
-                    // }
+
                 }
                 flag[warp] = 2;             // 标记当前warp完成
                 //printf("flag[%d] over2\n",warp);
                 __threadfence();
             }
+        }
+        else {
+            // warp==0：显式把排他前缀和置 0（由一个线程写，block 内可见）
+            if (!lane) { excl_sum = 0; }
         }
         __syncthreads(); // 同步线程，确保cmpOffset更新完成
         if(numDatas<=0)
@@ -1587,11 +1449,11 @@ __global__ void GDFC_compress_kernel_no_pack(
 }
 
 // 主压缩函数
-void GDFCompressor::GDFC_compress_no_pack(double* d_oriData, unsigned char* d_cmpBytes, size_t nbEle, size_t* cmpSize, cudaStream_t stream)
+void GDFCompressor::GDFC_compress_no_pack(double* d_oriData, unsigned char* d_cmpBytes, unsigned int* d2h_async_totalBits_ptr, size_t nbEle, cudaStream_t stream)
 {
     // Data blocking.
     int bsize = cmp_tblock_size;
-    int gsize = (nbEle + bsize * cmp_chunk - 1) / (bsize * cmp_chunk);
+    int gsize = (nbEle + bsize * DATA_PER_THREAD - 1) / (bsize * DATA_PER_THREAD);
     // size_t numthread = (nbEle + cmp_chunk - 1) / (cmp_chunk);
     int cmpOffSize = gsize + 1;
 
@@ -1599,7 +1461,6 @@ void GDFCompressor::GDFC_compress_no_pack(double* d_oriData, unsigned char* d_cm
     unsigned int* d_cmpOffset;
     unsigned int* d_locOffset;
     int* d_flag;
-    unsigned int glob_sync;
     cudaMallocAsync((void**)&d_cmpOffset, sizeof(unsigned int)*cmpOffSize,stream);
     cudaMemsetAsync(d_cmpOffset, 0, sizeof(unsigned int)*cmpOffSize,stream);
     cudaMallocAsync((void**)&d_locOffset, sizeof(unsigned int)*cmpOffSize,stream);
@@ -1607,24 +1468,20 @@ void GDFCompressor::GDFC_compress_no_pack(double* d_oriData, unsigned char* d_cm
     cudaMallocAsync((void**)&d_flag, sizeof(int)*cmpOffSize,stream);
     cudaMemsetAsync(d_flag, 0, sizeof(int)*cmpOffSize,stream);
 
+
     // cuSZp GPU compression.
     dim3 blockSize(bsize);
     dim3 gridSize(gsize);
 
-    // printf("run\n");
     GDFC_compress_kernel_no_pack<<<gridSize, blockSize, sizeof(unsigned int)*2, stream>>>(d_oriData, d_cmpBytes, d_cmpOffset, d_locOffset, d_flag, nbEle);
 
+    // printf("beta %.d ",d_cmpBytes[16]);
     // Obtain compression ratio and move data back to CPU.  
-    cudaMemcpyAsync(&glob_sync, d_cmpOffset+cmpOffSize-1, sizeof(unsigned int), cudaMemcpyDeviceToHost,stream);
-    
-    *cmpSize = ((size_t)glob_sync+7)/8;//+ (nbEle+cmp_tblock_size*cmp_chunk-1)/(cmp_tblock_size*cmp_chunk)*(cmp_tblock_size*cmp_chunk)/32;
-
+    cudaMemcpyAsync(d2h_async_totalBits_ptr, (d_cmpOffset + cmpOffSize-1), sizeof(unsigned int), cudaMemcpyDeviceToHost, stream);
     cudaFreeAsync(d_cmpOffset,stream);
     cudaFreeAsync(d_locOffset,stream);
     cudaFreeAsync(d_flag,stream);
 }
-
-
 
 __global__ void GDFC_compress_kernel_br(
     const double* input,
@@ -1635,7 +1492,7 @@ __global__ void GDFC_compress_kernel_br(
     int totalSize
 )
 {
-        // 共享内存，用于在线程块内共享数据
+    // 共享内存，用于在线程块内共享数据
     __shared__ unsigned int excl_sum; // 排他性前缀和，用于偏移量计算
     //__shared__ unsigned int base_idx; // 当前warp的基地址索引
 
@@ -1650,7 +1507,7 @@ __global__ void GDFC_compress_kernel_br(
     int startIdx = idx * DATA_PER_THREAD;
     int endIdx = min(startIdx + DATA_PER_THREAD, totalSize);
     int numDatas = endIdx - startIdx;
-    uint64_t deltas[DATA_PER_THREAD];
+    uint64_t deltas[DATA_PER_THREAD]={};
 
     int maxDecimalPlaces = 0;
     int maxBeta =0;
@@ -1661,180 +1518,143 @@ __global__ void GDFC_compress_kernel_br(
     int quant_chunk_idx;
     // int block_idx; // 如果不使用，可以移除
 
-    long currQuant;
-    long lorenQuant;
-    long prevQuant;
+    long currQuant=0;
+    long lorenQuant=0;
+    long prevQuant=0;
 
     unsigned int thread_ofs = 0;
-    double4 tmp_buffer;
-
     // 1. 采样
     for (int i = 0; i < numDatas; i++) {
         double value =input[startIdx + i];
         double log10v = log10(std::abs(value));
         int sp = floor(log10v);
-
-        int alpha = getDecimalPlaces_s(value, sp);// 得到小数位数
-        int tmp=getDecimalPlaces(value, sp);// 得到小数位数
-        // if(alpha<tmp)
-        // {
-        //     printf("alpha:%d,tmp:%d\n",alpha,tmp);
-        // }
-        int beta =  alpha + sp + 1;
-        maxBeta = max(maxBeta,beta);
-        maxDecimalPlaces = max(maxDecimalPlaces, alpha);
+        
+        double alpha = getDecimalPlaces(value, sp);// 得到小数位数
+        double beta =  alpha + sp + 1;
+        maxBeta = device_max(maxBeta,beta);
+        maxDecimalPlaces = device_max(maxDecimalPlaces, alpha);
     }
     //printf("maxDecimalPlaces:%d\n", maxDecimalPlaces);
     // 2. FOR + zigzag（用4向量化进行实现）
     uint64_t maxDelta = 0;
     firstValue = double2long(input[startIdx], maxDecimalPlaces,maxBeta); // 量化第一个
-    // if(idx<=2)
-    // printf("input:%f,fs:%ld,maxDecimalPlaces:%d,beta:%d\n",input[startIdx],firstValue,maxDecimalPlaces,maxBeta);
     prevQuant = firstValue;// 初始化第一个量化值
-    for(int j = 0; j < (numDatas+31) / 32; j++) { // 每个线程的数量 / 一个数据批次（32）
-        base_block_start_idx = startIdx + j * 32;           //每一组32个数据的起始位置
-        base_block_end_idx = base_block_start_idx + 32;     //每一组32个数据的结束位置
+    base_block_start_idx = startIdx + 1;
 
-        if(base_block_end_idx < totalSize) {
-                int i = base_block_start_idx;
-                tmp_buffer = reinterpret_cast<const double4*>(input)[i / 4];
-                quant_chunk_idx = j * 32 + (i % 32); //处理的每一组的第几个数据
-
-                // 处理x分量
-                if(i == startIdx) { // 针对第一个数据
-                    deltas[quant_chunk_idx] = 0;//填充第一个数据为0保证1024个数据
-                }
-                else {
-                    currQuant = double2long(tmp_buffer.x, maxDecimalPlaces,maxBeta); // 量化当前数据点
-                    lorenQuant = currQuant - prevQuant; // 计算差分
-
-                    deltas[quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
-                    //printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx],quant_chunk_idx,lorenQuant,currQuant,prevQuant);
-                    prevQuant = currQuant; // 更新前一个量化值
-                    maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]); // 存储差分绝对值
-                }
-
-                // 处理y分量
-                currQuant = double2long(tmp_buffer.y, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
-
-                deltas[quant_chunk_idx + 1] = zigzag_encode_cuda(lorenQuant);
-                //printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+1],quant_chunk_idx+1,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[ quant_chunk_idx + 1]);
-
-                // 处理z分量
-                currQuant = double2long(tmp_buffer.z, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
-
-                deltas[quant_chunk_idx + 2] = zigzag_encode_cuda(lorenQuant);
-                // printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+2],quant_chunk_idx+2,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 2]);
-
-                // 处理w分量
-                currQuant = double2long(tmp_buffer.w, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
-
-                deltas[quant_chunk_idx + 3] = zigzag_encode_cuda(lorenQuant);
-                // printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+3],quant_chunk_idx+3,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 3]);
-                i+=4;
-            #pragma unroll 7 //循环展开8次，就是4*8=32个数据,修改为7次，把第一次提取出来
-            for(; i < base_block_end_idx; i += 4) {
-
-                tmp_buffer = reinterpret_cast<const double4*>(input)[i / 4];
-                quant_chunk_idx = j * 32 + (i % 32); //处理的每一组的第几个数据
-
-                currQuant = double2long(tmp_buffer.x, maxDecimalPlaces,maxBeta); // 量化当前数据点
-                lorenQuant = currQuant - prevQuant; // 计算差分
-
-                deltas[quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
-                //printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx],quant_chunk_idx,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant; // 更新前一个量化值
-                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]); // 存储差分绝对值
-                // }
-
-                // 处理y分量
-                currQuant = double2long(tmp_buffer.y, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
-
-                deltas[quant_chunk_idx + 1] = zigzag_encode_cuda(lorenQuant);
-                //printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+1],quant_chunk_idx+1,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[ quant_chunk_idx + 1]);
-
-                // 处理z分量
-                currQuant = double2long(tmp_buffer.z, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
-
-                deltas[quant_chunk_idx + 2] = zigzag_encode_cuda(lorenQuant);
-                // printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+2],quant_chunk_idx+2,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 2]);
-
-                // 处理w分量
-                currQuant = double2long(tmp_buffer.w, maxDecimalPlaces,maxBeta);
-                lorenQuant = currQuant - prevQuant;
-
-                deltas[quant_chunk_idx + 3] = zigzag_encode_cuda(lorenQuant);
-                // printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+3],quant_chunk_idx+3,lorenQuant,currQuant,prevQuant);
-                prevQuant = currQuant;
-                maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 3]);
-            }
-        }
-        else {
-            // 处理当前数据块超出数据范围的情况
-            if(base_block_start_idx >= endIdx) {
-                // 如果整个数据块都超出范围，将absQuant设置为0
-                quant_chunk_idx = j * 32 + (base_block_start_idx % 32);
-                for(int i = quant_chunk_idx; i < quant_chunk_idx + 32; i++)
-                    deltas[i] = 0;
-            }
-            else {
-                // 部分数据块在范围内，部分超出范围
-                int remainbEle = totalSize - base_block_start_idx;  // 剩余有效数据元素数
-                int zeronbEle = base_block_end_idx - totalSize;     // 超出范围的数据元素数
-
-                // 处理剩余有效数据元素
-                for(int i = base_block_start_idx; i < base_block_start_idx + remainbEle; i++) {
-                    if(i==startIdx)
-                    {
-                        deltas[0]=0;
-                        continue;
-                    }
-                    quant_chunk_idx = j * 32 + (i % 32);
-                    currQuant = double2long(input[i], maxDecimalPlaces,maxBeta);
-
-                    lorenQuant = currQuant - prevQuant;
-
-                    deltas[ quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
-
-                    prevQuant = currQuant;
-                    maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]);
-                }
-
-                quant_chunk_idx = j * 32 + (totalSize % 32);
-                for(int i = quant_chunk_idx; i < quant_chunk_idx + zeronbEle; i++)
-                    deltas[i] = 0;
-            }
-        }
+    for(int i=0;i<numDatas-1;i++){
+        currQuant = double2long(input[base_block_start_idx+i], maxDecimalPlaces,maxBeta); // 量化当前数据点
+        lorenQuant = currQuant - prevQuant; // 计算差分
+        deltas[i] = zigzag_encode_cuda(lorenQuant);
+    
+        maxDelta = device_max_uint64(maxDelta, deltas[i]);
+        prevQuant = currQuant;
+        // if(startIdx<4){
+        //     printf("input %d, ",deltas[i]);
+        // }
     }
+    // for(int j = 0; j < (numDatas+31) / 32; j++) { // 每个线程的数量 / 一个数据批次（32）
+    //     base_block_start_idx = startIdx + j * 32;           //每一组32个数据的起始位置
+    //     base_block_end_idx = base_block_start_idx + 32;     //每一组32个数据的结束位置
+
+    //     if(base_block_end_idx < totalSize) {
+    //             int i = base_block_start_idx;
+                
+            
+    //         #pragma unroll 8 //循环展开8次，就是4*8=32个数据,修改为7次，把第一次提取出来
+    //         for(; i < base_block_end_idx; i += 4) {
+
+    //             tmp_buffer = reinterpret_cast<const double4*>(input)[(i) / 4];
+    //             quant_chunk_idx = j * 32 + ((i) % 32); //处理的每一组的第几个数据
+
+    //             currQuant = double2long(tmp_buffer.x, maxDecimalPlaces,maxBeta); // 量化当前数据点
+    //             lorenQuant = currQuant - prevQuant; // 计算差分
+
+    //             deltas[quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
+    //             //printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx],quant_chunk_idx,lorenQuant,currQuant,prevQuant);
+    //             prevQuant = currQuant; // 更新前一个量化值
+    //             maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]); // 存储差分绝对值
+    //             // }
+
+    //             // 处理y分量
+    //             currQuant = double2long(tmp_buffer.y, maxDecimalPlaces,maxBeta);
+    //             lorenQuant = currQuant - prevQuant;
+
+    //             deltas[quant_chunk_idx + 1] = zigzag_encode_cuda(lorenQuant);
+    //             //printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+1],quant_chunk_idx+1,lorenQuant,currQuant,prevQuant);
+    //             prevQuant = currQuant;
+    //             maxDelta = device_max_uint64(maxDelta, deltas[ quant_chunk_idx + 1]);
+
+    //             // 处理z分量
+    //             currQuant = double2long(tmp_buffer.z, maxDecimalPlaces,maxBeta);
+    //             lorenQuant = currQuant - prevQuant;
+
+    //             deltas[quant_chunk_idx + 2] = zigzag_encode_cuda(lorenQuant);
+    //             // printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+2],quant_chunk_idx+2,lorenQuant,currQuant,prevQuant);
+    //             prevQuant = currQuant;
+    //             maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 2]);
+
+    //             // 处理w分量
+    //             currQuant = double2long(tmp_buffer.w, maxDecimalPlaces,maxBeta);
+    //             lorenQuant = currQuant - prevQuant;
+
+    //             deltas[quant_chunk_idx + 3] = zigzag_encode_cuda(lorenQuant);
+    //             // printf("zigzag:%02x delta[%d]:%ld currQuant:%ld  prevQuant:%ld \n",deltas[quant_chunk_idx+3],quant_chunk_idx+3,lorenQuant,currQuant,prevQuant);
+    //             prevQuant = currQuant;
+    //             maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 3]);
+    //         }
+    //     }
+    //     else {
+    //         // 处理当前数据块超出数据范围的情况
+    //         if(base_block_start_idx >= endIdx) {
+    //             // 如果整个数据块都超出范围，将absQuant设置为0
+    //             quant_chunk_idx = j * 32 + (base_block_start_idx % 32);
+    //             for(int i = quant_chunk_idx; i < quant_chunk_idx + 32; i++)
+    //                 deltas[i] = 0;
+    //         }
+    //         else {
+    //             // 部分数据块在范围内，部分超出范围
+    //             int remainbEle = totalSize - base_block_start_idx;  // 剩余有效数据元素数
+    //             int zeronbEle = base_block_end_idx - totalSize;     // 超出范围的数据元素数
+
+    //             // 处理剩余有效数据元素
+    //             for(int i = base_block_start_idx; i < base_block_start_idx + remainbEle; i++) {
+    //                 if(i==startIdx)
+    //                 {
+    //                     deltas[0]=0;
+    //                     continue;
+    //                 }
+    //                 quant_chunk_idx = j * 32 + (i % 32);
+    //                 currQuant = double2long(input[i], maxDecimalPlaces,maxBeta);
+
+    //                 lorenQuant = currQuant - prevQuant;
+
+    //                 deltas[ quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
+
+    //                 prevQuant = currQuant;
+    //                 maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]);
+    //             }
+
+    //             quant_chunk_idx = j * 32 + (totalSize % 32);
+    //             for(int i = quant_chunk_idx; i < quant_chunk_idx + zeronbEle; i++)
+    //                 deltas[i] = 0;
+    //         }
+    //     }
+    // }
 
     bitCount = maxDelta > 0 ? 64 - __clzll(maxDelta) : 1;//用内置函数 替代处理循环
     bitCount = min(bitCount, (int)MAX_BITCOUNT);
 
 
-        int numByte = (numDatas + 7) / 8;
-        uint8_t result[64][128]={};
+        int numByte = (numDatas-1 + 7) / 8;
+        // uint8_t result[64][128];
+        uint8_t result[64][128] = {}; 
         // 初始化二维数组
 
         // 遍历每个uint64_t的数据
         for (int i = 0; i < bitCount; ++i) {//行
             int j=0;
 
-            while(j+8<numDatas)//有效 0.0027->0.0023
+            while(j+8<numDatas-1)//有效 0.0027->0.0023
             {
                 int byteIndex = j / 8;  // 当前bit属于第几个字节
                 result[i][byteIndex] = result[i][byteIndex] |
@@ -1848,7 +1668,7 @@ __global__ void GDFC_compress_kernel_br(
                                         (((deltas[j+7] >> (bitCount - 1 - i)) & 1) << (0));
                 j+=8;
             }
-            for (; j <numDatas ; ++j) {//列numBytes
+            for (; j <numDatas -1; ++j) {//列numBytes
                 //计算当前行（即bit位）
                 // if(i==0)
                 // {
@@ -1874,7 +1694,6 @@ __global__ void GDFC_compress_kernel_br(
         uint64_t flag1 = 0;              // 用于记录每一列是否为稀疏列
         uint8_t flag2[64][16];          // 对于稀疏列统计稀疏位置,最多1024个数据，所以最多1024bit，即128byte,
         memset(flag2, 0, sizeof(flag2));
-
 
         int BITS_PER_THREAD=4;
         for(int i = 0; i < bitCount; i += BITS_PER_THREAD) { // 每次处理4个比特位
@@ -1986,6 +1805,10 @@ __global__ void GDFC_compress_kernel_br(
                 __threadfence();
             }
         }
+        else {
+            // warp==0：显式把排他前缀和置 0（由一个线程写，block 内可见）
+            if (!lane) { excl_sum = 0; }
+        }
         __syncthreads(); // 同步线程，确保cmpOffset更新完成
         if(numDatas<=0)
         {
@@ -2065,12 +1888,12 @@ __global__ void GDFC_compress_kernel_br(
 
 }
 
-
-void GDFCompressor::GDFC_compress_br(double* d_oriData, unsigned char* d_cmpBytes, size_t nbEle, size_t* cmpSize, cudaStream_t stream)
+//返回bits
+void GDFCompressor::GDFC_compress_br(double* d_oriData, unsigned char* d_cmpBytes, unsigned int* d2h_async_totalBits_ptr, size_t nbEle, cudaStream_t stream)
 {
     // Data blocking.
     int bsize = cmp_tblock_size;
-    int gsize = (nbEle + bsize * cmp_chunk - 1) / (bsize * cmp_chunk);
+    int gsize = (nbEle + bsize * DATA_PER_THREAD - 1) / (bsize * DATA_PER_THREAD);
     // size_t numthread = (nbEle + cmp_chunk - 1) / (cmp_chunk);
     int cmpOffSize = gsize + 1;
 
@@ -2078,7 +1901,6 @@ void GDFCompressor::GDFC_compress_br(double* d_oriData, unsigned char* d_cmpByte
     unsigned int* d_cmpOffset;
     unsigned int* d_locOffset;
     int* d_flag;
-    unsigned int glob_sync;
     cudaMallocAsync((void**)&d_cmpOffset, sizeof(unsigned int)*cmpOffSize,stream);
     cudaMemsetAsync(d_cmpOffset, 0, sizeof(unsigned int)*cmpOffSize,stream);
     cudaMallocAsync((void**)&d_locOffset, sizeof(unsigned int)*cmpOffSize,stream);
@@ -2086,20 +1908,16 @@ void GDFCompressor::GDFC_compress_br(double* d_oriData, unsigned char* d_cmpByte
     cudaMallocAsync((void**)&d_flag, sizeof(int)*cmpOffSize,stream);
     cudaMemsetAsync(d_flag, 0, sizeof(int)*cmpOffSize,stream);
 
+
     // cuSZp GPU compression.
     dim3 blockSize(bsize);
     dim3 gridSize(gsize);
 
-    // printf("run\n");
     GDFC_compress_kernel_br<<<gridSize, blockSize, sizeof(unsigned int)*2, stream>>>(d_oriData, d_cmpBytes, d_cmpOffset, d_locOffset, d_flag, nbEle);
 
     // Obtain compression ratio and move data back to CPU.  
-    cudaMemcpyAsync(&glob_sync, d_cmpOffset+cmpOffSize-1, sizeof(unsigned int), cudaMemcpyDeviceToHost,stream);
-    
-    *cmpSize = ((size_t)glob_sync+7)/8;//+ (nbEle+cmp_tblock_size*cmp_chunk-1)/(cmp_tblock_size*cmp_chunk)*(cmp_tblock_size*cmp_chunk)/32;
-
+    cudaMemcpyAsync(d2h_async_totalBits_ptr, (d_cmpOffset + cmpOffSize-1), sizeof(unsigned int), cudaMemcpyDeviceToHost, stream);
     cudaFreeAsync(d_cmpOffset,stream);
     cudaFreeAsync(d_locOffset,stream);
     cudaFreeAsync(d_flag,stream);
 }
-

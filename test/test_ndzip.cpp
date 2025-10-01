@@ -11,38 +11,38 @@
 namespace fs = std::filesystem;
 
 // 读取浮点数据文件
-std::vector<float> read_data1(const std::string &file_path) {
+std::vector<double> read_data2(const std::string &file_path) {
     std::ifstream file(file_path, std::ios::binary);
     if (!file.is_open()) {
         throw std::runtime_error("无法打开文件: " + file_path);
     }
 
     file.seekg(0, std::ios::end);
-    size_t size = file.tellg() / sizeof(float);
+    size_t size = file.tellg() / sizeof(double);
     file.seekg(0, std::ios::beg);
 
-    std::vector<float> data(size);
-    file.read(reinterpret_cast<char *>(data.data()), size * sizeof(float));
+    std::vector<double> data(size);
+    file.read(reinterpret_cast<char *>(data.data()), size * sizeof(double));
     file.close();
     return data;
 }
-void test_cuda_compression(std::vector<float> oriData ,CompressionInfo &ans) ;
+void test_cuda_compression(std::vector<double> oriData ,CompressionInfo &ans) ;
 // 基于CUDA的压缩和解压测试
 CompressionInfo test_compression(const std::string &file_path) {
     // 读取数据
-    std::vector<float> oriData = read_data1(file_path);
+    std::vector<double> oriData = read_data2(file_path);
     CompressionInfo ans;
     test_cuda_compression(oriData,ans);
     return ans;
 }
 
-void test_cuda_compression(std::vector<float> oriData ,CompressionInfo &ans) {
+void test_cuda_compression(std::vector<double> oriData ,CompressionInfo &ans) {
     // 数据大小
     size_t data_size = oriData.size();
     ndzip::extent data_extent{static_cast<ndzip::index_type>(data_size)};
     
     // 计算压缩率
-    size_t original_size = oriData.size() * sizeof(float);
+    size_t original_size = oriData.size() * sizeof(double);
     
     // 创建CUDA事件用于精确计时
     cudaEvent_t start_total, end_total;
@@ -78,21 +78,21 @@ void test_cuda_compression(std::vector<float> oriData ,CompressionInfo &ans) {
     // std::cout << "1. 复制原始数据到设备...\n";
     cudaEventRecord(start_h2d);
     
-    float *device_data;
-    cudaMalloc(&device_data, data_size * sizeof(float));
-    cudaMemcpy(device_data, oriData.data(), data_size * sizeof(float), cudaMemcpyHostToDevice);
+    double *device_data;
+    cudaMalloc(&device_data, data_size * sizeof(double));
+    cudaMemcpy(device_data, oriData.data(), data_size * sizeof(double), cudaMemcpyHostToDevice);
     
     cudaEventRecord(end_h2d);
 
     // 2. 创建CUDA压缩器并分配压缩结果存储的GPU内存
     cudaEventRecord(start_compress);
     
-    auto compressor = ndzip::make_cuda_compressor<float>(
+    auto compressor = ndzip::make_cuda_compressor<double>(
         ndzip::compressor_requirements{data_extent});
 
-    size_t compressed_size = ndzip::compressed_length_bound<float>(data_extent);
-    ndzip::compressed_type<float> *device_compressed_data;
-    cudaMalloc(&device_compressed_data, compressed_size * sizeof(ndzip::compressed_type<float>));
+    size_t compressed_size = ndzip::compressed_length_bound<double>(data_extent);
+    ndzip::compressed_type<double> *device_compressed_data;
+    cudaMalloc(&device_compressed_data, compressed_size * sizeof(ndzip::compressed_type<double>));
 
     ndzip::index_type *device_compressed_length;
     cudaMalloc(&device_compressed_length, sizeof(ndzip::index_type));
@@ -113,9 +113,9 @@ void test_cuda_compression(std::vector<float> oriData ,CompressionInfo &ans) {
     ndzip::index_type host_compressed_length;
     cudaMemcpy(&host_compressed_length, device_compressed_length, sizeof(ndzip::index_type), cudaMemcpyDeviceToHost);
 
-    std::vector<ndzip::compressed_type<float>> host_compressed_data(host_compressed_length);
+    std::vector<ndzip::compressed_type<double>> host_compressed_data(host_compressed_length);
     cudaMemcpy(host_compressed_data.data(), device_compressed_data,
-               host_compressed_length * sizeof(ndzip::compressed_type<float>), cudaMemcpyDeviceToHost);
+               host_compressed_length * sizeof(ndzip::compressed_type<double>), cudaMemcpyDeviceToHost);
     
     cudaEventRecord(end_d2h_compress);
 
@@ -131,18 +131,18 @@ void test_cuda_compression(std::vector<float> oriData ,CompressionInfo &ans) {
     cudaFree(device_compressed_data);
     
     // 重新分配并复制压缩数据到设备
-    cudaMalloc(&device_compressed_data, host_compressed_length * sizeof(ndzip::compressed_type<float>));
+    cudaMalloc(&device_compressed_data, host_compressed_length * sizeof(ndzip::compressed_type<double>));
     cudaMemcpy(device_compressed_data, host_compressed_data.data(),
-               host_compressed_length * sizeof(ndzip::compressed_type<float>), cudaMemcpyHostToDevice);
+               host_compressed_length * sizeof(ndzip::compressed_type<double>), cudaMemcpyHostToDevice);
     
     cudaEventRecord(end_h2d_decompress);
 
     // 2. 创建CUDA解压缩器并分配解压结果内存
     cudaEventRecord(start_decompress);
-    auto decompressor = ndzip::make_cuda_decompressor<float>(1);
+    auto decompressor = ndzip::make_cuda_decompressor<double>(1);
     
-    float *device_decompressed_data;
-    cudaMalloc(&device_decompressed_data, data_size * sizeof(float));
+    double *device_decompressed_data;
+    cudaMalloc(&device_decompressed_data, data_size * sizeof(double));
 
     // 3. 执行GPU解压缩
     // std::cout << "2. 执行GPU解压缩...\n";
@@ -156,8 +156,8 @@ void test_cuda_compression(std::vector<float> oriData ,CompressionInfo &ans) {
     // std::cout << "3. 复制解压数据回主机...\n";
     cudaEventRecord(start_d2h_decompress);
     
-    std::vector<float> host_decompressed_data(data_size);
-    cudaMemcpy(host_decompressed_data.data(), device_decompressed_data, data_size * sizeof(float),
+    std::vector<double> host_decompressed_data(data_size);
+    cudaMemcpy(host_decompressed_data.data(), device_decompressed_data, data_size * sizeof(double),
                cudaMemcpyDeviceToHost);
     
     cudaEventRecord(end_d2h_decompress);
@@ -178,8 +178,8 @@ void test_cuda_compression(std::vector<float> oriData ,CompressionInfo &ans) {
     cudaEventElapsedTime(&d2h_decompress_time, start_d2h_decompress, end_d2h_decompress);
     cudaEventElapsedTime(&total_time, start_total, end_total);
     // 压缩阶段时间
-    float total_compress_time = h2d_time + compress_time + d2h_compress_time;
-    float total_decompress_time = h2d_decompress_time + decompress_time + d2h_decompress_time;
+    double total_compress_time = h2d_time + compress_time + d2h_compress_time;
+    double total_decompress_time = h2d_decompress_time + decompress_time + d2h_decompress_time;
     // 计算吞吐量
     double compress_throughput = (original_size / (1024.0 * 1024.0)) / (compress_time / 1000.0);
     double decompress_throughput = (original_size / (1024.0 * 1024.0)) / (decompress_time / 1000.0);
@@ -187,7 +187,7 @@ void test_cuda_compression(std::vector<float> oriData ,CompressionInfo &ans) {
     double total_decompress_throughput = (original_size / (1024.0 * 1024.0)) / (total_decompress_time / 1000.0);
 
     // 计算压缩率
-    size_t compressed_size_out = host_compressed_length * sizeof(ndzip::compressed_type<float>);
+    size_t compressed_size_out = host_compressed_length * sizeof(ndzip::compressed_type<double>);
     double compression_ratio = static_cast<double>(compressed_size_out) / original_size;
     CompressionInfo tmp{
         original_size/1024.0/1024.0,

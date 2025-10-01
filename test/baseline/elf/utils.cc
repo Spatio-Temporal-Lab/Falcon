@@ -37,6 +37,8 @@ static int getSignificantCount_32(float v, int sp, int lastBetaStar);
 static double get10iP(int i);
 static float get10iP_32(int i);
 static int *getSPAnd10iNFlag(double v);
+static int *getSPAnd10iNFlag_32(float v);
+
 
 int getFAlpha(int alpha) {
   assert(alpha >= 0);
@@ -61,7 +63,7 @@ int *getAlphaAndBetaStar(double v, int lastBetaStar) {
 int *getAlphaAndBetaStar_32(float v, int lastBetaStar) {
   v = v < 0 ? -v : v;
   int *alphaAndBetaStar = new int[2];
-  int *spAnd10iNFlag = getSPAnd10iNFlag(v);
+  int *spAnd10iNFlag = getSPAnd10iNFlag_32(v);
   int beta = getSignificantCount_32(v, spAnd10iNFlag[0], lastBetaStar);
   alphaAndBetaStar[0] = beta - spAnd10iNFlag[0] - 1;
   alphaAndBetaStar[1] = spAnd10iNFlag[1] == 1 ? 0 : beta;
@@ -233,5 +235,56 @@ static int *getSPAnd10iNFlag(double v) {
   double log10v = log10(v);
   spAnd10iNFlag[0] = (int) floor(log10v);
   spAnd10iNFlag[1] = log10v == (long) log10v ? 1 : 0;
+  return spAnd10iNFlag;
+}
+
+// 添加float版本的getSP函数
+int getSP_32(float v) {
+  if (v >= 1) {
+    int i = 0;
+    while (i < LENGTH_OF(mapSPGreater1) - 1) {
+      if (v < mapSPGreater1[i + 1]) {
+        return i;
+      }
+      i++;
+    }
+  } else {
+    int i = 1;
+    while (i < LENGTH_OF(mapSPLess1_32)) {
+      if (v >= mapSPLess1_32[i]) {
+        return -i;
+      }
+      i++;
+    }
+  }
+  return (int) floor(log10f(v));  // 使用log10f而不是log10
+}
+
+// 添加float版本的getSPAnd10iNFlag函数
+static int *getSPAnd10iNFlag_32(float v) {
+  int *spAnd10iNFlag = new int[2];
+  if (v >= 1) {
+    int i = 0;
+    while (i < LENGTH_OF(mapSPGreater1) - 1) {
+      if (v < mapSPGreater1[i + 1]) {
+        spAnd10iNFlag[0] = i;
+        return spAnd10iNFlag;
+      }
+      i++;
+    }
+  } else {
+    int i = 1;
+    while (i < LENGTH_OF(mapSPLess1_32)) {
+      if (v >= mapSPLess1_32[i]) {
+        spAnd10iNFlag[0] = -i;
+        spAnd10iNFlag[1] = v == mapSPLess1_32[i] ? 1 : 0;
+        return spAnd10iNFlag;
+      }
+      i++;
+    }
+  }
+  float log10v = log10f(v);
+  spAnd10iNFlag[0] = (int) floor(log10v);
+  spAnd10iNFlag[1] = log10v == (int) log10v ? 1 : 0;
   return spAnd10iNFlag;
 }

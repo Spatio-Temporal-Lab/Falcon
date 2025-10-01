@@ -20,6 +20,7 @@ endif()
 
 # 添加子项目
 add_subdirectory(baseline/ALP)
+add_subdirectory(baseline/ALP_g)
 add_subdirectory(baseline/ndzip)
 add_subdirectory(baseline/elf)
 add_subdirectory(baseline/elf_star)
@@ -58,6 +59,10 @@ target_include_directories(cdf_cpu_lib PUBLIC
 cuda_add_library(gdf_gpu_lib STATIC
     ${CMAKE_SOURCE_DIR}/src/gpu/GDFCompressor.cu
     ${CMAKE_SOURCE_DIR}/src/gpu/GDFDecompressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_float_compressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_float_decompressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_compressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_decompressor.cu
 )
 
 target_include_directories(gdf_gpu_lib PUBLIC
@@ -84,6 +89,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/test/baseline/elf
     ${CMAKE_SOURCE_DIR}/test/baseline/elf_star
     ${CMAKE_SOURCE_DIR}/test/baseline/elf_star_g
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP_g/include
 )
 
 # ==================== CPU测试目标 ====================
@@ -159,6 +165,7 @@ target_link_libraries(test_muti_stream
     GTest::Main 
     pthread
 )
+
 
 # test_muti_3step_block
 cuda_add_executable(test_muti_3step_block 
@@ -264,6 +271,20 @@ target_link_libraries(test_elf_star PRIVATE
     elf_star
 )
 
+# ALP GPU测试
+cuda_add_executable(test_ALP_g 
+    test_ALP_g.cu
+)
+target_link_libraries(test_ALP_g 
+    dataset_utils_lib
+    ${CUDA_LIBRARIES} 
+    GTest::GTest 
+    GTest::Main 
+    pthread 
+    alp_gpu
+    ALP
+)
+
 # ELF Star GPU测试
 cuda_add_executable(test_elf_star_g 
     test_elf_star_g.cu
@@ -276,6 +297,181 @@ target_link_libraries(test_elf_star_g
     pthread 
     elf_star_g
 )
+#=====================float=============================
+# test_float_muti_stream
+cuda_add_executable(test_muti_stream_opt 
+    GDF_test_muti_steam_opt_f64.cu
+)
+target_link_libraries(test_muti_stream_opt 
+    gdf_gpu_lib
+    cdf_cpu_lib
+    dataset_utils_lib
+    ${CUDA_LIBRARIES} 
+    GTest::GTest 
+    GTest::Main 
+    pthread
+)
+
+
+# test_float_muti_stream
+cuda_add_executable(test_float_muti_stream 
+    test_float_faclon.cu
+)
+target_link_libraries(test_float_muti_stream 
+    gdf_gpu_lib
+    cdf_cpu_lib
+    dataset_utils_lib
+    ${CUDA_LIBRARIES} 
+    GTest::GTest 
+    GTest::Main 
+    pthread
+)
+
+# ALP测试
+add_executable(test_float_ALP 
+    test_float_ALP.cpp
+)
+target_link_libraries(test_float_ALP PRIVATE 
+    cdf_cpu_lib
+    dataset_utils_lib
+    GTest::GTest 
+    GTest::Main 
+    pthread 
+    ALP
+)
+
+cuda_add_executable(test_float_ALP_g
+    test_float_ALP_g.cu
+)
+target_link_libraries(test_float_ALP_g
+    ${CUDA_LIBRARIES} 
+    dataset_utils_lib
+    GTest::GTest 
+    GTest::Main 
+    pthread 
+    alp_gpu
+    ALP
+)
+
+
+# test_float_muti_stream
+cuda_add_executable(test_float_Lz4 
+    test_float_Lz4.cu
+)
+target_link_libraries(test_float_Lz4
+        dataset_utils_lib
+        ${CUDA_LIBRARIES}
+        ${NVCOMP_LIBRARIES}
+        GTest::GTest
+        GTest::Main
+        pthread
+    )
+
+add_executable(test_float_elf
+test_float_elf.cpp
+)
+target_link_libraries(test_float_elf PRIVATE 
+    dataset_utils_lib
+    GTest::GTest 
+    GTest::Main 
+    pthread 
+    elf
+)
+
+# ELF Star测试
+add_executable(test_float_elf_star 
+    test_float_elf_star.cpp
+)
+target_link_libraries(test_float_elf_star PRIVATE 
+    dataset_utils_lib
+    GTest::GTest 
+    GTest::Main 
+    pthread 
+    elf_star
+)
+
+
+# ELF Star GPU测试
+cuda_add_executable(test_float_elf_star_g 
+    test_float_elf_star_g.cu
+)
+target_link_libraries(test_float_elf_star_g 
+    dataset_utils_lib
+    ${CUDA_LIBRARIES} 
+    GTest::GTest 
+    GTest::Main 
+    pthread 
+    elf_star_g
+)
+
+# gdeflate测试
+    cuda_add_executable(test_float_gdeflate 
+        test_float_gdeflate.cu
+    )
+    target_link_libraries(test_float_gdeflate
+        dataset_utils_lib
+        ${CUDA_LIBRARIES}
+        ${NVCOMP_LIBRARIES}
+        GTest::GTest
+        GTest::Main
+        pthread
+    )
+    target_include_directories(test_float_gdeflate PRIVATE 
+        ${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include
+    )
+
+    
+
+        # Snappy测试
+    add_executable(test_float_Snappy 
+        test_float_Snappy.cpp
+    )
+    target_link_libraries(test_float_Snappy
+        dataset_utils_lib
+        ${CUDA_LIBRARIES}
+        ${NVCOMP_LIBRARIES}
+        GTest::GTest
+        GTest::Main
+        pthread
+    )
+    target_include_directories(test_float_Snappy PRIVATE 
+        ${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include
+    )
+
+    cuda_add_executable(test_float_ndzip 
+    test_float_ndzip.cpp
+)
+target_link_libraries(test_float_ndzip 
+    dataset_utils_lib
+    ${CUDA_LIBRARIES} 
+    GTest::GTest 
+    ndzip-cuda 
+    io 
+    Boost::program_options 
+    GTest::Main 
+    ndzip 
+    pthread
+)
+target_include_directories(test_float_ndzip PRIVATE
+    ${CMAKE_SOURCE_DIR}/test/baseline/ndzip/include
+    ${CMAKE_SOURCE_DIR}/test/baseline/ndzip/src/io
+)
+
+# bitcomp测试
+    cuda_add_executable(test_float_bitcomp 
+        test_float_bitcomp.cu
+    )
+    target_link_libraries(test_float_bitcomp
+        dataset_utils_lib
+        ${CUDA_LIBRARIES}
+        ${NVCOMP_LIBRARIES}
+        GTest::GTest
+        GTest::Main
+        pthread
+    )
+    target_include_directories(test_float_bitcomp PRIVATE 
+        ${CMAKE_SOURCE_DIR}/test/baseline/nvcomp/include
+    )
 
 # ==================== nvcomp相关测试（如果找到） ====================
 if(nvcomp_FOUND)
@@ -348,9 +544,9 @@ endif()
 set_target_properties(
     test_cpu test_gpu test_gpu_nopack test_gpu_br
     test_muti_stream test_muti_3step_block test_muti_3step_noblock
-    benchmark_tests test_ALP test_ndzip test_elf test_elf_star test_elf_star_g
+    benchmark_tests test_ALP test_ALP_g test_ndzip test_elf test_elf_star test_elf_star_g
     PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
 )
 
 # ==================== 添加自定义命令用于清理 ====================

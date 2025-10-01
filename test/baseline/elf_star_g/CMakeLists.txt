@@ -25,6 +25,13 @@ set(ELF_STAR_SOURCES
         ElfStarDecHost.cu
         ElfStarDecKernel.cu
         ElfStarComHost.cu
+        utils/post_office_solver32.cu
+        defs32.cuh
+        Elf_Star_g_Kernel_32.cuh
+        ElfStarComKernel_32.cu
+        ElfStarDecHost_32.cu
+        ElfStarDecKernel_32.cu
+        ElfStarComHost_32.cu
 )
 
 # Create shared library
