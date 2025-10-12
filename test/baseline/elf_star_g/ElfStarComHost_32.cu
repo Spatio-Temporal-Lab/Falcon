@@ -9,13 +9,13 @@
 #include "Elf_Star_g_Kernel_32.cuh"
 
 // 改进的CUDA内存管理类（保持不变）
-class SafeCudaMemoryManager {
+class SafeCudaMemoryManager_32 {
 private:
     std::vector<void*> allocated_ptrs;
     bool cuda_available;
     
 public:
-    SafeCudaMemoryManager() : cuda_available(true) {
+    SafeCudaMemoryManager_32() : cuda_available(true) {
         cudaGetLastError();
         
         int device_count = 0;
@@ -85,18 +85,18 @@ public:
         allocated_ptrs.clear();
     }
     
-    ~SafeCudaMemoryManager() {
+    ~SafeCudaMemoryManager_32() {
         clear();
     }
 };
 
 // 带时间统计的完整压缩接口
-ssize_t elf_star_encode_with_timing(float *in, ssize_t len, uint8_t **out, 
+ssize_t elf_star_encode_with_timing_32(float *in, ssize_t len, uint8_t **out, 
                                    int64_t **out_compressed_lengths,
                                    int64_t **out_compressed_offsets, 
                                    int64_t **out_decompressed_offsets, 
                                    int *out_num_blocks,
-                                   ElfStarTimingInfo *timing_info) {
+                                   ElfStarTimingInfo_32 *timing_info) {
     if (!in || len <= 0 || !out || !out_num_blocks) {
         printf("压缩参数无效\n");
         return -1;
@@ -104,7 +104,7 @@ ssize_t elf_star_encode_with_timing(float *in, ssize_t len, uint8_t **out,
 
     // 初始化时间统计
     if (timing_info) {
-        memset(timing_info, 0, sizeof(ElfStarTimingInfo));
+        memset(timing_info, 0, sizeof(ElfStarTimingInfo_32));
     }
 
     // 检查输入数据
@@ -145,7 +145,7 @@ ssize_t elf_star_encode_with_timing(float *in, ssize_t len, uint8_t **out,
         h_out_offsets[i] = i * aligned_out_chunk_size;
     }
 
-    SafeCudaMemoryManager cuda_mem;
+    SafeCudaMemoryManager_32 cuda_mem;
     if (!cuda_mem.isAvailable()) {
         printf("CUDA环境不可用\n");
         return -1;
@@ -264,7 +264,7 @@ ssize_t elf_star_encode_with_timing(float *in, ssize_t len, uint8_t **out,
     
     // printf("启动压缩内核: %d个块, 每块%d个线程\n", blocks_per_grid, threads_per_block);
     
-    compress_kernel<<<blocks_per_grid, threads_per_block, 0, stream>>>(
+    compress_kernel_32<<<blocks_per_grid, threads_per_block, 0, stream>>>(
         d_in_data, d_in_offsets, d_out_data, d_out_offsets,
         d_compressed_sizes, d_temp_storage, max_chunk_len_elems, num_chunks
     );
@@ -464,9 +464,9 @@ ssize_t elf_star_encode_with_timing(float *in, ssize_t len, uint8_t **out,
 }
 
 // 简化的带时间统计的压缩接口
-ssize_t elf_star_encode_simple_with_timing(const float *in, ssize_t len, 
+ssize_t elf_star_encode_simple_with_timing_32(const float *in, ssize_t len, 
                                           uint8_t **out, ssize_t *out_len,
-                                          ElfStarTimingInfo *timing_info) {
+                                          ElfStarTimingInfo_32 *timing_info) {
     if (!in || len <= 0 || !out || !out_len) {
         return -1;
     }
@@ -477,7 +477,7 @@ ssize_t elf_star_encode_simple_with_timing(const float *in, ssize_t len,
     int64_t *decompressed_offsets = nullptr;
     int num_blocks = 0;
 
-    ssize_t result = elf_star_encode_with_timing((float*)in, len, &compressed_data,
+    ssize_t result = elf_star_encode_with_timing_32((float*)in, len, &compressed_data,
                                                &compressed_lengths, &compressed_offsets,
                                                &decompressed_offsets, &num_blocks,
                                                timing_info);
@@ -503,16 +503,16 @@ ssize_t elf_star_encode_simple_with_timing(const float *in, ssize_t len,
 }
 
 // 原有接口的实现（调用带时间统计的版本，但忽略时间信息）
-ssize_t elf_star_encode(float *in, ssize_t len, uint8_t **out, 
+ssize_t elf_star_encode_32(float *in, ssize_t len, uint8_t **out, 
                         int64_t **out_compressed_lengths,
                         int64_t **out_compressed_offsets, 
                         int64_t **out_decompressed_offsets, 
                         int *out_num_blocks) {
-    return elf_star_encode_with_timing(in, len, out, out_compressed_lengths,
+    return elf_star_encode_with_timing_32(in, len, out, out_compressed_lengths,
                                      out_compressed_offsets, out_decompressed_offsets,
                                      out_num_blocks, nullptr);
 }
 
 ssize_t elf_star_encode_simple(const float *in, ssize_t len, uint8_t **out, ssize_t *out_len) {
-    return elf_star_encode_simple_with_timing(in, len, out, out_len, nullptr);
+    return elf_star_encode_simple_with_timing_32(in, len, out, out_len, nullptr);
 }

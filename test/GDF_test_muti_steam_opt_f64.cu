@@ -28,7 +28,7 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
     }
 }
 
-cudaEvent_t global_start_event, global_end_event; //全局开始和结束事件
+
 
 
 // 流水线总体性能分析
@@ -39,9 +39,6 @@ struct PipelineAnalysis {
     float decomp_time=0;            // 解压缩时间
     float comp_throughout=0;        // 压缩吞吐量
     float decomp_throughout=0;      // 解压缩吞吐量
-    
-    float kernal_comp = 0;          // 压缩核函数时间
-    float kernal_decomp = 0;        // 解压核函数时间
 
     float total_compressed_size = 0; //压缩后总大小
     size_t chunk_size = 0; // 记录块大小
@@ -179,6 +176,7 @@ struct CompressionResult {
 CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize,int NUM_STREAM,bool visualize = false) {
     cudaDeviceSynchronize();
     // 创建时间线记录事件
+    cudaEvent_t global_start_event, global_end_event; //全局开始和结束事件
     cudaEventCreate(&global_start_event);
     cudaEventCreate(&global_end_event);
     //初始化
@@ -374,7 +372,6 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize,int NUM
 
     // 等待所有操作完成
     cudaEventSynchronize(global_end_event);
-    float kernalTime=0;
     // 计算总时间
     float totalTime;
     cudaEventElapsedTime(&totalTime, global_start_event, global_end_event);
@@ -391,7 +388,6 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize,int NUM
     analysis.comp_time = totalTime;
     analysis.comp_throughout=(data.nbEle * sizeof(double) / 1024.0 / 1024.0 / 1024.0) / (totalTime / 1000.0);
     analysis.chunk_size = chunkSize;
-    analysis.kernal_comp = kernalTime;
     *data.cmpSize=totalCmpSize;
 
     // ---------- 清理资源 ----------
@@ -432,6 +428,7 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize,int NUM
 
 CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize) {
     cudaDeviceSynchronize();
+    cudaEvent_t global_start_event, global_end_event; //全局开始和结束事件
     // 创建时间线记录事件
     cudaEventCreate(&global_start_event);
     cudaEventCreate(&global_end_event);
@@ -628,7 +625,6 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize) {
 
     // 等待所有操作完成
     cudaEventSynchronize(global_end_event);
-    float kernalTime=0;
     // 计算总时间
     float totalTime;
     cudaEventElapsedTime(&totalTime, global_start_event, global_end_event);
@@ -645,7 +641,6 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize) {
     analysis.comp_time = totalTime;
     analysis.comp_throughout=(data.nbEle * sizeof(double) / 1024.0 / 1024.0 / 1024.0) / (totalTime / 1000.0);
     analysis.chunk_size = chunkSize;
-    analysis.kernal_comp = kernalTime;
     *data.cmpSize=totalCmpSize;
     // ---------- 清理资源 ----------
     // 清理设备内存
@@ -709,6 +704,7 @@ CompressedData createCompressedData(const CompressionResult& compResult,
 PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compResult, ProcessedData &decompData, bool visualize = false) {
     CompressedData compData = createCompressedData(compResult, decompData);
     cudaDeviceSynchronize();
+    cudaEvent_t global_start_event, global_end_event; //全局开始和结束事件
     // 创建时间线记录事件
     cudaEventCreate(&global_start_event);
     cudaEventCreate(&global_end_event);
@@ -943,6 +939,8 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compRes
 PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compResult, ProcessedData &decompData,int NUM_STREAM) {
     CompressedData compData = createCompressedData(compResult, decompData);
     cudaDeviceSynchronize();
+    cudaEvent_t global_start_event, global_end_event; //全局开始和结束事件
+
     // 创建时间线记录事件
     cudaEventCreate(&global_start_event);
     cudaEventCreate(&global_end_event);

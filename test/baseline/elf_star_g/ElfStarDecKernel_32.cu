@@ -4,7 +4,7 @@
 #include <post_office_solver32.cuh>
 #include <cuda/std/cstdint>
 
-class ElfStarXORDecompressor_GPU {
+class ElfStarXORDecompressor_GPU_32 {
 private:
     FLOAT storedVal = {.i = 0};
     int storedLeadingZeros = INT_MAX;
@@ -175,7 +175,7 @@ public:
 };
 
 // 让我修正XOR解压器以完全匹配CPU版本
-class ElfStarXORDecompressor_CPU_Compatible {
+class ElfStarXORDecompressor_CPU_Compatible_32 {
 private:
     FLOAT storedVal = {.i = 0};
     int storedLeadingZeros = INT_MAX;
@@ -339,9 +339,9 @@ public:
     }
 };
 
-class ElfStarDecompressor_GPU {
+class ElfStarDecompressor_GPU_32 {
 private:
-    ElfStarXORDecompressor_CPU_Compatible xorDecompressor;
+    ElfStarXORDecompressor_CPU_Compatible_32 xorDecompressor;
     int lastBetaStar = INT_MAX;
 
     __device__ __forceinline__ float nextValue() {
@@ -417,7 +417,7 @@ public:
     }
 };
 
-__device__ int decompress_method_final_fix(
+__device__ int decompress_method_final_fix_32(
     uint8_t *d_in, ssize_t len, float *d_out_chunks, int thread_id) {
     
     if (len <= 4 || !d_in || !d_out_chunks) {
@@ -441,7 +441,7 @@ __device__ int decompress_method_final_fix(
         return 0;
     }
     
-    ElfStarDecompressor_GPU decompressor;
+    ElfStarDecompressor_GPU_32 decompressor;
     decompressor.init((uint32_t*)d_in, len / 4);
     
     int result = decompressor.decompress(d_out_chunks);
@@ -449,11 +449,11 @@ __device__ int decompress_method_final_fix(
     return result;
 }
 
-__device__ void decompress_method(uint8_t *d_in, ssize_t len, float *d_out_chunks) {
-    decompress_method_final_fix(d_in, len, d_out_chunks, 0);
+__device__ void decompress_method_32(uint8_t *d_in, ssize_t len, float *d_out_chunks) {
+    decompress_method_final_fix_32(d_in, len, d_out_chunks, 0);
 }
 
-__global__ void decompress_kernel(const uint8_t* d_in_data,
+__global__ void decompress_kernel_32(const uint8_t* d_in_data,
                                 const size_t* d_in_offsets,
                                 float* d_out_data,
                                 const size_t* d_out_offsets,
@@ -476,7 +476,7 @@ __global__ void decompress_kernel(const uint8_t* d_in_data,
         return;
     }
 
-    int decompressed_count = decompress_method_final_fix(
+    int decompressed_count = decompress_method_final_fix_32(
         p_in_chunk, in_chunk_len_bytes, p_out_chunk, chunk_idx);
     
     // if (chunk_idx < 3) {

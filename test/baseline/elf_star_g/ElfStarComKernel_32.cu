@@ -5,7 +5,7 @@
 #include "utils/post_office_solver32.cuh"
 #include "Elf_Star_g_Kernel_32.cuh"
 
-class ElfStarXORCompressor_EdgeSafe {
+class ElfStarXORCompressor_EdgeSafe_32 {
 private:
     int leading_representation[32];
     int trailing_representation[32];
@@ -199,12 +199,12 @@ public:
     __device__ __forceinline__ BitWriter *getWriter() { return &writer; }
 };
 
-class ElfStarCompressor_EdgeSafe {
+class ElfStarCompressor_EdgeSafe_32 {
 private:
     size_t size = 16;
     int lastBetaStar = INT_MAX;
     int numberOfValues = 0;
-    ElfStarXORCompressor_EdgeSafe xorCompressor;
+    ElfStarXORCompressor_EdgeSafe_32 xorCompressor;
     int leadDistribution[32];
     int trailDistribution[32];
 
@@ -332,7 +332,7 @@ public:
 };
 
 // 边界安全的压缩函数
-__device__ size_t compress_method_edge_safe(
+__device__ size_t compress_method_edge_safe_32(
     const float* d_in_chunk, ssize_t in_len,
     uint8_t* d_out_chunk, ssize_t out_len_bytes,
     int* temp_betaStarList, uint32_t* temp_vPrimeList) {
@@ -341,7 +341,7 @@ __device__ size_t compress_method_edge_safe(
         return 0;
     }
     
-    ElfStarCompressor_EdgeSafe compressor;
+    ElfStarCompressor_EdgeSafe_32 compressor;
     compressor.init((uint32_t*)d_out_chunk, out_len_bytes);
     
     for (int i = 0; i < in_len; i++) {
@@ -354,7 +354,7 @@ __device__ size_t compress_method_edge_safe(
     return (result_size <= out_len_bytes && result_size >= 4) ? result_size : 0;
 }
 
-__global__ void compress_kernel(const float* d_in_data,
+__global__ void compress_kernel_32(const float* d_in_data,
                                 const size_t* d_in_offsets,
                                 uint8_t* d_out_data,
                                 const size_t* d_out_offsets,
@@ -388,7 +388,7 @@ __global__ void compress_kernel(const float* d_in_data,
     int* p_temp_betaStar = (int*)(d_temp_storage + temp_offset_bytes);
     uint32_t* p_temp_vPrime = (uint32_t*)(d_temp_storage + temp_offset_bytes + max_chunk_len_elems * sizeof(int));
     
-    size_t actual_compressed_size = compress_method_edge_safe(
+    size_t actual_compressed_size = compress_method_edge_safe_32(
         p_in_chunk, in_chunk_len_elems,
         p_out_chunk, out_chunk_len_bytes,
         p_temp_betaStar, p_temp_vPrime);
