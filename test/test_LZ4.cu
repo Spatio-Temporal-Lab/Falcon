@@ -18,6 +18,12 @@ CompressionInfo test_compression(const std::string& file_path) {
     return comp_LZ4(oriData);
 }
 
+CompressionInfo test_beta_compression(const std::string& file_path,int beta) {
+    // 读取数据
+    std::vector<double> oriData = read_data(file_path,beta);
+    return comp_LZ4(oriData);
+}
+
 CompressionInfo comp_LZ4(std::vector<double> oriData)
 {
     // 获取数据大小
@@ -414,6 +420,27 @@ int main(int argc, char *argv[]) {
         if (processed == 0) {
             std::cerr << "No files found in directory: " << dir_path << std::endl;
         }
+    }
+    else if (arg == "--file-beta" && argc >= 3) {
+
+        std::string file_path = argv[2];
+
+        for(int beta=4;beta<18;beta++)
+        {
+            std::cout << "\nProcessing file: " << file_path;
+
+            printf("beta:%d\n",beta);
+            CompressionInfo a;
+            // for(int i=0;i<3;i++)
+            // {
+                cudaDeviceReset();
+                a+=test_beta_compression(file_path,beta);
+            // }
+            // a=a/3;
+            a.print();
+            std::cout << "---------------------------------------------" << std::endl;
+        }
+
     }
     else{
         ::testing::InitGoogleTest(&argc, argv);

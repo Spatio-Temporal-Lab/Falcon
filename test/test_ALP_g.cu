@@ -560,6 +560,13 @@ CompressionInfo test_alp_gpu_stream_compression(const std::string &file_path)
     return comp_alp_gpu_stream(oriData, decompressedData);
 }
 
+CompressionInfo test_beta_compression(const std::string &file_path,int beta)
+{
+    std::vector<double> oriData = read_data(file_path,beta);
+    std::vector<double> decompressedData;
+    return comp_alp_gpu_stream(oriData, decompressedData);
+}
+
 namespace test
 {
     template <typename T>
@@ -978,29 +985,10 @@ TEST_F(alp_test, ratio)
 
         try
         {
-            // alp::clear_alp_records();
-            // printf("----------------- CPU ------------------\n");
-            // // 只运行一次，避免重复输出干扰分析
-            // test_file_data<double>(file_path, file_stats);
 
-            // CompressionInfo compression_info{
-            //     file_stats.total_original_size / (1024.0 * 1024.0),
-            //     file_stats.total_compressed_size / (1024.0 * 1024.0),
-            //     file_stats.get_compression_ratio(),
-            //     0,
-            //     std::chrono::duration<double, std::milli>(file_stats.total_encode_time).count(),
-            //     file_stats.get_encode_throughput_mbps() / 1024.0,
-            //     0,
-            //     std::chrono::duration<double, std::milli>(file_stats.total_decode_time).count(),
-            //     file_stats.get_decode_throughput_mbps() / 1024.0};
-
-            // compression_info.print();
-            // printf("----------------- GPU ------------------\n");
             CompressionInfo info = test_alp_gpu_stream_compression(file_path);
             info.print();
             
-            // compare_alp_records(gpu_vector_records, gpu_rowgroup_records, 
-            //                 cpu_vector_records, cpu_rowgroup_records);
             all_file_stats.push_back(file_stats);
         }
         catch (const std::exception &e)
@@ -1010,61 +998,30 @@ TEST_F(alp_test, ratio)
         }
     }
 
-    // 输出总体统计信息
-    if (!all_file_stats.empty())
-    {
-        // std::cout << "\n"
-        //           << std::string(60, '=') << std::endl;
-        // std::cout << "总体统计信息" << std::endl;
-        // std::cout << std::string(60, '=') << std::endl;
-
-        // double total_original = 0, total_compressed = 0;
-        // std::chrono::duration<double> total_encode_time{0.0}, total_decode_time{0.0};
-        // std::map<alp::Scheme, int> total_scheme_usage;
-        // size_t total_rowgroups = 0;
-
-        // for (const auto &stats : all_file_stats)
-        // {
-        //     total_original += stats.total_original_size;
-        //     total_compressed += stats.total_compressed_size;
-        //     total_encode_time += stats.total_encode_time;
-        //     total_decode_time += stats.total_decode_time;
-        //     total_rowgroups += stats.batches_processed;
-
-        //     for (const auto &[scheme, count] : stats.scheme_usage)
-        //     {
-        //         total_scheme_usage[scheme] += count;
-        //     }
-        // }
-
-        // std::cout << "总原始大小: " << std::fixed << std::setprecision(2)
-        //           << total_original / (1024.0 * 1024.0) << " MB" << std::endl;
-        // std::cout << "总压缩大小: " << std::fixed << std::setprecision(2)
-        //           << total_compressed / (1024.0 * 1024.0) << " MB" << std::endl;
-        // std::cout << "总压缩比: " << std::fixed << std::setprecision(4)
-        //           << (total_original > 0 ? total_compressed / total_original : 0.0) << std::endl;
-        // std::cout << "总编码时间: " << std::fixed << std::setprecision(2)
-        //           << std::chrono::duration<double, std::milli>(total_encode_time).count() << " ms" << std::endl;
-        // std::cout << "总解码时间: " << std::fixed << std::setprecision(2)
-        //           << std::chrono::duration<double, std::milli>(total_decode_time).count() << " ms" << std::endl;
-
-        // std::cout << "\n总体方案使用统计:" << std::endl;
-        // for (const auto &[scheme, count] : total_scheme_usage)
-        // {
-        //     std::string scheme_name = (scheme == alp::Scheme::ALP) ? "ALP" : "ALP_RD";
-        //     std::cout << "  " << scheme_name << ": " << count << " 个rowgroups" << std::endl;
-        // }
-
-        // std::cout << "总处理的rowgroups: " << total_rowgroups << std::endl;
-        // std::cout << "处理的文件数: " << all_file_stats.size() << std::endl;
-    }
 }
 
 int main(int argc, char *argv[])
 {
+    std::string arg = argv[1];
     if (argc >= 3 && std::string(argv[1]) == "--dir")
     {
         dir_path = argv[2];
+    }
+    else if (arg == "--file-beta" && argc >= 3) {
+
+        std::string file_path = argv[2];
+
+        for(int beta=4;beta<18;beta++)
+        {
+            std::cout << "\nProcessing file: " << file_path;
+            printf("beta:%d\n",beta);
+            CompressionInfo info = test_beta_compression(file_path,beta);
+            info.print();
+
+            
+            std::cout << "---------------------------------------------" << std::endl;
+        }
+
     }
 
     ::testing::InitGoogleTest(&argc, argv);

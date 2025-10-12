@@ -250,178 +250,7 @@ std::vector<Column> get_dynamic_dataset(const std::string& directory_path, bool 
     std::cout << "找到 " << columns.size() << " 个列" << std::endl;
     return columns;
 }
-// // 统一的数据验证函数
-// bool is_valid_number(const std::string& str) {
-//     if (str.empty()) return false;
-    
-//     // 去除前后空白字符
-//     std::string trimmed = str;
-//     trimmed.erase(0, trimmed.find_first_not_of(" \t\n\r\f\v"));
-//     trimmed.erase(trimmed.find_last_not_of(" \t\n\r\f\v") + 1);
-    
-//     if (trimmed.empty()) return false;
-    
-//     // 使用 strtod 进行验证（更鲁棒）
-//     char* endptr = nullptr;
-//     double val = std::strtod(trimmed.c_str(), &endptr);
-    
-//     // 检查是否完全转换并且是有效数值
-//     return (endptr == trimmed.c_str() + trimmed.length()) && 
-//            !std::isnan(val) && std::isfinite(val);
-// }
 
-// // 安全的字符串转双精度浮点数函数
-// double safe_string_to_double(const std::string& str) {
-//     // 去除前后空白字符
-//     std::string trimmed = str;
-//     trimmed.erase(0, trimmed.find_first_not_of(" \t\n\r\f\v"));
-//     trimmed.erase(trimmed.find_last_not_of(" \t\n\r\f\v") + 1);
-    
-//     char* endptr = nullptr;
-//     double val = std::strtod(trimmed.c_str(), &endptr);
-    
-//     // 如果转换失败，返回NaN
-//     if (endptr != trimmed.c_str() + trimmed.length()) {
-//         return std::numeric_limits<double>::quiet_NaN();
-//     }
-    
-//     return val;
-// }
-
-// // 新增的验证和预处理函数
-// bool validate_and_preprocess_csv(const std::string& file_path, bool show_progress, char delimiter) {
-//     // 第一次读取：获取元数据和验证文件结构
-//     size_t total_lines = 0;
-//     size_t num_columns = 0;
-//     size_t valid_data_count = 0;
-    
-//     {
-//         std::ifstream meta_file(file_path);
-//         if (!meta_file) {
-//             std::cerr << "无法打开文件: " << file_path << std::endl;
-//             return false;
-//         }
-
-//         // 获取列数和总行数
-//         std::string first_line;
-//         if (std::getline(meta_file, first_line)) {
-//             std::stringstream ss(first_line);
-//             std::string cell;
-//             while (std::getline(ss, cell, delimiter)) ++num_columns;
-//             ++total_lines;
-//             while (std::getline(meta_file, first_line)) ++total_lines;
-//         }
-        
-//         if (num_columns == 0 || total_lines == 0) {
-//             std::cerr << "文件为空或格式错误: " << file_path << std::endl;
-//             return false;
-//         }
-//     }
-
-//     // 第二次读取：验证数据质量
-//     std::ifstream file(file_path);
-//     size_t current_line = 0;
-//     size_t invalid_count = 0;
-    
-//     if (show_progress) {
-//         std::cout << "验证文件: " << fs::path(file_path).filename() << std::endl;
-//         std::cout << "验证进度:\n0%   10%  20%  30%  40%  50%  60%  70%  80%  90%  100%\n|----|----|----|----|----|----|----|----|----|----|\n";
-//     }
-
-//     std::string line;
-//     while (std::getline(file, line)) {
-//         ++current_line;
-        
-//         // 更新进度条
-//         if (show_progress && total_lines > 0 && (current_line % std::max(1UL, total_lines/50) == 0 || current_line == total_lines)) {
-//             float progress = static_cast<float>(current_line) / total_lines;
-//             int bar_width = static_cast<int>(progress * 50);
-            
-//             std::cout << "\r[";
-//             for(int i = 0; i < 50; ++i) {
-//                 if(i < bar_width) std::cout << "=";
-//                 else if(i == bar_width) std::cout << ">";
-//                 else std::cout << " ";
-//             }
-//             std::cout << "] " 
-//                     << std::fixed << std::setw(5) << std::setprecision(1) 
-//                     << progress * 100 << "%";
-//             std::cout.flush();
-//         }
-
-//         // 验证当前行的数据
-//         std::stringstream ss(line);
-//         std::string cell;
-//         size_t col_idx = 0;
-//         size_t valid_cells_in_row = 0;
-        
-//         while (std::getline(ss, cell, delimiter) && col_idx < num_columns) {
-//             // 统一的数据验证逻辑
-//             if (is_valid_number(cell)) {
-//                 ++valid_cells_in_row;
-//             } else if (!cell.empty()) {
-//                 ++invalid_count;
-//                 if (show_progress && invalid_count % 100000000 == 0) {
-//                     std::cerr << "\n已发现 " << invalid_count << " 个无效数值: '" << cell << "'..." << std::endl;
-//                 }
-//             }
-//             ++col_idx;
-//         }
-        
-//         // 统计有效数据
-//         valid_data_count += valid_cells_in_row;
-//     }
-
-//     if (show_progress) {
-//         std::cout << std::endl;
-//     }
-
-//     // 计算数据质量指标
-//     size_t total_expected_cells = total_lines * num_columns;
-//     double data_quality_ratio = static_cast<double>(valid_data_count) / total_expected_cells;
-    
-//     // 输出验证结果
-//     std::cout << "文件验证完成: " << fs::path(file_path).filename() << std::endl;
-//     std::cout << "总行数: " << total_lines << ", 列数: " << num_columns << std::endl;
-//     std::cout << "有效数据: " << valid_data_count << "/" << total_expected_cells 
-//               << " (" << std::fixed << std::setprecision(1) << data_quality_ratio * 100 << "%)" << std::endl;
-//     std::cout << "无效数据: " << invalid_count << std::endl;
-    
-//     // 设定数据质量阈值（可根据需要调整）
-//     const double MIN_DATA_QUALITY_THRESHOLD = 0.5; // 至少50%的数据有效
-    
-//     if (data_quality_ratio >= MIN_DATA_QUALITY_THRESHOLD) {
-//         std::cout << "✓ 数据质量合格，包含在数据集中" << std::endl << std::endl;
-//         return true;
-//     } else {
-//         std::cout << "✗ 数据质量不合格（低于" << MIN_DATA_QUALITY_THRESHOLD * 100 << "%），跳过此文件" << std::endl << std::endl;
-//         return false;
-//     }
-// }
-
-
-// std::vector<Column> get_dynamic_dataset(const std::string& directory_path, bool show_progress, char delimiter) {
-//     std::vector<Column> dataset;
-//     uint64_t id = 1;
-
-//     for (const auto& entry : fs::directory_iterator(directory_path)) {
-//         if (entry.is_regular_file() && entry.path().extension() == ".csv") {
-//             Column column;
-//             column.id = id++;
-//             column.name = entry.path().stem().string();
-//             column.csv_file_path = entry.path().string();
-//             column.binary_file_path = entry.path().parent_path().string() + "/" + entry.path().stem().string() + ".bin";
-            
-//             // 验证并预处理CSV文件数据
-//             if (validate_and_preprocess_csv(column.csv_file_path, show_progress, delimiter)) {
-//                 dataset.push_back(column);
-//             } else {
-//                 std::cerr << "跳过文件（数据验证失败）: " << column.csv_file_path << std::endl;
-//             }
-//         }
-//     }
-//     return dataset;
-// }
 
 
 std::vector<double> read_data(const std::string& file_path, bool show_progress, char delimiter) {
@@ -547,9 +376,391 @@ std::vector<double> read_data(const std::string& file_path, bool show_progress, 
     // printf("数据大小: %0.6f MB",result.size()*sizeof(double)/1024.0/1024.0);
     return result;
 }
+/*
+    std::vector<double> read_data(const std::string& file_path, bool show_progress, char delimiter, int decimal_places) {
 
+        std::vector<double> result;
+        
+        // 第一次读取：获取元数据
+        size_t total_lines = 0;
+        size_t num_columns = 0;
+        {
+            std::ifstream meta_file(file_path);
+            if (!meta_file) {
+                std::cerr << "无法打开文件: " << file_path << std::endl;
+                return {};
+            }
 
+            // 获取列数和总行数
+            std::string first_line;
+            if (std::getline(meta_file, first_line)) {
+                std::stringstream ss(first_line);
+                std::string cell;
+                while (std::getline(ss, cell, delimiter)) ++num_columns;
+                ++total_lines;
+                while (std::getline(meta_file, first_line)) ++total_lines;
+            }
+            
+            if (num_columns == 0 || total_lines == 0) {
+                std::cerr << "文件为空或格式错误: " << file_path << std::endl;
+                return {};
+            }
+        }
 
+        // 初始化列存储
+        std::vector<std::vector<double>> columns(num_columns);
+        for (auto& col : columns) {
+            col.reserve(total_lines + 1000);  // 预分配+缓冲
+        }
+
+        // 计算精度调整系数（如果需要）
+        double precision_multiplier = 1.0;
+        if (decimal_places >= 0) {
+            precision_multiplier = std::pow(10.0, decimal_places);
+        }
+
+        // 第二次读取：处理数据
+        std::ifstream file(file_path);
+        size_t current_line = 0;
+        size_t skipped_values = 0;
+        
+        // 进度条初始化
+        if (show_progress) {
+            std::cout << "读取数据: " << fs::path(file_path).filename() << std::endl;
+            std::cout << "读取进度:\n0%   10%  20%  30%  40%  50%  60%  70%  80%  90%  100%\n|----|----|----|----|----|----|----|----|----|----|\n";
+        }
+
+        std::string line;
+        while (std::getline(file, line)) {
+            ++current_line;
+            
+            // 更新进度条
+            if (show_progress && total_lines > 0 && (current_line % std::max(1UL, total_lines/50) == 0 || current_line == total_lines)) {
+                float progress = static_cast<float>(current_line) / total_lines;
+                int bar_width = static_cast<int>(progress * 50);
+                
+                std::cout << "\r[";
+                for(int i = 0; i < 50; ++i) {
+                    if(i < bar_width) std::cout << "=";
+                    else if(i == bar_width) std::cout << ">";
+                    else std::cout << " ";
+                }
+                std::cout << "] " 
+                        << std::fixed << std::setw(5) << std::setprecision(1) 
+                        << progress * 100 << "%";
+                std::cout.flush();
+            }
+
+            // 高效数据解析
+            std::stringstream ss(line);
+            std::string cell;
+            size_t col_idx = 0;
+            
+            while (std::getline(ss, cell, delimiter) && col_idx < num_columns) {
+                if (!cell.empty()) {
+                    char* endptr = nullptr;
+                    double val = std::strtod(cell.c_str(), &endptr);
+                    
+                    // 增强的数值校验（包括无穷大检查）
+                    if (endptr != cell.c_str() && !std::isnan(val) && std::isfinite(val)) {
+                        // 根据decimal_places参数调整精度
+                        if (decimal_places >= 0) {
+                            val = std::round(val * precision_multiplier) / precision_multiplier;
+                        }
+                        columns[col_idx].emplace_back(val);
+                    } else {
+                        ++skipped_values;
+                    }
+                }
+                ++col_idx;
+            }
+        }
+
+        // 找到最大行数（处理不规则数据）
+        size_t max_rows = 0;
+        for (const auto& col : columns) {
+            max_rows = std::max(max_rows, col.size());
+        }
+
+        // 合并列数据（改进的内存管理）
+        const size_t estimated_elements = max_rows * num_columns;
+        result.reserve(estimated_elements);
+        
+        for (size_t col = 0; col < num_columns; ++col) {
+            for (size_t row = 0; row < max_rows; ++row) {
+                if (row < columns[col].size()) {
+                    result.emplace_back(columns[col][row]);
+                }
+            }
+        }
+
+        if (show_progress) {
+            std::cout << "\n\n数据读取完成!" << std::endl;
+            std::cout << "实际读取数据量: " << result.size() << "/" << estimated_elements;
+            if (estimated_elements > 0) {
+                std::cout << " (" << std::round(result.size()*100.0/estimated_elements) << "%)";
+            }
+            std::cout << std::endl;
+            std::cout << "跳过的无效数值: " << skipped_values << std::endl;
+            if (decimal_places >= 0) {
+                std::cout << "小数精度: " << decimal_places << " 位" << std::endl;
+            }
+            std::cout << std::endl;
+        }
+        return result;
+    }
+*/
+
+std::vector<double> read_data(const std::string& file_path, int significant_figures, bool show_progress, char delimiter) {
+
+    std::vector<double> result;
+    
+    // 第一次读取：获取元数据
+    size_t total_lines = 0;
+    size_t num_columns = 0;
+    {
+        std::ifstream meta_file(file_path);
+        if (!meta_file) {
+            std::cerr << "无法打开文件: " << file_path << std::endl;
+            return {};
+        }
+
+        // 获取列数和总行数
+        std::string first_line;
+        if (std::getline(meta_file, first_line)) {
+            std::stringstream ss(first_line);
+            std::string cell;
+            while (std::getline(ss, cell, delimiter)) ++num_columns;
+            ++total_lines;
+            while (std::getline(meta_file, first_line)) ++total_lines;
+        }
+        
+        if (num_columns == 0 || total_lines == 0) {
+            std::cerr << "文件为空或格式错误: " << file_path << std::endl;
+            return {};
+        }
+    }
+
+    // 初始化列存储
+    std::vector<std::vector<double>> columns(num_columns);
+    for (auto& col : columns) {
+        col.reserve(total_lines + 1000);  // 预分配+缓冲
+    }
+
+    // 纯字符串保留有效位数的函数
+    auto truncate_significant = [](std::string cell, int sig_figs) -> std::string {
+        if (sig_figs < 0) return cell;
+        
+        // 去除首尾空格
+        size_t start = cell.find_first_not_of(" \t\r\n");
+        size_t end = cell.find_last_not_of(" \t\r\n");
+        if (start == std::string::npos) return cell;
+        cell = cell.substr(start, end - start + 1);
+        
+        // 处理负号
+        bool is_negative = false;
+        if (!cell.empty() && cell[0] == '-') {
+            is_negative = true;
+            cell = cell.substr(1);
+        }
+        
+        // 检查是否为零
+        bool is_zero = true;
+        for (char c : cell) {
+            if (c != '0' && c != '.') {
+                is_zero = false;
+                break;
+            }
+        }
+        if (is_zero) return "0";
+        
+        // 找到小数点位置
+        size_t dot_pos = cell.find('.');
+        
+        // 统计有效数字（从第一个非零数字开始）
+        std::string digits_only;
+        int first_nonzero_pos = -1;  // 相对于小数点的位置
+        bool found_nonzero = false;
+        int pos_relative_to_dot = (dot_pos == std::string::npos) ? 
+                                   static_cast<int>(cell.length()) - 1 : 
+                                   static_cast<int>(dot_pos) - 1;
+        
+        for (size_t i = 0; i < cell.length(); ++i) {
+            if (cell[i] == '.') {
+                pos_relative_to_dot = -1;
+                continue;
+            }
+            
+            if (cell[i] != '0' || found_nonzero) {
+                if (!found_nonzero && cell[i] != '0') {
+                    first_nonzero_pos = pos_relative_to_dot;
+                    found_nonzero = true;
+                }
+                digits_only += cell[i];
+            }
+            
+            if (cell[i] != '.') {
+                pos_relative_to_dot--;
+            }
+        }
+        
+        if (digits_only.empty()) return "0";
+        
+        // 只保留前sig_figs位有效数字
+        if (digits_only.length() > static_cast<size_t>(sig_figs)) {
+            // 检查是否需要进位
+            bool need_round_up = (digits_only[sig_figs] >= '5');
+            digits_only = digits_only.substr(0, sig_figs);
+            
+            if (need_round_up) {
+                // 进位处理
+                int carry = 1;
+                for (int i = digits_only.length() - 1; i >= 0 && carry; --i) {
+                    int digit = digits_only[i] - '0' + carry;
+                    if (digit == 10) {
+                        digits_only[i] = '0';
+                    } else {
+                        digits_only[i] = '0' + digit;
+                        carry = 0;
+                    }
+                }
+                
+                if (carry) {
+                    // 溢出，需要在前面加1
+                    digits_only = "1" + digits_only;
+                    first_nonzero_pos++;
+                }
+            }
+        }
+        
+        // 构建结果字符串
+        std::string result;
+        
+        // 计算小数点应该在哪里
+        int dot_position = first_nonzero_pos - sig_figs + 1;
+        
+        if (first_nonzero_pos >= 0) {
+            // 数字 >= 1
+            if (first_nonzero_pos - sig_figs + 1 >= 0) {
+                // 需要补零（大整数）
+                result = digits_only;
+                for (int i = 0; i < first_nonzero_pos - sig_figs + 1; ++i) {
+                    result += '0';
+                }
+            } else {
+                // 需要添加小数点
+                int integer_digits = first_nonzero_pos + 1;
+                result = digits_only.substr(0, integer_digits);
+                if (digits_only.length() > static_cast<size_t>(integer_digits)) {
+                    result += '.';
+                    result += digits_only.substr(integer_digits);
+                }
+            }
+        } else {
+            // 数字 < 1 (0.00xxx形式)
+            result = "0.";
+            for (int i = 0; i < -first_nonzero_pos - 1; ++i) {
+                result += '0';
+            }
+            result += digits_only;
+        }
+        
+        if (is_negative) {
+            result = "-" + result;
+        }
+        
+        return result;
+    };
+
+    // 第二次读取：处理数据
+    std::ifstream file(file_path);
+    size_t current_line = 0;
+    size_t skipped_values = 0;
+    
+    // 进度条初始化
+    if (show_progress) {
+        std::cout << "读取数据: " << fs::path(file_path).filename() << std::endl;
+        std::cout << "读取进度:\n0%   10%  20%  30%  40%  50%  60%  70%  80%  90%  100%\n|----|----|----|----|----|----|----|----|----|----|\n";
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        ++current_line;
+        
+        // 更新进度条
+        if (show_progress && total_lines > 0 && (current_line % std::max(1UL, total_lines/50) == 0 || current_line == total_lines)) {
+            float progress = static_cast<float>(current_line) / total_lines;
+            int bar_width = static_cast<int>(progress * 50);
+            
+            std::cout << "\r[";
+            for(int i = 0; i < 50; ++i) {
+                if(i < bar_width) std::cout << "=";
+                else if(i == bar_width) std::cout << ">";
+                else std::cout << " ";
+            }
+            std::cout << "] " 
+                    << std::fixed << std::setw(5) << std::setprecision(1) 
+                    << progress * 100 << "%";
+            std::cout.flush();
+        }
+
+        // 高效数据解析
+        std::stringstream ss(line);
+        std::string cell;
+        size_t col_idx = 0;
+        
+        while (std::getline(ss, cell, delimiter) && col_idx < num_columns) {
+            if (!cell.empty()) {
+                // 进行有效位数处理（纯字符串）
+                std::string processed_cell = truncate_significant(cell, significant_figures);
+                
+                char* endptr = nullptr;
+                double val = std::strtod(processed_cell.c_str(), &endptr);
+                
+                // 增强的数值校验（包括无穷大检查）
+                if (endptr != processed_cell.c_str() && !std::isnan(val) && std::isfinite(val)) {
+                    columns[col_idx].emplace_back(val);
+                } else {
+                    ++skipped_values;
+                }
+            }
+            ++col_idx;
+        }
+    }
+
+    // 找到最大行数（处理不规则数据）
+    size_t max_rows = 0;
+    for (const auto& col : columns) {
+        max_rows = std::max(max_rows, col.size());
+    }
+
+    // 合并列数据（改进的内存管理）
+    const size_t estimated_elements = max_rows * num_columns;
+    result.reserve(estimated_elements);
+    
+    for (size_t col = 0; col < num_columns; ++col) {
+        for (size_t row = 0; row < max_rows; ++row) {
+            if (row < columns[col].size()) {
+                result.emplace_back(columns[col][row]);
+            }
+        }
+    }
+
+    if (show_progress) {
+        std::cout << "\n\n数据读取完成!" << std::endl;
+        std::cout << "实际读取数据量: " << result.size() << "/" << estimated_elements;
+        if (estimated_elements > 0) {
+            std::cout << " (" << std::round(result.size()*100.0/estimated_elements) << "%)";
+        }
+        std::cout << std::endl;
+        std::cout << "跳过的无效数值: " << skipped_values << std::endl;
+        if (significant_figures >= 0) {
+            std::cout << "有效位数: " << significant_figures << " 位" << std::endl;
+        }
+        std::cout << std::endl;
+    }
+    return result;
+}
 std::vector<float> read_data_float(const std::string& file_path, bool show_progress, char delimiter) {
 
     std::vector<float> result;

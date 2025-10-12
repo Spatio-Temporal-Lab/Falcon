@@ -29,6 +29,8 @@ std::vector<Column> get_dynamic_dataset(const std::string& directory_path, bool 
 
 // 读取浮点数数据文件
 std::vector<double> read_data(const std::string& file_path, bool a=0, char delimiter = ','); 
+std::vector<double> read_data(const std::string& file_path, int dsignificant_figures , bool show_progress = 0, char delimiter = ',');
+
 
 std::vector<float> read_data_float(const std::string& file_path, bool a=0, char delimiter = ','); 
 

@@ -197,7 +197,7 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize, bool v
         chunkSize=data.nbEle;
     }
 
-    printf("totalChunks: %d\n",totalChunks);
+    printf("totalChunks: %zu\n",totalChunks);
     // 主机侧内存分配
     // unsigned int *locCmpSize;
     // cudaCheckError(cudaHostAlloc((void**)&locCmpSize, sizeof(unsigned int) * totalChunks, cudaHostAllocDefault));
@@ -696,7 +696,7 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compRes
     result.total_size = totalDecompSize / 1024.0 / 1024.0;
     result.decomp_time = totalTime;
     result.decomp_throughout=(totalDecompSize  / 1024.0 / 1024.0 / 1024.0) / (totalTime / 1000.0);
-    size_t expectedSize = compData.totalElements * sizeof(double);
+    // size_t expectedSize = compData.totalElements * sizeof(double);
     // if (totalDecompSize != expectedSize) {
     //     printf("警告：解压缩大小不匹配！期望: %zu, 实际: %zu\n", 
     //         expectedSize, totalDecompSize);
@@ -735,7 +735,7 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compRes
                 tmp+=compData.chunkElementCounts[k];
                 k++;
             }
-            printf("chunk:%d,idx: %d ,ori: %.16f , dec: %.16f \n",k-1,j,decompData.oriData[j],decompData.decData[j]);
+            // printf("chunk:%d,idx: %d ,ori: %.16f , dec: %.16f \n",k-1,j,decompData.oriData[j],decompData.decData[j]);
             j++;
         }
     }
@@ -910,9 +910,9 @@ int setChunk(int nbEle)
     {
         chunkSize*=2;
     }
-    chunkSize=chunkSize/2;
+    // chunkSize=chunkSize/2;
     chunkSize=chunkSize>1025?chunkSize:1025;
-    printf("chunkSize:%d\n",chunkSize);
+    printf("chunkSize:%zu\n",chunkSize);
     return chunkSize;
 }
 

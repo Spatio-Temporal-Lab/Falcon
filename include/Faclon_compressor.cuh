@@ -39,7 +39,10 @@ public:
     static void GDFC_compress_no_pack(double* d_oriData, unsigned char* d_cmpBytes, unsigned int* d2h_async_totalBits_ptr, size_t nbEle, cudaStream_t stream);
     // 暴力计算
     static void GDFC_compress_br(double* d_oriData, unsigned char* d_cmpBytes, unsigned int* d2h_async_totalBits_ptr, size_t nbEle, cudaStream_t stream);
-    
+    // spare
+    static void GDFC_compress_spare(double* d_oriData, unsigned char* d_cmpBytes, unsigned int* d2h_async_totalBits_ptr, size_t nbEle, cudaStream_t stream);
+    // // string
+    // static void GDFC_compress_string(double* d_oriData, unsigned char* d_cmpBytes, unsigned int* d2h_async_totalBits_ptr, size_t nbEle, cudaStream_t stream);
 private:
 
     void setupDeviceMemory(
@@ -55,4 +58,5 @@ private:
     );
 
 };
+
 

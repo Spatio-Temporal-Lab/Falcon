@@ -626,12 +626,19 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compRes
 
                         // 调用解压接口
                         GDFDecompressor_opt GDFD;
-                        GDFD.GDFC_decompress_no_pack(
+                        GDFD.GDFC_decompress_stream_optimized(
                         d_out[s],                    // 解压输出
                         d_in[s],                     // 压缩输入
                         currentChunkElements,        // 原始元素数量
                         currentChunkCompressedSize,  // 压缩数据大小
                         streams[s]);
+                        // GDFDecompressor_opt GDFD;
+                        // GDFD.GDFC_decompress_no_pack(
+                        // d_out[s],                    // 解压输出
+                        // d_in[s],                     // 压缩输入
+                        // currentChunkElements,        // 原始元素数量
+                        // currentChunkCompressedSize,  // 压缩数据大小
+                        // streams[s]);
 
                         // 记录压缩数据拷贝和解压完成事件
                         cudaCheckError(cudaEventRecord(evSize[s], streams[s]));
@@ -696,7 +703,7 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compRes
     result.total_size = totalDecompSize / 1024.0 / 1024.0;
     result.decomp_time = totalTime;
     result.decomp_throughout=(totalDecompSize  / 1024.0 / 1024.0 / 1024.0) / (totalTime / 1000.0);
-    size_t expectedSize = compData.totalElements * sizeof(double);
+    // size_t expectedSize = compData.totalElements * sizeof(double);
     // if (totalDecompSize != expectedSize) {
     //     printf("警告：解压缩大小不匹配！期望: %zu, 实际: %zu\n", 
     //         expectedSize, totalDecompSize);
@@ -1061,7 +1068,7 @@ int setChunk(int nbEle)
     {
         chunkSize*=2;
     }
-    chunkSize=chunkSize/2;
+    // chunkSize=chunkSize/2;
     chunkSize=chunkSize>1025?chunkSize:1025;
     printf("chunkSize:%d\n",chunkSize);
     return chunkSize;

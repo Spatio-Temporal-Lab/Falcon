@@ -122,6 +122,21 @@ target_link_libraries(test_gpu_nopack
     ALP
 )
 
+# test_gpu_spare
+cuda_add_executable(test_gpu_spare
+    GDF_test_spare.cu
+)
+target_link_libraries(test_gpu_spare
+    gdf_gpu_lib
+    cdf_cpu_lib
+    dataset_utils_lib
+    ${CUDA_LIBRARIES} 
+    GTest::GTest 
+    GTest::Main 
+    pthread 
+    ALP
+)
+
 # test_gpu_br
 cuda_add_executable(test_gpu_br 
     GDF_test_br.cu
@@ -137,6 +152,20 @@ target_link_libraries(test_gpu_br
     ALP
 )
 
+# # test_gpu_string
+# cuda_add_executable(test_gpu_string
+#     GDF_test_string.cu
+# )
+# target_link_libraries(test_gpu_string
+#     gdf_gpu_lib
+#     cdf_cpu_lib
+#     dataset_utils_lib
+#     ${CUDA_LIBRARIES} 
+#     GTest::GTest 
+#     GTest::Main 
+#     pthread 
+#     ALP
+# )
 # test_gpu
 cuda_add_executable(test_gpu 
     GDF_test.cu
@@ -542,7 +571,8 @@ endif()
 
 # ==================== 设置输出目录（避免冲突） ====================
 set_target_properties(
-    test_cpu test_gpu test_gpu_nopack test_gpu_br
+    test_cpu test_gpu test_gpu_nopack test_gpu_spare test_gpu_br 
+    # test_gpu_string
     test_muti_stream test_muti_3step_block test_muti_3step_noblock
     benchmark_tests test_ALP test_ALP_g test_ndzip test_elf test_elf_star test_elf_star_g
     PROPERTIES

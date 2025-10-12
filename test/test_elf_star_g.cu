@@ -308,6 +308,10 @@ CompressionInfo test_compression_file(const std::string& file_path) {
     std::vector<double> oriData = read_data(file_path);
     return test_elf_star_compression_with_timing(oriData);
 }
+CompressionInfo test_beta_file(const std::string& file_path,int beta) {
+    std::vector<double> oriData = read_data(file_path,beta);
+    return test_elf_star_compression_with_timing(oriData);
+}
 
 // 单个测试用例 - 使用完整接口
 bool run_test_case(const std::string& test_name, 
@@ -434,6 +438,27 @@ int main(int argc, char *argv[]) {
         } else {
             std::cout << "\n处理完成，共测试 " << processed << " 个文件" << std::endl;
         }
+    }
+    else if (arg == "--file-beta" && argc >= 3) {
+
+        std::string file_path = argv[2];
+
+        for(int beta=4;beta<18;beta++)
+        {
+            std::cout << "\nProcessing file: " << file_path;
+
+            printf("beta:%d\n",beta);
+            CompressionInfo a;
+            // for(int i=0;i<3;i++)
+            // {
+                cudaDeviceReset();
+                a+=test_beta_file(file_path,beta);
+            // }
+            // a=a/3;
+            a.print();
+            std::cout << "---------------------------------------------" << std::endl;
+        }
+
     }
     else if (arg == "--help") {
         std::cout << "ELF Star压缩算法测试程序（使用完整接口）" << std::endl;

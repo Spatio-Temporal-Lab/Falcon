@@ -198,7 +198,7 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize, bool v
         chunkSize=data.nbEle;
     }
 
-    printf("totalChunks: %d\n",totalChunks);
+    printf("totalChunks: %zu\n",totalChunks);
     // 主机侧内存分配
     // 分配时添加保护
     unsigned int *locCmpSize;
@@ -216,8 +216,8 @@ CompressionResult execute_pipeline(ProcessedData &data, size_t chunkSize, bool v
     // 初始化偏移量数组
     h_cmp_offset[0] = 0;
 
-    bool of_rd[totalChunks+ NUM_STREAMS]={0};//内存偏移准备完成信号
-    of_rd[0]=true;
+    // bool of_rd[totalChunks+ NUM_STREAMS]={0};//内存偏移准备完成信号
+    // of_rd[0]=true;
 
     // 新增：记录每个chunk信息的数组
     size_t *chunkElementCounts;
@@ -658,7 +658,7 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compRes
     result.total_size = totalDecompSize / 1024.0 / 1024.0;
     result.decomp_time = totalTime;
     result.decomp_throughout=(totalDecompSize  / 1024.0 / 1024.0 / 1024.0) / (totalTime / 1000.0);
-    size_t expectedSize = compData.totalElements * sizeof(double);
+    // size_t expectedSize = compData.totalElements * sizeof(double);
     // if (totalDecompSize != expectedSize) {
     //     printf("警告：解压缩大小不匹配！期望: %zu, 实际: %zu\n", 
     //         expectedSize, totalDecompSize);
@@ -697,7 +697,7 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult& compRes
                 tmp+=compData.chunkElementCounts[k];
                 k++;
             }
-            printf("chunk:%d,idx: %d ,ori: %.16f , dec: %.16f \n",k-1,j,decompData.oriData[j],decompData.decData[j]);
+            // printf("chunk:%d,idx: %d ,ori: %.16f , dec: %.16f \n",k-1,j,decompData.oriData[j],decompData.decData[j]);
             j++;
         }
     }
@@ -997,7 +997,7 @@ int setChunk(int nbEle)
         chunkSize*=2;
     }
     chunkSize=chunkSize>limit?chunkSize/2:chunkSize;
-    printf("chunkSize:%d MB\n",chunkSize*sizeof(double)/1024/1025);
+    printf("chunkSize:%zu MB\n",chunkSize*sizeof(double)/1024/1025);
     return chunkSize;
 }
 
