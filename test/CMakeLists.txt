@@ -63,6 +63,8 @@ cuda_add_library(gdf_gpu_lib STATIC
     ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_float_decompressor.cu
     ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_compressor.cu
     ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_decompressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_pipeline.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_float_pipeline.cu
 )
 
 target_include_directories(gdf_gpu_lib PUBLIC
@@ -152,20 +154,6 @@ target_link_libraries(test_gpu_br
     ALP
 )
 
-# # test_gpu_string
-# cuda_add_executable(test_gpu_string
-#     GDF_test_string.cu
-# )
-# target_link_libraries(test_gpu_string
-#     gdf_gpu_lib
-#     cdf_cpu_lib
-#     dataset_utils_lib
-#     ${CUDA_LIBRARIES} 
-#     GTest::GTest 
-#     GTest::Main 
-#     pthread 
-#     ALP
-# )
 # test_gpu
 cuda_add_executable(test_gpu 
     GDF_test.cu
