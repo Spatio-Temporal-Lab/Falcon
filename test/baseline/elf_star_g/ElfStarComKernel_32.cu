@@ -28,7 +28,7 @@ private:
             lead_distribution, leading_representation, leading_round, lead_positions);
         
         if (num_positions <= 0 || num_positions > 16) {
-            return 0;  // 失败情况
+            return 0;
         }
         
         leading_bits_per_value = kPositionLength2Bits[num_positions];
@@ -41,7 +41,7 @@ private:
             trail_distribution, trailing_representation, trailing_round, trail_positions);
         
         if (num_positions <= 0 || num_positions > 16) {
-            return 0;  // 失败情况
+            return 0;
         }
         
         trailing_bits_per_value = kPositionLength2Bits[num_positions];
@@ -52,13 +52,24 @@ private:
         first = false;
         storedVal = value;
         
+        // if (blockIdx.x == 0 && threadIdx.x == 0) {
+        //     printf("[XOR-writeFirst] value=0x%08X\n", value);
+        // }
+        
         int trailingZeros;
         if (value == 0) {
             trailingZeros = 32;
+            // if (blockIdx.x == 0 && threadIdx.x == 0) {
+            //     printf("[XOR-writeFirst] value=0, trailingZeros=32\n");
+            // }
         } else {
             trailingZeros = __ffs(value) - 1;
             if (trailingZeros < 0) trailingZeros = 0;
             if (trailingZeros > 31) trailingZeros = 31;
+            
+            // if (blockIdx.x == 0 && threadIdx.x == 0) {
+            //     printf("[XOR-writeFirst] trailingZeros=%d\n", trailingZeros);
+            // }
         }
         
         write(&writer, trailingZeros, 6);
@@ -66,13 +77,17 @@ private:
         if (value != 0 && trailingZeros < 31) {
             int mantissaBits = 31 - trailingZeros;
             if (mantissaBits > 0 && mantissaBits <= 31) {
-                writeLong(&writer, storedVal >> (trailingZeros + 1), mantissaBits);
+                uint32_t mantissa = storedVal >> (trailingZeros + 1);
+                writeLong(&writer, mantissa, mantissaBits);
+                
+                // if (blockIdx.x == 0 && threadIdx.x == 0) {
+                //     printf("[XOR-writeFirst] mantissa=0x%08X, bits=%d\n", mantissa, mantissaBits);
+                // }
                 return 6 + mantissaBits;
             }
         }
         return 6;
     }
-
     __device__ __forceinline__ int compressValue(uint32_t value) {
         int thisSize = 0;
         uint32_t _xor = storedVal ^ value;
@@ -84,7 +99,6 @@ private:
             int leading_count = __clz(_xor);
             int trailing_count = (_xor == 0) ? 32 : (__ffs(_xor) - 1);
             
-            // 边界检查
             if (leading_count < 0 || leading_count >= 32) leading_count = 0;
             if (trailing_count < 0 || trailing_count >= 32) trailing_count = 0;
             
@@ -95,10 +109,8 @@ private:
                 (leadingZeros - storedLeadingZeros) + (trailingZeros - storedTrailingZeros) < 
                 1 + leading_bits_per_value + trailing_bits_per_value) {
                 
-                // case 1: 重用
                 int centerBits = 32 - storedLeadingZeros - storedTrailingZeros;
                 if (centerBits <= 0 || centerBits > 32) {
-                    // 回退到新编码
                     storedLeadingZeros = leadingZeros;
                     storedTrailingZeros = trailingZeros;
                     centerBits = 32 - storedLeadingZeros - storedTrailingZeros;
@@ -110,7 +122,6 @@ private:
                         writeLong(&writer, _xor >> storedTrailingZeros, centerBits);
                         thisSize += 2 + leading_bits_per_value + trailing_bits_per_value + centerBits;
                     } else {
-                        // 极端情况，写入原始值
                         write(&writer, 1, 2);
                         thisSize += 2;
                     }
@@ -120,19 +131,17 @@ private:
                         write(&writer, 1, 1);
                         writeLong(&writer, _xor >> storedTrailingZeros, centerBits);
                     } else {
-                        writeLong(&writer, (1ULL << centerBits) | (_xor >> storedTrailingZeros), len);
+                        writeLong(&writer, (1U << centerBits) | (_xor >> storedTrailingZeros), len);
                     }
                     thisSize += len;
                 }
             } else {
-                // case 00: 新的leading/trailing
                 storedLeadingZeros = leadingZeros;
                 storedTrailingZeros = trailingZeros;
                 int centerBits = 32 - storedLeadingZeros - storedTrailingZeros;
                 
                 if (centerBits <= 0 || centerBits > 32) {
-                    // 极端情况处理
-                    write(&writer, 1, 2);  // 当作相同值处理
+                    write(&writer, 1, 2);
                     thisSize += 2;
                 } else {
                     int len = 2 + leading_bits_per_value + trailing_bits_per_value + centerBits;
@@ -164,7 +173,6 @@ public:
         if (out_len_byte > 4) {
             initBitWriter(&writer, output + 1, out_len_byte / 4 - 1);
         } else {
-            // 对于极小的输出缓冲区，仍然尝试初始化
             initBitWriter(&writer, output + 1, 1);
         }
     }
@@ -201,7 +209,7 @@ public:
 
 class ElfStarCompressor_EdgeSafe_32 {
 private:
-    size_t size = 16;
+    size_t size = 32;  // 🔥 关键修复: 32位版本也是32 bits初始值
     int lastBetaStar = INT_MAX;
     int numberOfValues = 0;
     ElfStarXORCompressor_EdgeSafe_32 xorCompressor;
@@ -223,23 +231,35 @@ public:
     __device__ __forceinline__ void addValue(float v, int *betaStarList, uint32_t *vPrimeList) {
         FLOAT data = {.f = v};
         
-        if (v == 0.0 || isinf(v)) {
+        // 🔥 添加调试输出
+        // if (numberOfValues == 0 && blockIdx.x == 0 && threadIdx.x == 0) {
+        //     printf("[压缩-addValue] 第0个值: v=%.6f, raw=0x%08X\n", v, data.i);
+        // }
+        
+        if (v == 0.0f || isinf(v)) {
             vPrimeList[numberOfValues] = data.i;
             betaStarList[numberOfValues] = INT_MAX;
+            
+            // if (numberOfValues == 0 && blockIdx.x == 0 && threadIdx.x == 0) {
+            //     printf("[压缩-addValue] 分支: zero/inf, vPrime=0x%08X\n", data.i);
+            // }
         } else if (isnan(v)) {
-            vPrimeList[numberOfValues] = 0x7fc00000 & data.i;
+            vPrimeList[numberOfValues] = 0x7fc00000U & data.i;
             betaStarList[numberOfValues] = INT_MAX;
         } else {
+            // 正常值
             int alphaAndBetaStar[2];
             getAlphaAndBetaStar_32(v, lastBetaStar, alphaAndBetaStar);
-            int e = ((int) (data.i >> 23)) & 0xff;
-            int gAlpha = getFAlpha_32(alphaAndBetaStar[0]) + e - 127;
-            int eraseBits = 23 - gAlpha;
+            
+            int e = ((int) (data.i >> FLOAT_MANTISSA_BITS)) & 0xff;
+            int gAlpha = getFAlpha_32(alphaAndBetaStar[0]) + e - FLOAT_EXPONENT_BIAS;
+            int eraseBits = FLOAT_MANTISSA_BITS - gAlpha;
             
             if (eraseBits < 0) eraseBits = 0;
-            if (eraseBits > 23) eraseBits = 23;
+            if (eraseBits > FLOAT_MANTISSA_BITS) eraseBits = FLOAT_MANTISSA_BITS;
             
-            uint32_t mask = (eraseBits >= 32) ? 0ULL : (0xffffffffL << eraseBits);
+            // uint32_t mask = (eraseBits >= FLOAT_MANTISSA_BITS) ? 0U : (0xffffffffU << eraseBits);
+            uint32_t mask = (eraseBits >= 32) ? 0U : (0xffffffffU << eraseBits);
             uint32_t delta = (~mask) & data.i;
             
             if (delta != 0 && eraseBits > 3) {
@@ -248,9 +268,18 @@ public:
                 }
                 betaStarList[numberOfValues] = lastBetaStar;
                 vPrimeList[numberOfValues] = mask & data.i;
+                
+                // if (numberOfValues == 0 && blockIdx.x == 0 && threadIdx.x == 0) {
+                //     printf("[压缩-addValue] 分支: 截断, betaStar=%d, vPrime=0x%08X, eraseBits=%d\n",
+                //         lastBetaStar, vPrimeList[numberOfValues], eraseBits);
+                // }
             } else {
                 betaStarList[numberOfValues] = INT_MAX;
                 vPrimeList[numberOfValues] = data.i;
+                
+                // if (numberOfValues == 0 && blockIdx.x == 0 && threadIdx.x == 0) {
+                //     printf("[压缩-addValue] 分支: 保留原值, vPrime=0x%08X\n", data.i);
+                // }
             }
         }
         numberOfValues++;
@@ -263,7 +292,6 @@ public:
         }
         
         if (len <= 1) {
-            // 单元素情况，设置默认分布
             leadDistribution[0] = 1;
             trailDistribution[0] = 1;
             return;
@@ -290,7 +318,6 @@ public:
         }
         
         if (!hasValidXor) {
-            // 如果没有有效的XOR，设置默认分布
             leadDistribution[0] = 1;
             trailDistribution[0] = 1;
         }
@@ -301,19 +328,31 @@ public:
         
         int compressionLastBetaStar = INT_MAX;
         
+        // if (blockIdx.x == 0 && threadIdx.x == 0) {
+        //     printf("\n[压缩-compress] 开始压缩%d个值\n", len);
+        //     printf("[压缩-compress] 前3个vPrime: 0x%08X, 0x%08X, 0x%08X\n",
+        //         vPrimeList[0], len > 1 ? vPrimeList[1] : 0, len > 2 ? vPrimeList[2] : 0);
+        //     printf("[压缩-compress] 前3个betaStar: %d, %d, %d\n",
+        //         betaStarList[0], len > 1 ? betaStarList[1] : 0, len > 2 ? betaStarList[2] : 0);
+        // }
+        
         for (int i = 0; i < len; i++) {
             if (betaStarList[i] == INT_MAX) {
-                size += writeInt(2, 2);  // '10'
+                size += writeInt(2, 2);
             } else if (betaStarList[i] == compressionLastBetaStar) {
-                size += writeBit(false);  // '0'
+                size += writeBit(false);
             } else {
-                size += writeInt(betaStarList[i] | 0x18, 5);  // '11xxxx'
+                size += writeInt(betaStarList[i] | 0x18, 5);
                 compressionLastBetaStar = betaStarList[i];
             }
+            
+            // if (i == 0 && blockIdx.x == 0 && threadIdx.x == 0) {
+            //     printf("[压缩-compress] 即将addValue第0个: vPrime=0x%08X\n", vPrimeList[i]);
+            // }
+            
             size += xorCompressor.addValue(vPrimeList[i]);
         }
     }
-
     __device__ __forceinline__ void close(int len, uint32_t *out, int *betaStarList, uint32_t *vPrimeList) {
         calculateDistribution(len, vPrimeList);
         compress(len, betaStarList, vPrimeList);
@@ -327,11 +366,10 @@ public:
 
     __device__ __forceinline__ size_t get_size_bytes() {
         size_t bytes = (size + 31) / 32 * 4;
-        return (bytes > 0) ? bytes : 4;  // 至少4字节
+        return (bytes > 0) ? bytes : 4;
     }
 };
 
-// 边界安全的压缩函数
 __device__ size_t compress_method_edge_safe_32(
     const float* d_in_chunk, ssize_t in_len,
     uint8_t* d_out_chunk, ssize_t out_len_bytes,
@@ -351,7 +389,7 @@ __device__ size_t compress_method_edge_safe_32(
     compressor.close(in_len, (uint32_t*)d_out_chunk, temp_betaStarList, temp_vPrimeList);
     
     size_t result_size = compressor.get_size_bytes();
-    return (result_size <= out_len_bytes && result_size >= 4) ? result_size : 0;
+    return result_size;
 }
 
 __global__ void compress_kernel_32(const float* d_in_data,
@@ -363,6 +401,13 @@ __global__ void compress_kernel_32(const float* d_in_data,
                                 size_t max_chunk_len_elems,
                                 int num_chunks) {
     int chunk_idx = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    // 🔥 添加总块数输出
+    if (chunk_idx == 0) {
+        printf("[压缩Kernel] 总块数=%d, max_chunk_len=%llu\n", 
+               num_chunks, (unsigned long long)max_chunk_len_elems);
+    }
+    
     if (chunk_idx >= num_chunks) {
         return;
     }
@@ -371,6 +416,13 @@ __global__ void compress_kernel_32(const float* d_in_data,
     const size_t in_offset_end = d_in_offsets[chunk_idx + 1];
     const float* p_in_chunk = d_in_data + in_offset_start;
     const ssize_t in_chunk_len_elems = in_offset_end - in_offset_start;
+    
+    // 🔥 添加每个块的处理信息
+    // if (chunk_idx < 3 || chunk_idx == num_chunks - 1) {
+    //     printf("[压缩Kernel] 块%d: offset=%llu-%llu, 元素数=%lld\n",
+    //            chunk_idx, (unsigned long long)in_offset_start, 
+    //            (unsigned long long)in_offset_end, (long long)in_chunk_len_elems);
+    // }
     
     if (in_chunk_len_elems <= 0) {
         if (d_compressed_sizes_bytes) {
@@ -397,8 +449,9 @@ __global__ void compress_kernel_32(const float* d_in_data,
         d_compressed_sizes_bytes[chunk_idx] = actual_compressed_size;
     }
     
-    // if (chunk_idx < 3) {
-    //     printf("块%d: %lld元素 -> %llu字节\n", 
-    //            chunk_idx, (long long)in_chunk_len_elems, (unsigned long long)actual_compressed_size);
+    // 🔥 输出压缩结果
+    // if (chunk_idx < 3 || chunk_idx == num_chunks - 1) {
+    //     printf("[压缩Kernel] 块%d压缩完成: %llu字节\n",
+    //            chunk_idx, (unsigned long long)actual_compressed_size);
     // }
 }

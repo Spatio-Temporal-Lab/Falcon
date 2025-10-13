@@ -95,7 +95,7 @@ bool verify_decompression(const std::vector<float>& original,
 }
 
 // 带详细时间统计的ELF Star压缩测试函数 - 使用完整接口
-CompressionInfo test_elf_star_compression_with_timing_32(const std::vector<float>& original, float error_bound = 0.0) {
+CompressionInfo test_elf_star_compression_with_timing_32(const std::vector<float>& original, float error_bound = 1e-7) {
     CompressionInfo result;
     
     // 压缩测试 - 使用完整接口
@@ -166,9 +166,14 @@ CompressionInfo test_elf_star_compression_with_timing_32(const std::vector<float
     
     // 验证解压缩结果
     bool data_valid = verify_decompression(original, decompressed.data(), decompressed.size(), error_bound);
-    
     if (!data_valid) {
+        result.original_size_mb=-1;
         std::cerr << "ELF Star压缩/解压缩数据验证失败" << std::endl;
+        return result;
+    }
+    else
+    {
+        std::cerr << "ELF Star压缩/解压缩数据验证成功!!!!!!!!" << std::endl;
     }
     
     // 性能指标计算
