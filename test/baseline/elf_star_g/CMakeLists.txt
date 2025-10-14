@@ -70,7 +70,7 @@ add_executable(elf_star_test test_elf_star.cu)
 set_property(TARGET elf_star_test PROPERTY CUDA_SEPARABLE_COMPILATION ON)
 
 # Link test with the library
-target_link_libraries(elf_star_test PRIVATE elf_star_g CUDA::cudart)
+target_link_libraries(elf_star_test PRIVATE elf_star_g CUDA::cudart stdc++ m)
 
 # Set same include directories for test
 target_include_directories(elf_star_test PRIVATE

@@ -658,7 +658,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineImpl_NoPack(
     
     for (int i = 0; i < numStreams; ++i) {
         cudaCheckError(cudaMalloc(&d_in[i], chunkSize * sizeof(double)));
-        cudaCheckError(cudaMalloc(&d_out[i], chunkSize * sizeof(double)));
+        cudaCheckError(cudaMalloc(&d_out[i], chunkSize * sizeof(double) * 1.2));
     }
     
     cudaEventRecord(init_end_event);
