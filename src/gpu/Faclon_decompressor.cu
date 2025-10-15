@@ -524,7 +524,7 @@ __global__ void decompressKernelNoPack(
     // 计算delta信息
 
     // 计算输出起始位置
-    uint64_t deltasZigzag[1024];
+    // uint64_t deltasZigzag[1024];
     size_t outputOffset = blockId * 1025;
     // if (outputOffset >= totalElements) return;
     

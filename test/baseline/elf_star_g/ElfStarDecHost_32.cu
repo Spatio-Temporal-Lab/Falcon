@@ -10,13 +10,13 @@
 #include "Elf_Star_g_Kernel_32.cuh"
 
 // 重用相同的CUDA内存管理类（简化版本）
-class CudaMemoryManagerDecoder {
+class CudaMemoryManagerDecoder_32 {
 private:
     std::vector<void*> allocated_ptrs;
     bool valid_context;
     
 public:
-    CudaMemoryManagerDecoder() : valid_context(true) {
+    CudaMemoryManagerDecoder_32() : valid_context(true) {
         cudaError_t err = cudaGetLastError();
         if (err != cudaSuccess) {
             // printf("解压CUDA上下文初始状态异常: %s\n", cudaGetErrorString(err));
@@ -64,7 +64,7 @@ public:
         allocated_ptrs.clear();
     }
     
-    ~CudaMemoryManagerDecoder() {
+    ~CudaMemoryManagerDecoder_32() {
         clear();
     }
 };
@@ -198,13 +198,13 @@ int elf_star_parse_blocks_fixed32(const uint8_t *compressed_data, ssize_t compre
 }
 
 // 带时间统计的完整解压接口
-ssize_t elf_star_decode_with_timing(const uint8_t *all_in_data,
+ssize_t elf_star_decode_with_timing_32(const uint8_t *all_in_data,
                                    const size_t *in_offsets_bytes,
                                    const size_t *in_lengths_bytes,
                                    float *all_out_data,
                                    const size_t *out_offsets,
                                    int num_blocks,
-                                   ElfStarTimingInfo *timing_info) {
+                                   ElfStarTimingInfo_32 *timing_info) {
     if (num_blocks <= 0) {
         return 0;
     }
@@ -248,7 +248,7 @@ ssize_t elf_star_decode_with_timing(const uint8_t *all_in_data,
     //        (long long)total_in_bytes, (long long)total_out_bytes);
 
     // 使用改进的内存管理
-    CudaMemoryManagerDecoder cuda_mem;
+    CudaMemoryManagerDecoder_32 cuda_mem;
     if (!cuda_mem.isValid()) {
         // printf("解压CUDA内存管理器初始化失败\n");
         return -1;
@@ -403,7 +403,7 @@ ssize_t elf_star_decode_with_timing(const uint8_t *all_in_data,
     
     // printf("解压启动内核，块数: %d\n", num_blocks);
     
-    decompress_kernel<<<blocks_per_grid, threads_per_block, 0, stream>>>(
+    decompress_kernel_32<<<blocks_per_grid, threads_per_block, 0, stream>>>(
         d_in_data, d_in_offsets, d_out_data, d_out_offsets, num_blocks);
     
     cuda_err = cudaGetLastError();
@@ -498,9 +498,9 @@ ssize_t elf_star_decode_with_timing(const uint8_t *all_in_data,
 }
 
 // 简化的带时间统计的解压接口
-ssize_t elf_star_decode_simple_with_timing(const uint8_t *compressed_data, ssize_t compressed_len, 
+ssize_t elf_star_decode_simple_with_timing_32(const uint8_t *compressed_data, ssize_t compressed_len, 
                                           float **out, ssize_t *out_len,
-                                          ElfStarTimingInfo *timing_info) {
+                                          ElfStarTimingInfo_32 *timing_info) {
     if (!compressed_data || compressed_len <= 0 || !out || !out_len) {
         return -1;
     }
@@ -552,7 +552,7 @@ ssize_t elf_star_decode_simple_with_timing(const uint8_t *compressed_data, ssize
     }
 
     // 调用带时间统计的完整解压缩函数
-    ssize_t result = elf_star_decode_with_timing(compressed_data, in_offsets.data(), block_sizes,
+    ssize_t result = elf_star_decode_with_timing_32(compressed_data, in_offsets.data(), block_sizes,
                                                *out, out_offsets.data(), num_blocks,
                                                timing_info);
 
@@ -572,22 +572,32 @@ ssize_t elf_star_decode_simple_with_timing(const uint8_t *compressed_data, ssize
 }
 
 // 原有接口的实现（调用带时间统计的版本，但忽略时间信息）
-ssize_t elf_star_decode(const uint8_t *all_in_data,
+ssize_t elf_star_decode_32(const uint8_t *all_in_data,
                         const size_t *in_offsets_bytes,
                         const size_t *in_lengths_bytes,
                         float *all_out_data,
                         const size_t *out_offsets,
                         int num_blocks) {
-    return elf_star_decode_with_timing(all_in_data, in_offsets_bytes, in_lengths_bytes,
+    return elf_star_decode_with_timing_32(all_in_data, in_offsets_bytes, in_lengths_bytes,
                                      all_out_data, out_offsets, num_blocks, nullptr);
 }
 
-ssize_t elf_star_decode_simple(const uint8_t *compressed_data, ssize_t compressed_len, 
+ssize_t elf_star_decode_simple_32(const uint8_t *compressed_data, ssize_t compressed_len, 
                               float **out, ssize_t *out_len) {
-    return elf_star_decode_simple_with_timing(compressed_data, compressed_len, out, out_len, nullptr);
+    return elf_star_decode_simple_with_timing_32(compressed_data, compressed_len, out, out_len, nullptr);
 }
 
 void elf_star_free_encode_32(uint8_t *compressed_data, 
+                                int64_t *compressed_lengths,
+                                int64_t *compressed_offsets,
+                                int64_t *decompressed_offsets) {
+    if (compressed_data) free(compressed_data);
+    if (compressed_lengths) free(compressed_lengths);
+    if (compressed_offsets) free(compressed_offsets);
+    if (decompressed_offsets) free(decompressed_offsets);
+}
+
+void elf_star_free_encode_result_32(uint8_t *compressed_data, 
                                 int64_t *compressed_lengths,
                                 int64_t *compressed_offsets,
                                 int64_t *decompressed_offsets) {

@@ -1,21 +1,16 @@
-//
-// Created by lizhzz on 25-7-8.
-// Fixed version - 修复了工具函数的实现错误
-//
-// 添加跨平台 ssize_t 定义
+
 #ifndef _SSIZE_T_DEFINED
     #define _SSIZE_T_DEFINED
-
     #ifdef _WIN32
-        #include <basetsd.h> // 包含 SSIZE_T 定义
+        #include <basetsd.h>
         typedef SSIZE_T ssize_t;
     #else
-        #include <sys/types.h> // Linux/macOS 环境
+        #include <sys/types.h>
     #endif
 #endif
 
-#ifndef DEFS_CUH
-#define DEFS_CUH
+#ifndef DEFS32_CUH
+#define DEFS32_CUH
 #include <cstdint>
 
 union DOUBLE {
@@ -36,26 +31,37 @@ union FLOAT {
 #define MAP_10_I_P_SIZE 21
 #define MAP_10_I_N_SIZE 21
 
-static __device__ __constant__ int f_32[] = {0, 4, 7, 10, 14, 17, 20, 24, 27, 30, 34, 37, 40, 44, 47, 50, 54, 57, 60, 64, 67};
+#define FLOAT_MANTISSA_BITS 23
+#define FLOAT_EXPONENT_BITS 8
+#define FLOAT_EXPONENT_BIAS 127
 
-static __device__ __constant__ float map10iP_32[] = {1.0, 1.0E1, 1.0E2, 1.0E3, 1.0E4, 1.0E5, 1.0E6, 1.0E7, 1.0E8, 1.0E9, 1.0E10, 1.0E11,
-                                 1.0E12, 1.0E13, 1.0E14, 1.0E15, 1.0E16, 1.0E17, 1.0E18, 1.0E19, 1.0E20};
+static __device__ __constant__ int f_32[] = {
+    0, 4, 7, 10, 14, 17, 20, 24, 27, 30, 34, 37, 40, 44, 47, 50, 54, 57, 60, 64, 67
+};
+
+static __device__ __constant__ float map10iP_32[] = {
+    1.0f, 1.0E1f, 1.0E2f, 1.0E3f, 1.0E4f, 1.0E5f, 1.0E6f, 1.0E7f, 1.0E8f, 1.0E9f, 
+    1.0E10f, 1.0E11f, 1.0E12f, 1.0E13f, 1.0E14f, 1.0E15f, 1.0E16f, 1.0E17f, 1.0E18f, 1.0E19f, 1.0E20f
+};
 
 static __device__ __constant__ int mapSPGreater1_32[] = {
     1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000
 };
 
 static __device__ __constant__ float mapSPLess1_32[] = {
-    1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001, 0.000000001, 0.0000000001
+    1.0f, 0.1f, 0.01f, 0.001f, 0.0001f, 0.00001f, 0.000001f, 0.0000001f, 
+    0.00000001f, 0.000000001f, 0.0000000001f
 };
 
-static __device__ __constant__ float map10iN_32[] = {1.0, 1.0E-1, 1.0E-2, 1.0E-3, 1.0E-4, 1.0E-5, 1.0E-6, 1.0E-7, 1.0E-8, 1.0E-9,
-                                 1.0E-10, 1.0E-11, 1.0E-12, 1.0E-13, 1.0E-14, 1.0E-15, 1.0E-16, 1.0E-17, 1.0E-18,
-                                 1.0E-19, 1.0E-20};
+static __device__ __constant__ float map10iN_32[] = {
+    1.0f, 1.0E-1f, 1.0E-2f, 1.0E-3f, 1.0E-4f, 1.0E-5f, 1.0E-6f, 1.0E-7f, 1.0E-8f, 1.0E-9f,
+    1.0E-10f, 1.0E-11f, 1.0E-12f, 1.0E-13f, 1.0E-14f, 1.0E-15f, 1.0E-16f, 1.0E-17f, 1.0E-18f,
+    1.0E-19f, 1.0E-20f
+};
 
 static __device__ void getSPAnd10iNFlag_32(float v, int result_sp_flag[2]) {
     result_sp_flag[1] = 0;
-    if (v >= 1.0) {
+    if (v >= 1.0f) {
         int i = 0;
         while (i < MAP_SP_GREATER_1_SIZE - 1) {
             if (v < mapSPGreater1_32[i + 1]) {
@@ -64,7 +70,6 @@ static __device__ void getSPAnd10iNFlag_32(float v, int result_sp_flag[2]) {
             }
             i++;
         }
-        // 修复：处理超出范围的情况
         result_sp_flag[0] = MAP_SP_GREATER_1_SIZE - 1;
     } else {
         int i = 1;
@@ -76,63 +81,56 @@ static __device__ void getSPAnd10iNFlag_32(float v, int result_sp_flag[2]) {
             }
             i++;
         }
-        // 修复：处理超出范围的情况
         result_sp_flag[0] = -(MAP_SP_LESS_1_SIZE - 1);
     }
     
-    // 修复：如果没有在表中找到，使用log10计算
-    float log10v = log10(v);
-    result_sp_flag[0] = (int) floor(log10v);
-    result_sp_flag[1] = (fabs(log10v - floor(log10v)) < 1e-10) ? 1 : 0;
+    float log10v = log10f(v);
+    result_sp_flag[0] = (int) floorf(log10v);
+    result_sp_flag[1] = (fabsf(log10v - floorf(log10v)) < 1e-6f) ? 1 : 0;
 }
 
 static __device__ float get10iP_32(int i) {
-    if (i < 0) return 1.0; // 修复：处理负数情况
+    if (i <= 0) return 1.0f;  // 🔥 Java throws exception, but we return 1.0f
     if (i >= MAP_10_I_P_SIZE) {
-        return pow(10.0, i);
+        return powf(10.0f, (float)i);
     } else {
         return map10iP_32[i];
     }
 }
 
+// 🔥 完全按照Java逻辑重写
 static __device__ int getSignificantCount_32(float v, int sp, int lastBetaStar) {
     int i;
+    
+    // 🔥 完全按照Java的条件分支
     if (lastBetaStar != 0x7FFFFFFF && lastBetaStar != 0) {
+        // Java: i = Math.max(lastBetaStar - sp - 1, 1);
         i = lastBetaStar - sp - 1;
-        if (i <= 1) {
-            i = 1;
-        }
-    } else if (lastBetaStar == 0x7FFFFFFF) {
-        i = 9 - sp - 1;
+        if (i < 1) i = 1;
     } else if (sp >= 0) {
         i = 1;
     } else {
         i = -sp;
     }
 
-    // 修复：添加边界检查
-    if (i < 0) i = 1;
-    if (i > 20) i = 20; // 限制在合理范围内
-
     float temp = v * get10iP_32(i);
-    int tempLong = (int) temp;
+    long tempLong = (long) temp;
     
-    // 修复：添加迭代次数限制，防止无限循环
-    int max_iterations = 10;
-    int iterations = 0;
-    
-    while (tempLong != temp && iterations < max_iterations) {
+    // Java: while ((int) temp != temp)
+    while (tempLong != temp) {
         i++;
-        if (i > 20) break; // 防止超出合理范围
         temp = v * get10iP_32(i);
-        tempLong = (int) temp;
-        iterations++;
+        tempLong = (long) temp;
+        
+        // 安全检查防止无限循环
+        if (i > 20) break;
     }
     
-    // 修复：更精确的浮点数比较
-    if (fabs(temp / get10iP_32(i) - v) > 1e-15) {
-        return 9;
+    // Java: if (temp / get10iP(i) != v) return 8;
+    if (temp / get10iP_32(i) != v) {
+        return 8;
     } else {
+        // 🔥 Java的关键逻辑：去除尾部的0
         while (i > 0 && tempLong % 10 == 0) {
             i--;
             tempLong = tempLong / 10;
@@ -142,8 +140,7 @@ static __device__ int getSignificantCount_32(float v, int sp, int lastBetaStar) 
 }
 
 static __device__ void getAlphaAndBetaStar_32(float v, int lastBetaStar, int alphaAndBetaStar[2]) {
-    // 使用GPU内置函数fabs()来求绝对值，效率更高
-    v = fabs(v);
+    v = fabsf(v);
     int spAnd10iNFlag[2];
     getSPAnd10iNFlag_32(v, spAnd10iNFlag);
     int beta = getSignificantCount_32(v, spAnd10iNFlag[0], lastBetaStar);
@@ -154,14 +151,14 @@ static __device__ void getAlphaAndBetaStar_32(float v, int lastBetaStar, int alp
 static __device__ int getFAlpha_32(int alpha) {
     if (alpha < 0) alpha = 0;
     if (alpha >= F_TABLE_SIZE) {
-        return (int) ceil(alpha * LOG_2_10);
+        return (int) ceilf(alpha * LOG_2_10);
     } else {
         return f_32[alpha];
     }
 }
 
 static __device__ int getSP_32(float v) {
-    if (v >= 1) {
+    if (v >= 1.0f) {
         int i = 0;
         while (i < MAP_SP_GREATER_1_SIZE - 1) {
             if (v < mapSPGreater1_32[i + 1]) {
@@ -169,7 +166,7 @@ static __device__ int getSP_32(float v) {
             }
             i++;
         }
-        return MAP_SP_GREATER_1_SIZE - 1; // 修复：返回最大索引
+        return MAP_SP_GREATER_1_SIZE - 1;
     } else {
         int i = 1;
         while (i < MAP_SP_LESS_1_SIZE) {
@@ -178,29 +175,28 @@ static __device__ int getSP_32(float v) {
             }
             i++;
         }
-        return -(MAP_SP_LESS_1_SIZE - 1); // 修复：返回最小索引
+        return -(MAP_SP_LESS_1_SIZE - 1);
     }
     
-    // 备用计算
-    return (int) floor(log10(v));
+    return (int) floorf(log10f(v));
 }
 
-static __device__ double get10iN_32(int i) {
-    if (i < 0) return 1.0; // 修复：处理负数情况
+static __device__ float get10iN_32(int i) {
+    if (i <= 0) return 1.0f;  // 🔥 Java throws exception
     if (i >= MAP_10_I_N_SIZE) {
-        return pow(10.0, -i);
+        return powf(10.0f, -(float)i);
     } else {
         return map10iN_32[i];
     }
 }
 
-static __device__ double roundUp_32(double v, int alpha) {
-    double scale = get10iP_32(alpha);
-    if (v < 0) {
-        return floor(v * scale) / scale;
+static __device__ float roundUp_32(float v, int alpha) {
+    float scale = get10iP_32(alpha);
+    if (v < 0.0f) {
+        return floorf(v * scale) / scale;
     } else {
-        return ceil(v * scale) / scale;
+        return ceilf(v * scale) / scale;
     }
 }
 
-#endif //DEFS_CUH
+#endif //DEFS32_CUH

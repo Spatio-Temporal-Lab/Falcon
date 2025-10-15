@@ -498,7 +498,7 @@ CompressionInfo comp_alp_gpu_stream(std::vector<double> oriData, std::vector<dou
     std::cout << "gpu记录了 " << gpu_vector_records.size() << " 个向量\n";
     std::cout << "gpu记录了 " << gpu_rowgroup_records.size() << " 个行组（ALP选择）\n";
     // 清理记录
-    printf("GOPU处理了%d个行组\n",(nbEle+params.blockSize)/params.blockSize);
+    printf("GPU处理了%d个行组\n",(nbEle+params.blockSize)/params.blockSize);
     // 打印详细时间分析
     // std::cout << "\n===== 时间分析 =====" << std::endl;
     // std::cout << "压缩阶段：" << std::endl;

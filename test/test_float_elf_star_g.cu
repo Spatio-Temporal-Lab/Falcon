@@ -95,7 +95,7 @@ bool verify_decompression(const std::vector<float>& original,
 }
 
 // 带详细时间统计的ELF Star压缩测试函数 - 使用完整接口
-CompressionInfo test_elf_star_compression_with_timing(const std::vector<float>& original, float error_bound = 0.0) {
+CompressionInfo test_elf_star_compression_with_timing_32(const std::vector<float>& original, float error_bound = 1e-7) {
     CompressionInfo result;
     
     // 压缩测试 - 使用完整接口
@@ -104,11 +104,11 @@ CompressionInfo test_elf_star_compression_with_timing(const std::vector<float>& 
     int64_t* compressed_offsets = nullptr;
     int64_t* decompressed_offsets = nullptr;
     int num_blocks = 0;
-    ElfStarTimingInfo timing_info;
+    ElfStarTimingInfo_32 timing_info;
 
     auto compress_start = std::chrono::high_resolution_clock::now();
     
-    ssize_t compress_result = elf_star_encode_with_timing(
+    ssize_t compress_result = elf_star_encode_with_timing_32(
         const_cast<float*>(original.data()), 
         original.size(),
         &compressed,
@@ -145,7 +145,7 @@ CompressionInfo test_elf_star_compression_with_timing(const std::vector<float>& 
 
     auto decompress_start = std::chrono::high_resolution_clock::now();
 
-    ssize_t decompress_result = elf_star_decode_with_timing(
+    ssize_t decompress_result = elf_star_decode_with_timing_32(
         compressed,
         in_offsets.data(),
         in_lengths.data(),
@@ -159,16 +159,21 @@ CompressionInfo test_elf_star_compression_with_timing(const std::vector<float>& 
     const double decompress_time = std::chrono::duration<double, std::milli>(decompress_end - decompress_start).count();
     if (decompress_result <= 0) {
         std::cerr << "ELF Star解压缩失败" << std::endl;
-        elf_star_free_encode_result(compressed, compressed_lengths, 
+        elf_star_free_encode_result_32(compressed, compressed_lengths, 
                                    compressed_offsets, decompressed_offsets);
         return result;
     }
     
     // 验证解压缩结果
     bool data_valid = verify_decompression(original, decompressed.data(), decompressed.size(), error_bound);
-    
     if (!data_valid) {
+        result.original_size_mb=-1;
         std::cerr << "ELF Star压缩/解压缩数据验证失败" << std::endl;
+        return result;
+    }
+    else
+    {
+        std::cerr << "ELF Star压缩/解压缩数据验证成功!!!!!!!!" << std::endl;
     }
     
     // 性能指标计算
@@ -193,7 +198,7 @@ CompressionInfo test_elf_star_compression_with_timing(const std::vector<float>& 
     result.decomp_throughput = decompression_throughput_GBs;           // 解压吞吐量
     
     // 清理内存
-    elf_star_free_encode_result(compressed, compressed_lengths, 
+    elf_star_free_encode_result_32(compressed, compressed_lengths, 
                                compressed_offsets, decompressed_offsets);
     
     return result;
@@ -212,7 +217,7 @@ CompressionInfo test_elf_star_compression_simple(const std::vector<float>& origi
     
     auto compress_start = std::chrono::high_resolution_clock::now();
     
-    ssize_t compress_result = elf_star_encode(
+    ssize_t compress_result = elf_star_encode_32(
         const_cast<float*>(original.data()), 
         original.size(),
         &compressed,
@@ -248,7 +253,7 @@ CompressionInfo test_elf_star_compression_simple(const std::vector<float>& origi
     
     auto decompress_start = std::chrono::high_resolution_clock::now();
     
-    ssize_t decompress_result = elf_star_decode(
+    ssize_t decompress_result = elf_star_decode_32(
         compressed,
         in_offsets.data(),
         in_lengths.data(),
@@ -261,7 +266,7 @@ CompressionInfo test_elf_star_compression_simple(const std::vector<float>& origi
     
     if (decompress_result <= 0) {
         std::cerr << "ELF Star解压缩失败" << std::endl;
-        elf_star_free_encode_result(compressed, compressed_lengths, 
+        elf_star_free_encode_result_32(compressed, compressed_lengths, 
                                    compressed_offsets, decompressed_offsets);
         return result;
     }
@@ -297,16 +302,16 @@ CompressionInfo test_elf_star_compression_simple(const std::vector<float>& origi
     result.decomp_throughput = decompression_throughput_GBs;
     
     // 清理内存
-    elf_star_free_encode_result(compressed, compressed_lengths, 
+    elf_star_free_encode_result_32(compressed, compressed_lengths, 
                                compressed_offsets, decompressed_offsets);
     
     return result;
 }
 
 // 文件测试模板（类似LZ4测试代码）- 使用完整接口
-CompressionInfo test_compression_file(const std::string& file_path) {
+CompressionInfo test_compression_file_32(const std::string& file_path) {
     std::vector<float> oriData = read_data_float(file_path);
-    return test_elf_star_compression_with_timing(oriData);
+    return test_elf_star_compression_with_timing_32(oriData);
 }
 
 // 单个测试用例 - 使用完整接口
@@ -316,7 +321,7 @@ bool run_test_case(const std::string& test_name,
     std::cout << "数据大小: " << test_data.size() << " 个float元素 ("
               << test_data.size() * sizeof(float) << " 字节)\n";
     
-    CompressionInfo result = test_elf_star_compression_with_timing(test_data);
+    CompressionInfo result = test_elf_star_compression_with_timing_32(test_data);
 
     if (result.original_size_mb > 0) {
         result.print();
@@ -411,7 +416,7 @@ int main(int argc, char *argv[]) {
                 
                 if (!warm) {
                     std::cout << "\n-------------------预热阶段-------------------------- " << file_path << std::endl;
-                    test_compression_file(file_path);
+                    test_compression_file_32(file_path);
                     warm = true;
                     std::cout << "-------------------预热完成------------------------" << std::endl;
                 }
@@ -420,7 +425,7 @@ int main(int argc, char *argv[]) {
                 
                 // 运行3次取平均值（类似LZ4测试代码）
                 for (int i = 0; i < 3; i++) {
-                    avg_result += test_compression_file(file_path);
+                    avg_result += test_compression_file_32(file_path);
                 }
                 avg_result = avg_result / 3;
                 avg_result.print();
