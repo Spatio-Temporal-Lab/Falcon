@@ -149,7 +149,8 @@ if (NDZIP_USE_HIPSYCL)
     target_link_libraries(ndzip-sycl PUBLIC ndzip)
 endif ()
 
-if (NDZIP_USE_CUDA)
+# if (NDZIP_USE_CUDA)
+if (1)
     add_library(ndzip-cuda SHARED
         include/ndzip/cuda.hh
         src/ndzip/cuda_bits.cuh

@@ -21,3 +21,4 @@ float roundUp_32(float v, int alpha);
 double get10iN(int i);
 float get10iN_32(int i);
 int getSP(double v);
+int getSP_32(float v);

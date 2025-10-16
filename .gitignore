@@ -5,6 +5,7 @@ Makefile
 !include/zstd/Makefile
 cmake_install.cmake
 build/
+build*/
 *-build/
 Testing/
 build-support/boost_*
@@ -80,3 +81,5 @@ plot/*.tex
 *.out
 *.app
 
+test/data/wrong/merged_2DWSD_2min_ALL.csv
+test/data/big/merged_data.csv

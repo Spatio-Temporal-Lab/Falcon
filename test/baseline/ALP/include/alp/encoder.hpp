@@ -232,6 +232,7 @@ struct encoder {
 		for (size_t i {0}; i < stt.k_combinations; i++) {
 			stt.best_k_combinations.push_back(best_k_combinations[i].first);
 		}
+		record_rowgroup_combinations(best_k_combinations);
 	}
 
 	/*
@@ -400,6 +401,7 @@ struct encoder {
 		}
 		encode_simdized(
 		    input_vector, exceptions, exceptions_positions, exceptions_count, encoded_integers, stt.fac, stt.exp);
+		record_vector_ef(stt.exp, stt.fac);
 	}
 
 	static inline void

@@ -27,7 +27,7 @@ class AbstractElfDecompressor32 {
   float recoverVByBetaStar() {
     float v;
     float vPrime = xorDecompress();
-    int sp = getSP(abs(vPrime));
+    int sp = getSP_32(abs(vPrime));
     if (lastBetaStar == 0) {
       v = get10iN_32(-sp - 1);
       if (vPrime < 0) {

@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <cstdint>
+#include <thread> 
 #include "output_bit_stream.h"
 
 class CDFCompressor {
