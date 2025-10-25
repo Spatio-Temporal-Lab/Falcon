@@ -1,22 +1,22 @@
-// Faclon_pipeline.cu
+// Falcon_pipeline.cu
 // 流水线压缩和解压缩实现
-// 路径: Falcon\src\gpu\Faclon_pipeline.cu
+// 路径: Falcon\src\gpu\Falcon_pipeline.cu
 
-#include "Faclon_pipeline.cuh"
+#include "Falcon_pipeline.cuh"
 #include <algorithm>
 #include <iostream>
 #include <cstring>
 
 // 构造函数
-FaclonPipeline::FaclonPipeline(int numStreams) : NUM_STREAMS(numStreams) {
+FalconPipeline::FalconPipeline(int numStreams) : NUM_STREAMS(numStreams) {
 }
 
 // 析构函数
-FaclonPipeline::~FaclonPipeline() {
+FalconPipeline::~FalconPipeline() {
 }
 
 // 辅助函数:从压缩结果创建CompressedData结构
-CompressedData FaclonPipeline::createCompressedData(
+CompressedData FalconPipeline::createCompressedData(
     const CompressionResult& compResult,
     const ProcessedData& originalData) {
     
@@ -52,7 +52,7 @@ void cleanup_data(ProcessedData &data) {
 // 标准实现
 
 // 执行压缩流水线(使用类成员变量的流数量)
-CompressionResult FaclonPipeline::executeCompressionPipeline(
+CompressionResult FalconPipeline::executeCompressionPipeline(
     ProcessedData &data,
     size_t chunkSize) {
     
@@ -60,7 +60,7 @@ CompressionResult FaclonPipeline::executeCompressionPipeline(
 }
 
 // 执行压缩流水线(指定流数量)
-CompressionResult FaclonPipeline::executeCompressionPipeline(
+CompressionResult FalconPipeline::executeCompressionPipeline(
     ProcessedData &data,
     size_t chunkSize,
     int numStreams) {
@@ -69,7 +69,7 @@ CompressionResult FaclonPipeline::executeCompressionPipeline(
 }
 
 // 压缩流水线内部实现
-CompressionResult FaclonPipeline::executeCompressionPipelineImpl(
+CompressionResult FalconPipeline::executeCompressionPipelineImpl(
     ProcessedData &data,
     size_t chunkSize,
     int numStreams) {
@@ -187,7 +187,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineImpl(
                             streams[s]));
                         
                         // 调用压缩接口
-                        GDFCompressor_opt::GDFC_compress_stream(
+                        FalconCompressor::Falcon_compress_stream(
                             d_in[s],
                             d_out[s],
                             &locCmpSize[chunkIDX[s] + 1],
@@ -327,7 +327,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineImpl(
 }
 
 // 执行解压缩流水线(使用类成员变量的流数量)
-PipelineAnalysis FaclonPipeline::executeDecompressionPipeline(
+PipelineAnalysis FalconPipeline::executeDecompressionPipeline(
     const CompressionResult& compResult,
     ProcessedData &decompData,
     bool visualize) {
@@ -336,7 +336,7 @@ PipelineAnalysis FaclonPipeline::executeDecompressionPipeline(
 }
 
 // 执行解压缩流水线(指定流数量)
-PipelineAnalysis FaclonPipeline::executeDecompressionPipeline(
+PipelineAnalysis FalconPipeline::executeDecompressionPipeline(
     const CompressionResult& compResult,
     ProcessedData &decompData,
     int numStreams,
@@ -346,7 +346,7 @@ PipelineAnalysis FaclonPipeline::executeDecompressionPipeline(
 }
 
 // 解压缩流水线内部实现
-PipelineAnalysis FaclonPipeline::executeDecompressionPipelineImpl(
+PipelineAnalysis FalconPipeline::executeDecompressionPipelineImpl(
     const CompressionResult& compResult,
     ProcessedData &decompData,
     int numStreams,
@@ -438,8 +438,8 @@ PipelineAnalysis FaclonPipeline::executeDecompressionPipelineImpl(
                             streams[s]));
                         
                         // 调用解压接口
-                        GDFDecompressor_opt GDFD;
-                        GDFD.GDFC_decompress_stream_optimized(
+                        FalconDecompressor GDFD;
+                        GDFD.Falcon_decompress_stream_optimized(
                             d_out[s],
                             d_in[s],
                             currentChunkElements,
@@ -573,7 +573,7 @@ PipelineAnalysis FaclonPipeline::executeDecompressionPipelineImpl(
 // NOPACK---------------------------------------------------------------------
 
 
-CompressionResult FaclonPipeline::executeCompressionPipelineNoPack(
+CompressionResult FalconPipeline::executeCompressionPipelineNoPack(
     ProcessedData &data,
     size_t chunkSize) {
     
@@ -582,7 +582,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineNoPack(
 
 
 // 压缩流水线内部实现
-CompressionResult FaclonPipeline::executeCompressionPipelineImpl_NoPack(
+CompressionResult FalconPipeline::executeCompressionPipelineImpl_NoPack(
     ProcessedData &data,
     size_t chunkSize,
     int numStreams) {
@@ -700,7 +700,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineImpl_NoPack(
                             streams[s]));
                         
                         // 调用压缩接口
-                        GDFCompressor_opt::GDFC_compress_no_pack(
+                        FalconCompressor::Falcon_compress_no_pack(
                             d_in[s],
                             d_out[s],
                             &locCmpSize[chunkIDX[s] + 1],
@@ -842,7 +842,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineImpl_NoPack(
 // SPARE---------------------------------------------------------------------
 
 
-CompressionResult FaclonPipeline::executeCompressionPipelineSpare(
+CompressionResult FalconPipeline::executeCompressionPipelineSpare(
     ProcessedData &data,
     size_t chunkSize) {
     
@@ -850,7 +850,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineSpare(
 }
 
 // 压缩流水线内部实现
-CompressionResult FaclonPipeline::executeCompressionPipelineImpl_Spare(
+CompressionResult FalconPipeline::executeCompressionPipelineImpl_Spare(
     ProcessedData &data,
     size_t chunkSize,
     int numStreams) {
@@ -968,7 +968,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineImpl_Spare(
                             streams[s]));
                         
                         // 调用压缩接口
-                        GDFCompressor_opt::GDFC_compress_spare(
+                        FalconCompressor::Falcon_compress_spare(
                             d_in[s],
                             d_out[s],
                             &locCmpSize[chunkIDX[s] + 1],
@@ -1110,7 +1110,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineImpl_Spare(
 // BR---------------------------------------------------------------------
 
 
-CompressionResult FaclonPipeline::executeCompressionPipelineBr(
+CompressionResult FalconPipeline::executeCompressionPipelineBr(
     ProcessedData &data,
     size_t chunkSize) {
     
@@ -1118,7 +1118,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineBr(
 }
 
 // 压缩流水线内部实现
-CompressionResult FaclonPipeline::executeCompressionPipelineImpl_Br(
+CompressionResult FalconPipeline::executeCompressionPipelineImpl_Br(
     ProcessedData &data,
     size_t chunkSize,
     int numStreams) {
@@ -1236,7 +1236,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineImpl_Br(
                             streams[s]));
                         
                         // 调用压缩接口
-                        GDFCompressor_opt::GDFC_compress_br(
+                        FalconCompressor::Falcon_compress_br(
                             d_in[s],
                             d_out[s],
                             &locCmpSize[chunkIDX[s] + 1],
@@ -1379,7 +1379,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineImpl_Br(
 
 // 阻塞
 
-CompressionResult FaclonPipeline::executeCompressionPipelineBlock(
+CompressionResult FalconPipeline::executeCompressionPipelineBlock(
     ProcessedData &data,
     size_t chunkSize) 
 {
@@ -1500,7 +1500,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineBlock(
                             cudaMemcpyHostToDevice,
                             streams[s]));
                         // 调用压缩接口（内部处理所有临时内存）
-                        GDFCompressor_opt::GDFC_compress_stream(
+                        FalconCompressor::Falcon_compress_stream(
                             d_in[s],
                             d_out[s],
                             &locCmpSize[chunkIDX[s] + 1],  // +1 因为有前保护
@@ -1634,7 +1634,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineBlock(
 
 //非阻塞
 
-CompressionResult FaclonPipeline::executeCompressionPipelineNoBlock(
+CompressionResult FalconPipeline::executeCompressionPipelineNoBlock(
     ProcessedData &data,
     size_t chunkSize) 
 {
@@ -1753,7 +1753,7 @@ CompressionResult FaclonPipeline::executeCompressionPipelineNoBlock(
                             cudaMemcpyHostToDevice,
                             streams[s]));
                         // 调用压缩接口（内部处理所有临时内存）
-                        GDFCompressor_opt::GDFC_compress_stream(
+                        FalconCompressor::Falcon_compress_stream(
                             d_in[s],
                             d_out[s],
                             &locCmpSize[chunkIDX[s] + 1],  // +1 因为有前保护

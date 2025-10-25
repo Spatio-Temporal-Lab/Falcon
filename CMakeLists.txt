@@ -30,11 +30,15 @@ set(SRC_CPU
 )
 
 set(SRC_GPU
-    src/gpu/GDFCompressor.cu
-    src/gpu/GDFDecompressor.cu
     
-    src/gpu/Faclon_decompressor.cu
-    src/gpu/Faclon_compressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/FalconCompressor_1024.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/FalconDecompressor_1024.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_float_compressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_float_decompressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_compressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_decompressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_pipeline.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_float_pipeline.cu
     src/utils/output_bit_stream.cc
     src/utils/input_bit_stream.cc
 )

@@ -1,18 +1,18 @@
-// Faclon_float_pipeline.cu
+// Falcon_float_pipeline.cu
 // 32位浮点数流水线压缩和解压缩实现
-// 路径: Falcon\src\gpu\Faclon_float_pipeline.cu
+// 路径: Falcon\src\gpu\Falcon_float_pipeline.cu
 
-#include "Faclon_float_pipeline.cuh"
+#include "Falcon_float_pipeline.cuh"
 #include <algorithm>
 #include <iostream>
 #include <cstring>
 
 // 析构函数
-FaclonPipeline_32::~FaclonPipeline_32() {
+FalconPipeline_32::~FalconPipeline_32() {
 }
 
 // 辅助函数:从压缩结果创建CompressedData结构
-CompressedData_32 FaclonPipeline_32::createCompressedData(
+CompressedData_32 FalconPipeline_32::createCompressedData(
     const CompressionResult_32& compResult,
     const ProcessedData_32& originalData) {
     
@@ -46,7 +46,7 @@ void cleanup_data_32(ProcessedData_32 &data) {
 }
 
 // 执行压缩流水线(使用类成员变量的流数量)
-CompressionResult_32 FaclonPipeline_32::executeCompressionPipeline(
+CompressionResult_32 FalconPipeline_32::executeCompressionPipeline(
     ProcessedData_32 &data,
     size_t chunkSize) {
     
@@ -54,7 +54,7 @@ CompressionResult_32 FaclonPipeline_32::executeCompressionPipeline(
 }
 
 // 执行压缩流水线(指定流数量)
-CompressionResult_32 FaclonPipeline_32::executeCompressionPipeline(
+CompressionResult_32 FalconPipeline_32::executeCompressionPipeline(
     ProcessedData_32 &data,
     size_t chunkSize,
     int numStreams) {
@@ -63,7 +63,7 @@ CompressionResult_32 FaclonPipeline_32::executeCompressionPipeline(
 }
 
 // 压缩流水线内部实现
-CompressionResult_32 FaclonPipeline_32::executeCompressionPipelineImpl(
+CompressionResult_32 FalconPipeline_32::executeCompressionPipelineImpl(
     ProcessedData_32 &data,
     size_t chunkSize,
     int numStreams) {
@@ -181,7 +181,7 @@ CompressionResult_32 FaclonPipeline_32::executeCompressionPipelineImpl(
                             streams[s]));
                         
                         // 调用压缩接口
-                        GDFCompressor::GDFC_compress_stream(
+                        FalconCompressor::Falcon_compress_stream(
                             d_in[s],
                             d_out[s],
                             &locCmpSize[chunkIDX[s] + 1],
@@ -321,7 +321,7 @@ CompressionResult_32 FaclonPipeline_32::executeCompressionPipelineImpl(
 }
 
 // 执行解压缩流水线(使用类成员变量的流数量)
-PipelineAnalysis_32 FaclonPipeline_32::executeDecompressionPipeline(
+PipelineAnalysis_32 FalconPipeline_32::executeDecompressionPipeline(
     const CompressionResult_32& compResult,
     ProcessedData_32 &decompData,
     bool visualize) {
@@ -330,7 +330,7 @@ PipelineAnalysis_32 FaclonPipeline_32::executeDecompressionPipeline(
 }
 
 // 执行解压缩流水线(指定流数量)
-PipelineAnalysis_32 FaclonPipeline_32::executeDecompressionPipeline(
+PipelineAnalysis_32 FalconPipeline_32::executeDecompressionPipeline(
     const CompressionResult_32& compResult,
     ProcessedData_32 &decompData,
     int numStreams,
@@ -340,7 +340,7 @@ PipelineAnalysis_32 FaclonPipeline_32::executeDecompressionPipeline(
 }
 
 // 解压缩流水线内部实现
-PipelineAnalysis_32 FaclonPipeline_32::executeDecompressionPipelineImpl(
+PipelineAnalysis_32 FalconPipeline_32::executeDecompressionPipelineImpl(
     const CompressionResult_32& compResult,
     ProcessedData_32 &decompData,
     int numStreams,
@@ -432,8 +432,8 @@ PipelineAnalysis_32 FaclonPipeline_32::executeDecompressionPipelineImpl(
                             streams[s]));
                         
                         // 调用解压接口
-                        GDFDecompressor GDFD;
-                        GDFD.GDFC_decompress_stream_optimized(
+                        FalconDecompressor Falcon;
+                        Falcon.Falcon_decompress_stream_optimized(
                             d_out[s],
                             d_in[s],
                             currentChunkElements,

@@ -56,18 +56,18 @@ target_include_directories(cdf_cpu_lib PUBLIC
 )
 
 # GPU源文件编译为对象库（关键修复）
-cuda_add_library(gdf_gpu_lib STATIC
-    ${CMAKE_SOURCE_DIR}/src/gpu/GDFCompressor.cu
-    ${CMAKE_SOURCE_DIR}/src/gpu/GDFDecompressor.cu
-    ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_float_compressor.cu
-    ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_float_decompressor.cu
-    ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_compressor.cu
-    ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_decompressor.cu
-    ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_pipeline.cu
-    ${CMAKE_SOURCE_DIR}/src/gpu/Faclon_float_pipeline.cu
+cuda_add_library(Falcon_gpu_lib STATIC
+    ${CMAKE_SOURCE_DIR}/src/gpu/FalconCompressor_1024.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/FalconDecompressor_1024.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_float_compressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_float_decompressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_compressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_decompressor.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_pipeline.cu
+    ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_float_pipeline.cu
 )
 
-target_include_directories(gdf_gpu_lib PUBLIC
+target_include_directories(Falcon_gpu_lib PUBLIC
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/src/utils
 )
@@ -111,10 +111,10 @@ target_link_libraries(test_cpu PRIVATE
 
 # test_gpu_nopack
 cuda_add_executable(test_gpu_nopack 
-    GDF_test_nopack.cu
+    Falcon_test_nopack.cu
 )
 target_link_libraries(test_gpu_nopack 
-    gdf_gpu_lib
+    Falcon_gpu_lib
     cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
@@ -126,10 +126,10 @@ target_link_libraries(test_gpu_nopack
 
 # test_gpu_spare
 cuda_add_executable(test_gpu_spare
-    GDF_test_spare.cu
+    Falcon_test_spare.cu
 )
 target_link_libraries(test_gpu_spare
-    gdf_gpu_lib
+    Falcon_gpu_lib
     cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
@@ -141,10 +141,10 @@ target_link_libraries(test_gpu_spare
 
 # test_gpu_br
 cuda_add_executable(test_gpu_br 
-    GDF_test_br.cu
+    Falcon_test_br.cu
 )
 target_link_libraries(test_gpu_br 
-    gdf_gpu_lib
+    Falcon_gpu_lib
     cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
@@ -156,10 +156,10 @@ target_link_libraries(test_gpu_br
 
 # test_gpu
 cuda_add_executable(test_gpu 
-    GDF_test.cu
+    Falcon_test.cu
 )
 target_link_libraries(test_gpu 
-    gdf_gpu_lib
+    Falcon_gpu_lib
     cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
@@ -171,10 +171,10 @@ target_link_libraries(test_gpu
 
 # test_muti_stream
 cuda_add_executable(test_muti_stream 
-    GDF_test_muti_steam_f64.cu
+    Falcon_test_muti_steam_f64.cu
 )
 target_link_libraries(test_muti_stream 
-    gdf_gpu_lib
+    Falcon_gpu_lib
     cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
@@ -189,7 +189,7 @@ cuda_add_executable(test_muti_3step_block
     muti_type_3step_block.cu
 )
 target_link_libraries(test_muti_3step_block 
-    gdf_gpu_lib
+    Falcon_gpu_lib
     cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
@@ -203,7 +203,7 @@ cuda_add_executable(test_muti_3step_noblock
     muti_type_3step_noblock.cu
 )
 target_link_libraries(test_muti_3step_noblock 
-    gdf_gpu_lib
+    Falcon_gpu_lib
     cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
@@ -217,7 +217,7 @@ cuda_add_executable(benchmark_tests
     benchmark.cu
 )
 target_link_libraries(benchmark_tests 
-    gdf_gpu_lib
+    Falcon_gpu_lib
     cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
@@ -317,10 +317,10 @@ target_link_libraries(test_elf_star_g
 #=====================float=============================
 # test_float_muti_stream
 cuda_add_executable(test_muti_stream_opt 
-    GDF_test_muti_steam_opt_f64.cu
+    Falcon_test_muti_steam_opt_f64.cu
 )
 target_link_libraries(test_muti_stream_opt 
-    gdf_gpu_lib
+    Falcon_gpu_lib
     cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
@@ -332,10 +332,10 @@ target_link_libraries(test_muti_stream_opt
 
 # test_float_muti_stream
 cuda_add_executable(test_float_muti_stream 
-    test_float_faclon.cu
+    test_float_falcon.cu
 )
 target_link_libraries(test_float_muti_stream 
-    gdf_gpu_lib
+    Falcon_gpu_lib
     cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
