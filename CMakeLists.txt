@@ -20,15 +20,6 @@ set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -O3)
 include_directories(include)
 include_directories(src/utils)
 
-# 源文件
-set(SRC_CPU
-        src/cpu/CDFCompressor.cpp
-        src/cpu/CDFDecompressor.cpp
-        src/utils/output_bit_stream.cc
-        src/utils/input_bit_stream.cc
-        benchmark.cpp
-)
-
 set(SRC_GPU
     
     ${CMAKE_SOURCE_DIR}/src/gpu/FalconCompressor_1024.cu
@@ -49,7 +40,7 @@ add_subdirectory(test)
 
 # 查找 GTest 和 Google Benchmark
 find_package(GTest REQUIRED)
-find_package(benchmark REQUIRED)
+# find_package(benchmark REQUIRED)
 
 
 # 添加库不存在的下载方法
@@ -65,18 +56,18 @@ if (NOT GTest_FOUND)
 endif()
 
 
-if (NOT benchmark_FOUND)
-    message(STATUS "Google Benchmark library not found. Downloading and building it locally...")
+# if (NOT benchmark_FOUND)
+#     message(STATUS "Google Benchmark library not found. Downloading and building it locally...")
     
-    # 设置下载目录
-    include(FetchContent)
-    FetchContent_Declare(
-        benchmark
-        GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v1.6.1 # 目前我的版本
-    )
-    FetchContent_MakeAvailable(benchmark)
-endif()
+#     # 设置下载目录
+#     include(FetchContent)
+#     FetchContent_Declare(
+#         benchmark
+#         GIT_REPOSITORY https://github.com/google/benchmark.git
+#         GIT_TAG v1.6.1 # 目前我的版本
+#     )
+#     FetchContent_MakeAvailable(benchmark)
+# endif()
 
 
 

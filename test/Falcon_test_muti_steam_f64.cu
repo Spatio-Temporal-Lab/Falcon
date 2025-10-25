@@ -758,7 +758,7 @@ PipelineAnalysis execute_decompression_pipeline(const CompressionResult &compRes
     result.total_size = totalDecompSize / 1024.0 / 1024.0;
     result.decomp_time = totalTime;
     result.decomp_throughout = (totalDecompSize / 1024.0 / 1024.0 / 1024.0) / (totalTime / 1000.0);
-    size_t expectedSize = compData.totalElements * sizeof(double);
+    // size_t expectedSize = compData.totalElements * sizeof(double);
     // if (totalDecompSize != expectedSize) {
     //     printf("警告：解压缩大小不匹配！期望: %zu, 实际: %zu\n",
     //         expectedSize, totalDecompSize);

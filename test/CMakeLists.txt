@@ -29,7 +29,7 @@ add_subdirectory(baseline/mpc)
 
 # 查找依赖包
 find_package(GTest REQUIRED)
-find_package(benchmark REQUIRED)
+# find_package(benchmark REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(CUDA REQUIRED)
 
@@ -42,18 +42,6 @@ set(CMAKE_CUDA_ARCHITECTURES 70)
 # ==================== 重要修复：创建共享的CUDA对象库 ====================
 # 这避免了多个目标重复编译相同的CUDA文件
 
-# CPU源文件库
-add_library(cdf_cpu_lib STATIC
-    ${CMAKE_SOURCE_DIR}/src/cpu/CDFCompressor.cpp
-    ${CMAKE_SOURCE_DIR}/src/cpu/CDFDecompressor.cpp
-    ${CMAKE_SOURCE_DIR}/src/utils/output_bit_stream.cc
-    ${CMAKE_SOURCE_DIR}/src/utils/input_bit_stream.cc
-)
-
-target_include_directories(cdf_cpu_lib PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/src/utils
-)
 
 # GPU源文件编译为对象库（关键修复）
 cuda_add_library(Falcon_gpu_lib STATIC
@@ -94,18 +82,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/test/baseline/ALP_g/include
 )
 
-# ==================== CPU测试目标 ====================
-add_executable(test_cpu 
-    CDF_test.cpp
-)
-target_link_libraries(test_cpu PRIVATE 
-    cdf_cpu_lib
-    dataset_utils_lib
-    GTest::GTest 
-    GTest::Main 
-    pthread 
-    ALP
-)
 
 # ==================== GPU测试目标（使用共享库） ====================
 
@@ -115,7 +91,6 @@ cuda_add_executable(test_gpu_nopack
 )
 target_link_libraries(test_gpu_nopack 
     Falcon_gpu_lib
-    cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
     GTest::GTest 
@@ -130,7 +105,6 @@ cuda_add_executable(test_gpu_spare
 )
 target_link_libraries(test_gpu_spare
     Falcon_gpu_lib
-    cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
     GTest::GTest 
@@ -145,7 +119,6 @@ cuda_add_executable(test_gpu_br
 )
 target_link_libraries(test_gpu_br 
     Falcon_gpu_lib
-    cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
     GTest::GTest 
@@ -160,7 +133,6 @@ cuda_add_executable(test_gpu
 )
 target_link_libraries(test_gpu 
     Falcon_gpu_lib
-    cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
     GTest::GTest 
@@ -175,7 +147,6 @@ cuda_add_executable(test_muti_stream
 )
 target_link_libraries(test_muti_stream 
     Falcon_gpu_lib
-    cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
     GTest::GTest 
@@ -190,7 +161,6 @@ cuda_add_executable(test_muti_3step_block
 )
 target_link_libraries(test_muti_3step_block 
     Falcon_gpu_lib
-    cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
     GTest::GTest 
@@ -204,28 +174,11 @@ cuda_add_executable(test_muti_3step_noblock
 )
 target_link_libraries(test_muti_3step_noblock 
     Falcon_gpu_lib
-    cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
     GTest::GTest 
     GTest::Main 
     pthread
-)
-
-# ==================== Benchmark目标 ====================
-cuda_add_executable(benchmark_tests 
-    benchmark.cu
-)
-target_link_libraries(benchmark_tests 
-    Falcon_gpu_lib
-    cdf_cpu_lib
-    dataset_utils_lib
-    ${CUDA_LIBRARIES} 
-    benchmark::benchmark 
-    GTest::GTest 
-    GTest::Main 
-    pthread 
-    ALP
 )
 
 # ==================== 其他测试目标 ====================
@@ -235,7 +188,6 @@ add_executable(test_ALP
     test_ALP.cpp
 )
 target_link_libraries(test_ALP PRIVATE 
-    cdf_cpu_lib
     dataset_utils_lib
     GTest::GTest 
     GTest::Main 
@@ -321,7 +273,6 @@ cuda_add_executable(test_muti_stream_opt
 )
 target_link_libraries(test_muti_stream_opt 
     Falcon_gpu_lib
-    cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
     GTest::GTest 
@@ -336,7 +287,6 @@ cuda_add_executable(test_float_muti_stream
 )
 target_link_libraries(test_float_muti_stream 
     Falcon_gpu_lib
-    cdf_cpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
     GTest::GTest 
@@ -349,7 +299,6 @@ add_executable(test_float_ALP
     test_float_ALP.cpp
 )
 target_link_libraries(test_float_ALP PRIVATE 
-    cdf_cpu_lib
     dataset_utils_lib
     GTest::GTest 
     GTest::Main 
@@ -559,10 +508,10 @@ endif()
 
 # ==================== 设置输出目录（避免冲突） ====================
 set_target_properties(
-    test_cpu test_gpu test_gpu_nopack test_gpu_spare test_gpu_br 
+    test_gpu test_gpu_nopack test_gpu_spare test_gpu_br 
     # test_gpu_string
     test_muti_stream test_muti_3step_block test_muti_3step_noblock
-    benchmark_tests test_ALP test_ALP_g test_ndzip test_elf test_elf_star test_elf_star_g
+    test_ALP test_ALP_g test_ndzip test_elf test_elf_star test_elf_star_g
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
 )
