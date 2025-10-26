@@ -10,7 +10,7 @@
 #include <random>
 #include <fstream>
 #include "data/dataset_utils.hpp"
-#include "Faclon_pipeline.cuh"
+#include "Falcon_pipeline.cuh"
 #include <thread>
 namespace fs = std::filesystem;
 
@@ -112,7 +112,7 @@ ProcessedData prepare_data(const std::string &source_path = "", size_t generate_
 CompressionInfo test_compression(ProcessedData data, size_t chunkSize)
 {
 
-    FaclonPipeline ex(NUM_STREAMS);
+    FalconPipeline ex(NUM_STREAMS);
 
     CompressionResult compResult = ex.executeCompressionPipelineBlock(data, chunkSize);
     cudaDeviceSynchronize(); 
@@ -143,7 +143,7 @@ void warmup()
         }
         printf("GPU预热中...\n");
         size_t warmup_chunk = data.nbEle; // 单流
-        FaclonPipeline ex;
+        FalconPipeline ex;
 
         CompressionResult compResult = ex.executeCompressionPipelineSpare(data, warmup_chunk);
         cudaDeviceSynchronize(); // 确保预热完成

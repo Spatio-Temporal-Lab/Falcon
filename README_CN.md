@@ -1,4 +1,3 @@
-
 # Falcon: 基于GPU的自适应浮点数无损压缩框架
 
 **Falcon** 是一个高性能的基于GPU加速的无损压缩框架，专门为浮点数时间序列数据设计。它通过三个关键创新利用现代GPU架构，实现了前所未有的压缩比和吞吐量：异步流水线、精确的浮点数到整数转换以及自适应稀疏位平面编码。
@@ -109,7 +108,9 @@ sudo apt-get -y install nvcomp-cuda-12
 
 ### 环境验证
 
-```bash
+**bash**
+
+```
 # 检查编译器版本
 g++ --version
 cmake --version
@@ -123,52 +124,50 @@ nvidia-smi
 
 ### 头文件结构
 
-#### CPU 版本 (基线)
-
-- `CDFCompressor.h` - CPU 压缩实现
-- `CDFDecompressor.h` - CPU 解压缩实现
-
 #### GPU 优化版本 (每个线程处理1025个元素)
 
-- `Faclon_compressor.cuh` - 优化的GPU压缩器（1个线程处理1025个元素）
-- `Faclon_decompressor.cuh` - 优化的GPU解压缩器（1个线程处理1025个元素）
+* `Falcon_compressor.cuh` - 优化的GPU压缩器（1个线程处理1025个元素）
+* `Falcon_decompressor.cuh` - 优化的GPU解压缩器（1个线程处理1025个元素）
 
 #### GPU 单精度浮点数版本
 
-- `Faclon_float_compressor.cuh` - 单精度浮点数（32位）专用的GPU压缩器
-- `Faclon_float_decompressor.cuh` - 单精度浮点数（32位）专用的GPU解压缩器
+* `Falcon_float_compressor.cuh` - 单精度浮点数（32位）专用的GPU压缩器
+* `Falcon_float_decompressor.cuh` - 单精度浮点数（32位）专用的GPU解压缩器
 
 #### GPU 基础版本 (每个线程处理1024个元素)
 
-- `GDFCompressor.cuh` - 基础GPU压缩器（1个线程处理1024个元素）
-- `GDFDecompressor.cuh` - 基础GPU解压缩器（1个线程处理1024个元素）
+* `FalconCompressor_1024.cuh` - 基础GPU压缩器（1个线程处理1024个元素）
+* `FalconDecompressor_1024.cuh` - 基础GPU解压缩器（1个线程处理1024个元素）
 
 #### GPU 流水线版本
 
-- `Faclon_pipeline.cuh` - 包含消融测试接口的流水线实现
-- `Faclon_float_pipeline.cuh` - 单精度浮点数流水线实现
+* `Falcon_pipeline.cuh` - 包含消融测试接口的流水线实现
+* `Falcon_float_pipeline.cuh` - 单精度浮点数流水线实现
 
 ### 源代码实现
 
+**text**
+
 ```
 src/
-├── cpu/           # CDF压缩器/解压缩器的CPU实现
 ├── gpu/           # GPU内核实现
 └── utils/         # 位流工具和辅助函数
 ```
 
 ### 并行设计
 
-- **块大小**: 每个GPU线程处理1024或1025个元素
-- **线程映射**: 每个线程处理一个完整的块
-- **线程束效率**: 为32线程的线程束执行优化
-- **内存访问**: 合并的全局内存访问模式
+* **块大小** : 每个GPU线程处理1024或1025个元素
+* **线程映射** : 每个线程处理一个完整的块
+* **线程束效率** : 为32线程的线程束执行优化
+* **内存访问** : 合并的全局内存访问模式
 
 ## 🔨 构建
 
 ### 快速构建脚本
 
-```bash
+**bash**
+
+```
 #!/bin/bash
 set -x
 mkdir -p build
@@ -200,11 +199,13 @@ make -j$(nproc)
 
 ### 测试结构
 
+**text**
+
 ```
 test/
 ├── baseline/          # 比较算法 (ALP, ndzip, elf 等)
 ├── data/             # 测试数据集
-├── GDF_test_*.cu     # 主GPU测试套件
+├── Falcon_test_*.cu  # 主GPU测试套件
 └── test_*.cpp/cu     # 特定算法测试
 ```
 
@@ -235,31 +236,25 @@ test/
 #### 多流性能测试
 
 ```bash
-# 3步阻塞的多流
-./test/test_muti_3step_block --dir ../test/data/use/
-
-# 3步非阻塞的多流
-./test/test_muti_3step_noblock --dir ../test/data/use/
-
 # 优化的多流
 ./test/test_muti_stream_opt --dir ../test/data/use/
 ```
 
-### 消融研究
+### 消融实验
 
 #### 编码策略消融
 
-- **全稀疏**: 所有位平面使用稀疏存储
-- **全稠密**: 所有位平面使用稠密存储
-- **暴力误差**: 不精确的十进制位置计算
-- **标准**: 自适应稀疏/稠密选择（默认）
+* **全稀疏** : 所有位平面使用稀疏存储
+* **全稠密** : 所有位平面使用稠密存储
+* **暴力误差** : 不精确的十进制位置计算
+* **标准** : 自适应稀疏/稠密选择（默认）
 
 #### 流水线消融
 
-- **单流**: 顺序处理
-- **阻塞**: 同步多流
-- **非阻塞**: 异步多流
-- **标准**: 事件驱动调度器（默认）
+* **单流** : 顺序处理
+* **阻塞** : 同步多流
+* **非阻塞** : 异步多流
+* **标准** : 事件驱动调度器（默认）
 
 ### 完整测试脚本
 
@@ -316,27 +311,29 @@ run_test "muti_stream_opt"
 
 ### 默认参数
 
-- **块大小**: 每个线程1024或1025个元素
-- **批大小**: 1025 × 1024 × 4 个元素
-- **流水线流数**: 16
-- **GPU架构**: 计算能力7.0+
+* **块大小** : 每个线程1024或1025个元素
+* **批大小** : 1025 × 1024 × 4 个元素
+* **流水线流数** : 16
+* **GPU架构** : 计算能力7.0+
 
 ### 块大小考虑
 
-- **1024个元素**: 与2的幂对齐以便内存寻址
-- **1025个元素**: 优化内存空间利用，减少内存浪费
-- **线程映射**: 每个GPU线程处理恰好一个块
+* **1024个元素** : 与2的幂对齐以便内存寻址
+* **1025个元素** : 优化内存空间利用，减少内存浪费
+* **线程映射** : 每个GPU线程处理恰好一个块
 
 ### 构建选项
 
-- `-DCMAKE_BUILD_TYPE=Release` 用于优化性能
-- `-DCMAKE_CUDA_ARCHITECTURES=70` 用于特定GPU架构
+* `-DCMAKE_BUILD_TYPE=Release` 用于优化性能
+* `-DCMAKE_CUDA_ARCHITECTURES=70` 用于特定GPU架构
 
 ## 📚 引用
 
 如果您在研究中使用了Falcon，请引用：
 
-```bibtex
+**bibtex**
+
+```
 @article{falcon2025,
   title={Falcon: GPU-Based Floating-point Adaptive Lossless Compression},
   author={Li, Zheng and Wang, Weiyan and Li, Ruiyuan and Chen, Chao and Long, Xianlei and Zheng, Linjiang and Xu, Quanqing and Yang, Chuanhui},
@@ -351,14 +348,14 @@ run_test "muti_stream_opt"
 
 ## 👥 作者
 
-- **李政** (重庆大学) - zhengli@cqu.edu.cn
-- **王伟俨** (重庆大学) - weiyan.wang@stu.cqu.edu.cn
-- **李瑞远** (重庆大学) - ruiyuan.li@cqu.edu.cn
-- **陈超** (重庆大学) - cschaochen@cqu.edu.cn
-- **龙宪磊** (重庆大学) - xianlei.long@cqu.edu.cn
-- **郑林江** (重庆大学) - zlj_cqu@cqu.edu.cn
-- **徐泉清** (OceanBase, 蚂蚁集团) - xuquanqing.xqq@oceanbase.com
-- **杨传辉** (OceanBase, 蚂蚁集团) - rizhao.ych@oceanbase.com
+* **李政** (重庆大学) - zhengli@cqu.edu.cn
+* **王伟俨** (重庆大学) - weiyan.wang@stu.cqu.edu.cn
+* **李瑞远** (重庆大学) - ruiyuan.li@cqu.edu.cn
+* **陈超** (重庆大学) - cschaochen@cqu.edu.cn
+* **龙宪磊** (重庆大学) - xianlei.long@cqu.edu.cn
+* **郑林江** (重庆大学) - zlj_cqu@cqu.edu.cn
+* **徐泉清** (OceanBase, 蚂蚁集团) - xuquanqing.xqq@oceanbase.com
+* **杨传辉** (OceanBase, 蚂蚁集团) - rizhao.ych@oceanbase.com
 
 ## 📄 许可证
 
@@ -366,10 +363,10 @@ run_test "muti_stream_opt"
 
 ## 🔗 相关出版物
 
-- [Elf: 基于擦除的无损浮点数压缩](https://doi.org/10.14778/3594512.3594523)
-- [ALP: 自适应无损浮点数压缩](https://doi.org/10.1145/3614332)
-- [Serf: 流式误差有界浮点数压缩](https://doi.org/10.1145/3725353)
+* [Elf: 基于擦除的无损浮点数压缩](https://doi.org/10.14778/3594512.3594523)
+* [ALP: 自适应无损浮点数压缩](https://doi.org/10.1145/3614332)
+* [Serf: 流式误差有界浮点数压缩](https://doi.org/10.1145/3725353)
 
 ---
 
-**注意**: 本项目已在WSL2 (Ubuntu 22.04) 和原生Ubuntu 24.04环境下验证通过，并具有指定的依赖项。关于具体实现或性能特性的问题，请参考相应的头文件和测试用例。
+ **注意** : 本项目已在WSL2 (Ubuntu 22.04) 和原生Ubuntu 24.04环境下验证通过，并具有指定的依赖项。关于具体实现或性能特性的问题，请参考相应的头文件和测试用例。

@@ -1,14 +1,14 @@
-// Faclon_float_pipeline.cuh
+// Falcon_float_pipeline.cuh
 // 32位浮点数流水线压缩和解压缩类
-// 路径: Falcon\include\Faclon_float_pipeline.cuh
+// 路径: Falcon\include\Falcon_float_pipeline.cuh
 
 #pragma once
 
 #include <cuda_runtime.h>
 #include <vector>
 #include <cstddef>
-#include "Faclon_float_compressor.cuh"
-#include "Faclon_float_decompressor.cuh"
+#include "Falcon_float_compressor.cuh"
+#include "Falcon_float_decompressor.cuh"
 
 // 流水线性能分析结构体
 struct PipelineAnalysis_32 {
@@ -57,14 +57,14 @@ enum Stage_32 {
 };
 
 // 流水线压缩解压缩类
-class FaclonPipeline_32 {
+class FalconPipeline_32 {
 public:
-    FaclonPipeline_32() {
+    FalconPipeline_32() {
         NUM_STREAMS = 16;
     }
     
-    FaclonPipeline_32(int numStreams) : NUM_STREAMS(numStreams) {}
-    ~FaclonPipeline_32();
+    FalconPipeline_32(int numStreams) : NUM_STREAMS(numStreams) {}
+    ~FalconPipeline_32();
 
     // 执行压缩流水线
     CompressionResult_32 executeCompressionPipeline(

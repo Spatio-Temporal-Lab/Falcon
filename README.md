@@ -1,4 +1,3 @@
-
 # Falcon: GPU-Based Floating-point Adaptive Lossless Compression
 
 **Falcon** is a high-performance GPU-accelerated lossless compression framework specifically designed for floating-point time series data. It achieves unprecedented compression ratios and throughput by leveraging modern GPU architectures through three key innovations: asynchronous pipeline, precise float-to-integer conversion, and adaptive sparse bit-plane encoding.
@@ -123,36 +122,32 @@ nvidia-smi
 
 ### Header Files Structure
 
-#### CPU Version (Baseline)
-
-- `CDFCompressor.h` - CPU compression implementation
-- `CDFDecompressor.h` - CPU decompression implementation
-
 #### GPU Optimized Version (1025 elements per thread)
 
-- `Faclon_compressor.cuh` - Optimized GPU compressor (1 thread processes 1025 elements)
-- `Faclon_decompressor.cuh` - Optimized GPU decompressor (1 thread processes 1025 elements)
+* `Falcon_compressor.cuh` - Optimized GPU compressor (1 thread processes 1025 elements)
+* `Falcon_decompressor.cuh` - Optimized GPU decompressor (1 thread processes 1025 elements)
 
 #### GPU Single Precision Version
 
-- `Faclon_float_compressor.cuh` - Single precision floating-point GPU compressor
-- `Faclon_float_decompressor.cuh` - Single precision floating-point GPU decompressor
+* `Falcon_float_compressor.cuh` - Single precision floating-point GPU compressor
+* `Falcon_float_decompressor.cuh` - Single precision floating-point GPU decompressor
 
 #### GPU Base Version (1024 elements per thread)
 
-- `GDFCompressor.cuh` - Base GPU compressor (1 thread processes 1024 elements)
-- `GDFDecompressor.cuh` - Base GPU decompressor (1 thread processes 1024 elements)
+* `FalconCompressor_1024.cuh` - Base GPU compressor (1 thread processes 1024 elements)
+* `FalconDecompressor_1024.cuh` - Base GPU decompressor (1 thread processes 1024 elements)
 
 #### GPU Pipeline Version
 
-- `Faclon_pipeline.cuh` - Pipeline implementation with ablation interfaces
-- `Faclon_float_pipeline.cuh` - Single precision floating-point pipeline implementation
+* `Falcon_pipeline.cuh` - Pipeline implementation with ablation interfaces
+* `Falcon_float_pipeline.cuh` - Single precision floating-point pipeline implementation
 
 ### Source Implementation
 
+**text**
+
 ```
 src/
-├── cpu/           # CPU implementation of CDF compressor/decompressor
 ├── gpu/           # GPU kernel implementations
 └── utils/         # Bit stream utilities and helper functions
 ```
@@ -204,7 +199,7 @@ make -j$(nproc)
 test/
 ├── baseline/          # Comparison algorithms (ALP, ndzip, elf, etc.)
 ├── data/             # Test datasets
-├── GDF_test_*.cu     # Main GPU test suites
+├── Falcon_test_*.cu  # Main GPU test suites
 └── test_*.cpp/cu     # Specific algorithm tests
 ```
 

@@ -1,18 +1,18 @@
 // #include "data/dataset_utils.hpp"
-// #include "Faclon_decompressor.cuh"
-// #include "Faclon_compressor.cuh"
+// #include "Falcon_decompressor.cuh"
+// #include "Falcon_compressor.cuh"
 
-// Faclon_pipeline.cuh
+// Falcon_pipeline.cuh
 // 流水线压缩和解压缩类
-// 路径: Falcon\include\Faclon_pipeline.cuh
+// 路径: Falcon\include\Falcon_pipeline.cuh
 
 #pragma once
 
 #include <cuda_runtime.h>
 #include <vector>
 #include <cstddef>
-#include "Faclon_compressor.cuh"
-#include "Faclon_decompressor.cuh"
+#include "Falcon_compressor.cuh"
+#include "Falcon_decompressor.cuh"
 
 // 流水线性能分析结构体
 struct PipelineAnalysis {
@@ -62,14 +62,14 @@ enum Stage {
 
 
 // 流水线压缩解压缩类
-class FaclonPipeline {
+class FalconPipeline {
 public:
-    FaclonPipeline()
+    FalconPipeline()
     {
         NUM_STREAMS = 16;
     }
-    FaclonPipeline(int numStreams);
-    ~FaclonPipeline();
+    FalconPipeline(int numStreams);
+    ~FalconPipeline();
 
     // 执行压缩流水线
     CompressionResult executeCompressionPipeline(
