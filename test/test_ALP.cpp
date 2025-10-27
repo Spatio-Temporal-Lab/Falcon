@@ -433,8 +433,6 @@
 #include <algorithm>
 #include <cstring>
 
-#include "CDFCompressor.h"
-#include "CDFDecompressor.h"
 namespace fs = std::filesystem;
 
 namespace test {

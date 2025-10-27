@@ -141,18 +141,18 @@ target_link_libraries(test_gpu
     ALP
 )
 
-# test_muti_stream
-cuda_add_executable(test_muti_stream 
-    Falcon_test_muti_steam_f64.cu
-)
-target_link_libraries(test_muti_stream 
-    Falcon_gpu_lib
-    dataset_utils_lib
-    ${CUDA_LIBRARIES} 
-    GTest::GTest 
-    GTest::Main 
-    pthread
-)
+# test_muti_stream_1024
+# cuda_add_executable(test_muti_stream_1024 
+#     Falcon_test_muti_steam_1024.cu
+# )
+# target_link_libraries(test_muti_stream_1024 
+#     Falcon_gpu_lib
+#     dataset_utils_lib
+#     ${CUDA_LIBRARIES} 
+#     GTest::GTest 
+#     GTest::Main 
+#     pthread
+# )
 
 
 # test_muti_3step_block
@@ -268,10 +268,10 @@ target_link_libraries(test_elf_star_g
 )
 #=====================float=============================
 # test_float_muti_stream
-cuda_add_executable(test_muti_stream_opt 
-    Falcon_test_muti_steam_opt_f64.cu
+cuda_add_executable(test_muti_stream
+    Falcon_test_muti_steam_f64.cu
 )
-target_link_libraries(test_muti_stream_opt 
+target_link_libraries(test_muti_stream
     Falcon_gpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 
