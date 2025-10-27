@@ -124,20 +124,15 @@ nvidia-smi
 
 ### 头文件结构
 
-#### GPU 优化版本 (每个线程处理1025个元素)
+#### GPU 基础版本 (每个线程处理1025个元素)
 
-* `Falcon_compressor.cuh` - 优化的GPU压缩器（1个线程处理1025个元素）
-* `Falcon_decompressor.cuh` - 优化的GPU解压缩器（1个线程处理1025个元素）
+* `Falcon_compressor.cuh` - GPU压缩器（1个线程处理1025个元素）
+* `Falcon_decompressor.cuh` - GPU解压缩器（1个线程处理1025个元素）
 
 #### GPU 单精度浮点数版本
 
 * `Falcon_float_compressor.cuh` - 单精度浮点数（32位）专用的GPU压缩器
 * `Falcon_float_decompressor.cuh` - 单精度浮点数（32位）专用的GPU解压缩器
-
-#### GPU 基础版本 (每个线程处理1024个元素)
-
-* `FalconCompressor_1024.cuh` - 基础GPU压缩器（1个线程处理1024个元素）
-* `FalconDecompressor_1024.cuh` - 基础GPU解压缩器（1个线程处理1024个元素）
 
 #### GPU 流水线版本
 
@@ -156,7 +151,7 @@ src/
 
 ### 并行设计
 
-* **块大小** : 每个GPU线程处理1024或1025个元素
+* **块大小** : 每个GPU线程处理1025元素
 * **线程映射** : 每个线程处理一个完整的块
 * **线程束效率** : 为32线程的线程束执行优化
 * **内存访问** : 合并的全局内存访问模式
@@ -236,8 +231,8 @@ test/
 #### 多流性能测试
 
 ```bash
-# 优化的多流
-./test/test_muti_stream_opt --dir ../test/data/use/
+# 多流模式
+./test/test_muti_stream --dir ../test/data/use/
 ```
 
 ### 消融实验
@@ -285,7 +280,7 @@ run_test "gpu_spare"
 # 多流测试
 run_test "muti_3step_block"
 run_test "muti_3step_noblock"
-run_test "muti_stream_opt"
+run_test "muti_stream"
 ```
 
 ## 📊 实验结果
@@ -311,14 +306,13 @@ run_test "muti_stream_opt"
 
 ### 默认参数
 
-* **块大小** : 每个线程1024或1025个元素
+* **块大小** : 每个线程1025个元素
 * **批大小** : 1025 × 1024 × 4 个元素
 * **流水线流数** : 16
 * **GPU架构** : 计算能力7.0+
 
 ### 块大小考虑
 
-* **1024个元素** : 与2的幂对齐以便内存寻址
 * **1025个元素** : 优化内存空间利用，减少内存浪费
 * **线程映射** : 每个GPU线程处理恰好一个块
 

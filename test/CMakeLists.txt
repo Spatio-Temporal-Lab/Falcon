@@ -37,7 +37,7 @@ message(STATUS "CUDA Include Directories: ${CUDA_INCLUDE_DIRS}")
 include_directories(${CUDA_INCLUDE_DIRS})
 
 # 设置 CUDA 架构
-set(CMAKE_CUDA_ARCHITECTURES 70)
+# set(CMAKE_CUDA_ARCHITECTURES 70)
 
 # ==================== 重要修复：创建共享的CUDA对象库 ====================
 # 这避免了多个目标重复编译相同的CUDA文件

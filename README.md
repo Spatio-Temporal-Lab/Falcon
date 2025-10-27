@@ -122,7 +122,7 @@ nvidia-smi
 
 ### Header Files Structure
 
-#### GPU Optimized Version (1025 elements per thread)
+#### GPU Base Version (1025 elements per thread)
 
 * `Falcon_compressor.cuh` - Optimized GPU compressor (1 thread processes 1025 elements)
 * `Falcon_decompressor.cuh` - Optimized GPU decompressor (1 thread processes 1025 elements)
@@ -131,11 +131,6 @@ nvidia-smi
 
 * `Falcon_float_compressor.cuh` - Single precision floating-point GPU compressor
 * `Falcon_float_decompressor.cuh` - Single precision floating-point GPU decompressor
-
-#### GPU Base Version (1024 elements per thread)
-
-* `FalconCompressor_1024.cuh` - Base GPU compressor (1 thread processes 1024 elements)
-* `FalconDecompressor_1024.cuh` - Base GPU decompressor (1 thread processes 1024 elements)
 
 #### GPU Pipeline Version
 
@@ -154,7 +149,7 @@ src/
 
 ### Parallelism Design
 
-- **Chunk Size**: 1024 or 1025 elements per GPU thread
+- **Chunk Size**: 1025 elements per GPU thread
 - **Thread Mapping**: Each thread processes one complete chunk
 - **Warp Efficiency**: Optimized for 32-thread warp execution
 - **Memory Access**: Coalesced global memory access patterns
@@ -214,7 +209,7 @@ test/
 #### Benchmark Tests (vs Baselines)
 
 ```bash
-# Main GPU implementation (1024 elements/thread)
+# Main GPU implementation 
 ./test/test_gpu --dir ../test/data/use/
 
 # GPU without packing optimization
@@ -237,7 +232,7 @@ test/
 ./test/test_muti_3step_noblock --dir ../test/data/use/
 
 # Optimized multi-stream
-./test/test_muti_stream_opt --dir ../test/data/use/
+./test/test_muti_stream --dir ../test/data/use/
 ```
 
 ### Ablation Studies
@@ -311,14 +306,13 @@ run_test "muti_stream_opt"
 
 ### Default Parameters
 
-- **Chunk Size**: 1024 or 1025 elements per thread
+- **Chunk Size**: 1025 elements per thread
 - **Batch Size**: 1025 × 1024 × 4 elements
 - **Pipeline Streams**: 16
 - **GPU Architecture**: Compute Capability 7.0+
 
 ### Chunk Size Considerations
 
-- **1024 elements**: Aligns with power-of-two for memory addressing
 - **1025 elements**: Optimized for memory space utilization
 - **Thread Mapping**: Each GPU thread processes exactly one chunk
 
