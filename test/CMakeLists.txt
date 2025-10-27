@@ -45,8 +45,8 @@ set(CMAKE_CUDA_ARCHITECTURES 70)
 
 # GPU源文件编译为对象库（关键修复）
 cuda_add_library(Falcon_gpu_lib STATIC
-    ${CMAKE_SOURCE_DIR}/src/gpu/FalconCompressor_1024.cu
-    ${CMAKE_SOURCE_DIR}/src/gpu/FalconDecompressor_1024.cu
+    # ${CMAKE_SOURCE_DIR}/src/gpu/FalconCompressor_1024.cu
+    # ${CMAKE_SOURCE_DIR}/src/gpu/FalconDecompressor_1024.cu
     ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_float_compressor.cu
     ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_float_decompressor.cu
     ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_compressor.cu
@@ -140,19 +140,6 @@ target_link_libraries(test_gpu
     pthread 
     ALP
 )
-
-# test_muti_stream_1024
-# cuda_add_executable(test_muti_stream_1024 
-#     Falcon_test_muti_steam_1024.cu
-# )
-# target_link_libraries(test_muti_stream_1024 
-#     Falcon_gpu_lib
-#     dataset_utils_lib
-#     ${CUDA_LIBRARIES} 
-#     GTest::GTest 
-#     GTest::Main 
-#     pthread
-# )
 
 
 # test_muti_3step_block
