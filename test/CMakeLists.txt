@@ -25,7 +25,6 @@ add_subdirectory(baseline/ndzip)
 add_subdirectory(baseline/elf)
 add_subdirectory(baseline/elf_star)
 add_subdirectory(baseline/elf_star_g)
-# add_subdirectory(baseline/mpc)
 
 # 查找依赖包
 find_package(GTest REQUIRED)
