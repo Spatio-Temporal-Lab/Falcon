@@ -40,6 +40,11 @@ __device__ static int getDecimalPlaces(float value, int sp)
         digits++;
         td = pow10_table[digits];
         temp = value * td;
+        if(round(temp)/td!=value)
+        {
+            digits=17;
+            
+        }
         // double deltaBound = pow(2,ilogb(temp)-52);
         trac = temp + POW_NUM_G - POW_NUM_G;
     }

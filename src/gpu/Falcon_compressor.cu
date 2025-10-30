@@ -48,6 +48,10 @@ __device__ static int getDecimalPlaces(double value,int sp) {
         digits++;
         td = pow10_table[digits];
         temp = value * td;
+        if(round(temp)/td!=value)
+        {
+            digits=23;
+        }
         // double deltaBound = pow(2,ilogb(temp)-52);
         trac = temp + POW_NUM_G - POW_NUM_G;
     }
@@ -198,13 +202,6 @@ __global__ void Falcon_compress_kernel(
 
     maxBeta = maxSp + maxDecimalPlaces+1;
     
-    // for (int i = 0; i < numDatas; i++) {
-    //     double value =input[startIdx + i];
-    //     if(value == -4.0023584){
-    //     printf("maxBeta:%d, maxAlpha: %d, maxSp: %d, wrongAlpha:%.16f \n", maxBeta, maxDecimalPlaces, maxSp,input[startIdx + idwrong]);
-    // }
-    // }
-    //printf("maxDecimalPlaces:%d\n", maxDecimalPlaces);
     // 2. FOR + zigzag（用4向量化进行实现）
     volatile uint64_t maxDelta = 0;
     firstValue = double2long(input[startIdx], maxDecimalPlaces,maxBeta); // 量化第一个
@@ -411,24 +408,6 @@ __global__ void Falcon_compress_kernel(
 
     // 6 开始写入
 
-    
-
-
-        // unsigned long long firstValueBits = 0;
-        // memcpy(&firstValueBits, &firstValue, sizeof(long));
-        // if (outputIdx % 8 != 0) {
-        // 6.1 写入 bitSize (8 字节)
-            // for(int i = 0; i < 8; i++) {
-            //     output[outputIdx + i] = (bitSize >> (i * 8)) & 0xFF;
-
-            // }
-
-
-            // // 6.2. 写入 firstValue (8 字节)
-            // for(int i = 0; i < 8; i++) {
-            //     output[outputIdx + 8 + i] = (firstValueBits >> (i * 8)) & 0xFF;
-
-            // }
         memcpy(output + outputIdx, &bitSize, sizeof(unsigned long long));
 
         // 6.2. 写入 firstValue (8 字节)
@@ -441,11 +420,6 @@ __global__ void Falcon_compress_kernel(
         output[outputIdx + 16] = static_cast<unsigned char>(maxDecimalPlaces);
         output[outputIdx + 17] = static_cast<unsigned char>(maxBeta);
         output[outputIdx + 18] = static_cast<unsigned char>(bitCount);
-
-        // 6.4 写入flag1(8字节 标识稀疏)
-        // for(int i = 0; i < 8; i++) {
-        //     output[outputIdx + 19 + i] = (flag1 >> (i * 8)) & 0xFF;
-        // }
 
         memcpy(output + outputIdx + 19, &flag1, sizeof(unsigned long long));
         // printf("In %d  flag1 is : %llx\n",idx,flag1);
@@ -548,9 +522,6 @@ void FalconCompressor::Falcon_compress_stream(double* d_oriData, unsigned char* 
 
     Falcon_compress_kernel<<<gridSize, blockSize, sizeof(unsigned int)*2, stream>>>(d_oriData, d_cmpBytes, d_cmpOffset, d_locOffset, d_flag, nbEle);
 
-    // cudaCheckError(cudaDeviceSynchronize());
-    // cudaCheckError(cudaGetLastError());
-    // printf("beta %.d ",d_cmpBytes[16]);
     // Obtain compression ratio and move data back to CPU.  
     cudaMemcpyAsync(d2h_async_totalBits_ptr, (d_cmpOffset + cmpOffSize-1), sizeof(unsigned int), cudaMemcpyDeviceToHost, stream);
     cudaFreeAsync(d_cmpOffset,stream);
@@ -629,47 +600,6 @@ __global__ void compressBlockKernel(
         if (base_block_end_idx < totalSize)
         {
             int i = base_block_start_idx;
-            // tmp_buffer = reinterpret_cast<const double4*>(input)[i / 4];
-            // quant_chunk_idx = j * 32 + (i % 32); //处理的每一组的第几个数据
-
-            // // 处理x分量
-            // if(i == startIdx) { // 针对第一个数据
-
-            //     deltas[quant_chunk_idx] = 0;//填充第一个数据为0保证1024个数据
-            // }
-            // else {
-            //     currQuant = double2long(tmp_buffer.x, maxDecimalPlaces,maxBeta); // 量化当前数据点
-            //     lorenQuant = currQuant - prevQuant; // 计算差分
-
-            //     deltas[quant_chunk_idx] = zigzag_encode_cuda(lorenQuant);
-            //     prevQuant = currQuant; // 更新前一个量化值
-            //     maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx]); // 存储差分绝对值
-            // }
-
-            // // 处理y分量
-            // currQuant = double2long(tmp_buffer.y, maxDecimalPlaces,maxBeta);
-            // lorenQuant = currQuant - prevQuant;
-
-            // deltas[quant_chunk_idx + 1] = zigzag_encode_cuda(lorenQuant);
-            // prevQuant = currQuant;
-            // maxDelta = device_max_uint64(maxDelta, deltas[ quant_chunk_idx + 1]);
-
-            // // 处理z分量
-            // currQuant = double2long(tmp_buffer.z, maxDecimalPlaces,maxBeta);
-            // lorenQuant = currQuant - prevQuant;
-
-            // deltas[quant_chunk_idx + 2] = zigzag_encode_cuda(lorenQuant);
-            // prevQuant = currQuant;
-            // maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 2]);
-
-            // // 处理w分量
-            // currQuant = double2long(tmp_buffer.w, maxDecimalPlaces,maxBeta);
-            // lorenQuant = currQuant - prevQuant;
-
-            // deltas[quant_chunk_idx + 3] = zigzag_encode_cuda(lorenQuant);
-            // prevQuant = currQuant;
-            // maxDelta = device_max_uint64(maxDelta, deltas[quant_chunk_idx + 3]);
-            // i+=4;
             #pragma unroll 8 //循环展开8次，就是4*8=32个数据,修改为7次，把第一次提取出来
             for(; i < base_block_end_idx; i += 4) {
 
@@ -1084,9 +1014,7 @@ void FalconCompressor::compress(const std::vector<double>& input, std::vector<un
 
     std::vector<uint64_t> bitSizes(numthread);
     cudaCheckError(cudaMemcpy(bitSizes.data(), d_bitSizes, numthread * sizeof(uint64_t), cudaMemcpyDeviceToHost));
-    //std::cout<<"end3\n";
 
-    // 计算每个块的输出偏移量
     std::vector<uint64_t> offsets(numthread, 0);
     uint64_t totalCompressedBits = 0;
     for (size_t i = 0; i < numthread; i++) {
@@ -1122,9 +1050,7 @@ __global__ void Falcon_compress_kernel_no_pack(
 {
     // 共享内存，用于在线程块内共享数据
     __shared__ unsigned int excl_sum; // 排他性前缀和，用于偏移量计算
-    //__shared__ unsigned int base_idx; // 当前warp的基地址索引
 
-    // 获取线程和块信息
     int tid = threadIdx.x;
     int bid = blockIdx.x;
     int idx = bid * blockDim.x + tid;
@@ -1147,9 +1073,6 @@ __global__ void Falcon_compress_kernel_no_pack(
     volatile int maxBeta = 0;
 
     int base_block_start_idx=0;
-    // int base_block_end_idx=0;
-    // int quant_chunk_idx;
-    // int block_idx; // 如果不使用，可以移除
 
     long currQuant=0;
     long lorenQuant=0;
@@ -1174,14 +1097,7 @@ __global__ void Falcon_compress_kernel_no_pack(
     }
 
     maxBeta = maxSp + maxDecimalPlaces+1;
-    
-    // for (int i = 0; i < numDatas; i++) {
-    //     double value =input[startIdx + i];
-    //     if(value == -4.0023584){
-    //     printf("maxBeta:%d, maxAlpha: %d, maxSp: %d, wrongAlpha:%.16f \n", maxBeta, maxDecimalPlaces, maxSp,input[startIdx + idwrong]);
-    // }
-    // }
-    //printf("maxDecimalPlaces:%d\n", maxDecimalPlaces);
+
     // 2. FOR + zigzag（用4向量化进行实现）
     volatile uint64_t maxDelta = 0;
     firstValue = double2long(input[startIdx], maxDecimalPlaces,maxBeta); // 量化第一个
@@ -1389,24 +1305,6 @@ __global__ void Falcon_compress_kernel_no_pack(
 
     // 6 开始写入
 
-    
-
-
-        // unsigned long long firstValueBits = 0;
-        // memcpy(&firstValueBits, &firstValue, sizeof(long));
-        // if (outputIdx % 8 != 0) {
-        // 6.1 写入 bitSize (8 字节)
-            // for(int i = 0; i < 8; i++) {
-            //     output[outputIdx + i] = (bitSize >> (i * 8)) & 0xFF;
-
-            // }
-
-
-            // // 6.2. 写入 firstValue (8 字节)
-            // for(int i = 0; i < 8; i++) {
-            //     output[outputIdx + 8 + i] = (firstValueBits >> (i * 8)) & 0xFF;
-
-            // }
         memcpy(output + outputIdx, &bitSize, sizeof(unsigned long long));
 
         // 6.2. 写入 firstValue (8 字节)
@@ -1421,16 +1319,11 @@ __global__ void Falcon_compress_kernel_no_pack(
         output[outputIdx + 18] = static_cast<unsigned char>(bitCount);
 
         // 6.4 写入flag1(8字节 标识稀疏)
-        // for(int i = 0; i < 8; i++) {
-        //     output[outputIdx + 19 + i] = (flag1 >> (i * 8)) & 0xFF;
-        // }
-
         memcpy(output + outputIdx + 19, &flag1, sizeof(unsigned long long));
-        // printf("In %d  flag1 is : %llx\n",idx,flag1);
+
         // 6.5 写入每一列
         int flag2Byte = (numByte+7)/8;
         int ofs=outputIdx + 27;
-        //int res=0;              //byte中剩余的bit位
         for(int i=0;i<bitCount;i++)
         {
             size_t flag2_row_start_offset = i * flag2Byte;
