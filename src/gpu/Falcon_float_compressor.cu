@@ -43,50 +43,54 @@ __device__ static int getDecimalPlaces(float value, int sp)
         // double deltaBound = pow(2,ilogb(temp)-52);
         trac = temp + POW_NUM_G - POW_NUM_G;
     }
-
+    if(round(temp)/td!=value)
+    {
+        digits=17;
+        
+    }
     return digits;
 }
-
-__device__ static int getDecimalPlaces_s(float v, int sp)
-{
-    //     value = value < 0 ? -value : value;
-    //     double trac = value + POW_NUM_G - POW_NUM_G;
-    //     double temp = value;
-
-    //     int digits = 0;
-    //     double td = 1;
-    //     double deltaBound = abs(value) * pow(2, -52);
-    //     while (abs(temp - trac) == 0 && digits < 16 - sp - 1)
-    //     {
-    //         digits++;
-    //         td = pow10_table[digits];
-    //         temp = value * td;
-    //         trac = temp + POW_NUM_G - POW_NUM_G;
-    //     }
-
-    //     return digits;
-    // }
-    v = v < 0 ? -v : v;
-
-    int i = 0;
-    float scale = 1.0;
-
-    // 找到能精确表示为整数的最小倍数
-    while (i < 9)
+/*
+    __device__ static int getDecimalPlaces_s(float v, int sp)
     {
-        float temp = v * scale;
+        //     value = value < 0 ? -value : value;
+        //     double trac = value + POW_NUM_G - POW_NUM_G;
+        //     double temp = value;
 
-        if (round(temp) == temp)
+        //     int digits = 0;
+        //     double td = 1;
+        //     double deltaBound = abs(value) * pow(2, -52);
+        //     while (abs(temp - trac) == 0 && digits < 16 - sp - 1)
+        //     {
+        //         digits++;
+        //         td = pow10_table[digits];
+        //         temp = value * td;
+        //         trac = temp + POW_NUM_G - POW_NUM_G;
+        //     }
+
+        //     return digits;
+        // }
+        v = v < 0 ? -v : v;
+
+        int i = 0;
+        float scale = 1.0;
+
+        // 找到能精确表示为整数的最小倍数
+        while (i < 9)
         {
+            float temp = v * scale;
 
-            return i;
+            if (round(temp) == temp)
+            {
+
+                return i;
+            }
+            i++;
+            scale *= 10.0;
         }
-        i++;
-        scale *= 10.0;
+        return 9; // 达到单精度极限
     }
-    return 9; // 达到双精度极限
-}
-
+*/
 // 辅助函数：打印缓冲区的指定范围，以十六进制格式显示
 __device__ void print_bytes(const unsigned char *buffer, size_t start, size_t length, const char *label)
 {
@@ -184,8 +188,8 @@ __global__ void Falcon_compress_kernel(
     int firstValue = 0;
     int bitCount = 0;
 
-    int base_block_start_idx, base_block_end_idx;
-    int quant_chunk_idx;
+    int base_block_start_idx;// base_block_end_idx;
+    // int quant_chunk_idx;
     // int block_idx; // 如果不使用，可以移除
 
     int currQuant = 0;
@@ -193,7 +197,7 @@ __global__ void Falcon_compress_kernel(
     int prevQuant = 0;
 
     unsigned int thread_ofs = 0;
-    float4 tmp_buffer;
+    // float4 tmp_buffer;
     // float maxDeV = 0;
     int maxSp = -99;
     // 1. 采样

@@ -1,2 +1,0 @@
-/usr/bin/ar qc libcuSZp.a CMakeFiles/cuSZp_static.dir/src/cuSZp_kernels_f32.cu.o CMakeFiles/cuSZp_static.dir/src/cuSZp_kernels_f64.cu.o CMakeFiles/cuSZp_static.dir/src/cuSZp_utility.cu.o CMakeFiles/cuSZp_static.dir/src/cuSZp_timer.cu.o CMakeFiles/cuSZp_static.dir/src/cuSZp_entry_f32.cu.o CMakeFiles/cuSZp_static.dir/src/cuSZp_entry_f64.cu.o CMakeFiles/cuSZp_static.dir/src/cuSZp.cu.o
-/usr/bin/ranlib libcuSZp.a

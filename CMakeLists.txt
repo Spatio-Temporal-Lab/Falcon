@@ -13,7 +13,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CUDA_STANDARD 17)
 find_package(CUDA REQUIRED)
 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -O3)
-
+set(CMAKE_CUDA_ARCHITECTURES 75 )#89 86 90)
 #enable_language(CXX)
 #enable_language(CUDA)
 # 包含目录

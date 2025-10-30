@@ -25,7 +25,6 @@ add_subdirectory(baseline/ndzip)
 add_subdirectory(baseline/elf)
 add_subdirectory(baseline/elf_star)
 add_subdirectory(baseline/elf_star_g)
-add_subdirectory(baseline/mpc)
 
 # 查找依赖包
 find_package(GTest REQUIRED)
@@ -37,7 +36,7 @@ message(STATUS "CUDA Include Directories: ${CUDA_INCLUDE_DIRS}")
 include_directories(${CUDA_INCLUDE_DIRS})
 
 # 设置 CUDA 架构
-set(CMAKE_CUDA_ARCHITECTURES 70)
+# set(CMAKE_CUDA_ARCHITECTURES 70)
 
 # ==================== 重要修复：创建共享的CUDA对象库 ====================
 # 这避免了多个目标重复编译相同的CUDA文件
@@ -45,8 +44,8 @@ set(CMAKE_CUDA_ARCHITECTURES 70)
 
 # GPU源文件编译为对象库（关键修复）
 cuda_add_library(Falcon_gpu_lib STATIC
-    ${CMAKE_SOURCE_DIR}/src/gpu/FalconCompressor_1024.cu
-    ${CMAKE_SOURCE_DIR}/src/gpu/FalconDecompressor_1024.cu
+    # ${CMAKE_SOURCE_DIR}/src/gpu/FalconCompressor_1024.cu
+    # ${CMAKE_SOURCE_DIR}/src/gpu/FalconDecompressor_1024.cu
     ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_float_compressor.cu
     ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_float_decompressor.cu
     ${CMAKE_SOURCE_DIR}/src/gpu/Falcon_compressor.cu
@@ -139,19 +138,6 @@ target_link_libraries(test_gpu
     GTest::Main 
     pthread 
     ALP
-)
-
-# test_muti_stream
-cuda_add_executable(test_muti_stream 
-    Falcon_test_muti_steam_f64.cu
-)
-target_link_libraries(test_muti_stream 
-    Falcon_gpu_lib
-    dataset_utils_lib
-    ${CUDA_LIBRARIES} 
-    GTest::GTest 
-    GTest::Main 
-    pthread
 )
 
 
@@ -268,10 +254,10 @@ target_link_libraries(test_elf_star_g
 )
 #=====================float=============================
 # test_float_muti_stream
-cuda_add_executable(test_muti_stream_opt 
-    Falcon_test_muti_steam_opt_f64.cu
+cuda_add_executable(test_muti_stream
+    Falcon_test_muti_steam_f64.cu
 )
-target_link_libraries(test_muti_stream_opt 
+target_link_libraries(test_muti_stream
     Falcon_gpu_lib
     dataset_utils_lib
     ${CUDA_LIBRARIES} 

@@ -14,8 +14,6 @@
 #include <map>
 #include <algorithm>
 
-#include "CDFCompressor.h"
-#include "CDFDecompressor.h"
 namespace fs = std::filesystem;
 
 namespace test {
