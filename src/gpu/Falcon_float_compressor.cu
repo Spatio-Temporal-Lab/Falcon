@@ -34,13 +34,11 @@ __device__ static int getDecimalPlaces(float value, int sp)
     int digits = 0;
     float td = 1;
     float deltaBound = abs(value) * pow(2, -23);
-    // double deltaBound = pow(2,ilogb(temp)-52);
     while (abs(temp - trac) >= deltaBound * td && digits < 8 - sp - 1)
     {
         digits++;
         td = pow10_table[digits];
         temp = value * td;
-        // double deltaBound = pow(2,ilogb(temp)-52);
         trac = temp + POW_NUM_G - POW_NUM_G;
     }
     if(round(temp)/td!=value)
