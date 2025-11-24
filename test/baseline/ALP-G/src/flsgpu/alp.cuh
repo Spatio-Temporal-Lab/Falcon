@@ -4,7 +4,7 @@
 
 #include "../alp/constants.hpp"
 #include "fls.cuh"
-#include "src/alp/config.hpp"
+#include "../alp/config.hpp"
 #include "structs.cuh"
 
 #ifndef ALP_CUH
