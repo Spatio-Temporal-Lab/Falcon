@@ -44,6 +44,19 @@ include_directories(${CUDA_INCLUDE_DIRS})
 # 设置 CUDA 架构
 # set(CMAKE_CUDA_ARCHITECTURES 70)
 
+# CPU源文件库
+add_library(Falcon_cpu_lib STATIC
+    ${CMAKE_SOURCE_DIR}/src/cpu/Falcon_basic_compressor.cpp
+    ${CMAKE_SOURCE_DIR}/src/cpu/Falcon_basic_decompressor.cpp
+    ${CMAKE_SOURCE_DIR}/src/utils/output_bit_stream.cc
+    ${CMAKE_SOURCE_DIR}/src/utils/input_bit_stream.cc
+)
+
+target_include_directories(Falcon_cpu_lib PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/src/utils
+)
+
 # ==================== 重要修复：创建共享的CUDA对象库 ====================
 # 这避免了多个目标重复编译相同的CUDA文件
 
@@ -97,6 +110,17 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src
 )
 
+# ==================== CPU测试目标 ====================
+add_executable(test_Falcon_cpu 
+    Falcon_basic_test.cpp
+)
+target_link_libraries(test_Falcon_cpu PRIVATE 
+    Falcon_cpu_lib
+    dataset_utils_lib
+    GTest::GTest 
+    GTest::Main 
+    pthread 
+)
 
 # ==================== GPU测试目标（使用共享库） ====================
 
