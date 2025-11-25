@@ -138,10 +138,6 @@ CompressionInfo comp_ALP_G(std::vector<double> oriData) {
     // ==================== 解压阶段 ====================
     auto start_total_decompress = std::chrono::high_resolution_clock::now();
     
-    // 调试信息
-    size_t actual_n_vecs = utils::get_n_vecs_from_size(device_column.n_values);
-    // size_t expected_blocks = (actual_n_vecs + VECTORS_PER_BLOCK - 1) / VECTORS_PER_BLOCK;
-
     double* host_decompressed_data = nullptr;
     try {
         start_kernel = std::chrono::high_resolution_clock::now();
@@ -180,7 +176,6 @@ CompressionInfo comp_ALP_G(std::vector<double> oriData) {
     const uint8_t* decompressed_bytes = reinterpret_cast<const uint8_t*>(host_decompressed_data);
     size_t actual_decomp_size = device_column.n_values * sizeof(double);
     
-    // bool validation_passed = true;
     if (memcmp(padded_bytes, decompressed_bytes, actual_decomp_size) != 0) {
         std::cout << "❌ 数据验证失败!" << std::endl;
         
@@ -196,7 +191,6 @@ CompressionInfo comp_ALP_G(std::vector<double> oriData) {
                 error_count++;
             }
         }
-        validation_passed = false;
     } else {
         std::cout << "✓ 数据验证成功" << std::endl;
     }

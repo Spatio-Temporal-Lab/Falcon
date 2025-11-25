@@ -41,7 +41,8 @@ set(ALPG_SOURCE_FILES
 
 # 添加所有 generated-bindings 中的 .cu 文件
 file(GLOB ALPG_GENERATED_BINDINGS_FILES
-    "src/generated-bindings/*-bindings.cu"
+    # "src/generated-bindings/*-bindings.cu"
+    "src/generated-bindings/*-decompress_column-bindings.cu"
 )
 list(APPEND ALPG_SOURCE_FILES ${ALPG_GENERATED_BINDINGS_FILES})
 
