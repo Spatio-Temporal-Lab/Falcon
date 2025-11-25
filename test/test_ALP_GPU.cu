@@ -96,17 +96,17 @@ CompressionInfo comp_ALP_G(std::vector<double> oriData) {
     
     // ==================== 压缩阶段 ====================
     auto start_total_compress = std::chrono::high_resolution_clock::now();
-    auto start_kernel = start_total_compress;
-
     flsgpu::host::ALPColumn<double> host_compressed_column;
     try {
-        start_kernel = std::chrono::high_resolution_clock::now();
         host_compressed_column = alp::encode<double>(data_ptr, num_elements, false);
-        auto end_kernel = std::chrono::high_resolution_clock::now();
     } catch (const std::exception& e) {
         std::cerr << "❌ ALP-G 压缩失败: " << e.what() << std::endl;
         return CompressionInfo{};
     }
+            
+    auto end_total_compress = std::chrono::high_resolution_clock::now();
+    double compression_kernel_time = 0;
+    double compression_total_time = std::chrono::duration<double, std::milli>(end_total_compress - start_total_compress).count();
     
     size_t compressed_size = host_compressed_column.compressed_size_bytes_alp;
     double compression_ratio = static_cast<double>(compressed_size) / original_size;
@@ -116,10 +116,18 @@ CompressionInfo comp_ALP_G(std::vector<double> oriData) {
         flsgpu::host::free_column(host_compressed_column);
         return CompressionInfo{};
     }
-    
-    std::cout << "✓ 压缩完成: " << compressed_size << " bytes, 比率=" 
+
+    std::cout << "✓ 基础版压缩完成: " << compressed_size << " bytes, 比率=" 
               << compression_ratio << "x" << std::endl;
-    
+
+    // ==================== 解压阶段 ====================
+    // 创建 CUDA 事件用于计时, 减少误差
+    cudaEvent_t kernel_start{};
+    cudaEvent_t kernel_stop{};
+    cudaEventCreate(&kernel_start);
+    cudaEventCreate(&kernel_stop);
+    auto start_total_decompress = std::chrono::high_resolution_clock::now();
+    // auto start_kernel = start_total_decompress;
     // GPU 数据转移
     flsgpu::device::ALPColumn<double> device_column;
     try {
@@ -130,30 +138,24 @@ CompressionInfo comp_ALP_G(std::vector<double> oriData) {
         flsgpu::host::free_column(host_compressed_column);
         return CompressionInfo{};
     }
-    
-    auto end_total_compress = std::chrono::high_resolution_clock::now();
-    double compression_kernel_time = std::chrono::duration<double, std::milli>(end_total_compress - start_kernel).count();
-    double compression_total_time = std::chrono::duration<double, std::milli>(end_total_compress - start_total_compress).count();
-    
-    // ==================== 解压阶段 ====================
-    auto start_total_decompress = std::chrono::high_resolution_clock::now();
-    
+
+    // GPU 解压（返回的是 CPU 主机指针）
+    float kernel_elapsed_ms = 0.0f;
     double* host_decompressed_data = nullptr;
     try {
-        start_kernel = std::chrono::high_resolution_clock::now();
-        
-        // GPU 解压（返回的是 CPU 主机指针）
+        cudaEventRecord(kernel_start);
         host_decompressed_data = bindings::decompress_column<double, flsgpu::device::ALPColumn<double>>(
             device_column,
             UNPACK_N_VECTORS,  // 使用配置的参数
             1,                 // unpack_n_values
             enums::Unpacker::StatefulBranchless,
-            enums::Patcher::Stateless,  // 使用 Stateless 以获得更好的性能
+            enums::Patcher::Stateful,  // 使用 Stateless 以获得更好的性能
             1                  // n_samples
         );
-        
+        cudaEventRecord(kernel_stop);
+        cudaEventSynchronize(kernel_stop);
+        cudaEventElapsedTime(&kernel_elapsed_ms, kernel_start, kernel_stop);
         cudaDeviceSynchronize();
-        auto end_kernel = std::chrono::high_resolution_clock::now();
         
         if (!host_decompressed_data) {
             throw std::runtime_error("解压返回 nullptr");
@@ -164,11 +166,13 @@ CompressionInfo comp_ALP_G(std::vector<double> oriData) {
         if (host_decompressed_data) delete[] host_decompressed_data;
         flsgpu::host::free_column(device_column);
         flsgpu::host::free_column(host_compressed_column);
+        cudaEventDestroy(kernel_start);
+        cudaEventDestroy(kernel_stop);
         return CompressionInfo{};
     }
-    
+    //时间统计
     auto end_total_decompress = std::chrono::high_resolution_clock::now();
-    double decompression_kernel_time = std::chrono::duration<double, std::milli>(end_total_decompress - start_kernel).count();
+    double decompression_kernel_time = static_cast<double>(kernel_elapsed_ms);
     double decompression_total_time = std::chrono::duration<double, std::milli>(end_total_decompress - start_total_decompress).count();
     
     // ==================== 数据验证 ====================
@@ -215,6 +219,8 @@ CompressionInfo comp_ALP_G(std::vector<double> oriData) {
     delete[] host_decompressed_data;
     flsgpu::host::free_column(device_column);
     flsgpu::host::free_column(host_compressed_column);
+    cudaEventDestroy(kernel_start);
+    cudaEventDestroy(kernel_stop);
     cudaDeviceSynchronize();
     
     return result;
