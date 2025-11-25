@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(CompressionTests)
+project(CompressionTests CUDA CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# 设置 CUDA 标志
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Wno-deprecated-gpu-targets")
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --expt-relaxed-constexpr --expt-extended-lambda")
 
 # 查找 nvcomp
 find_package(nvcomp CONFIG PATHS 
@@ -25,6 +28,9 @@ add_subdirectory(baseline/ndzip)
 add_subdirectory(baseline/elf)
 add_subdirectory(baseline/elf_star)
 add_subdirectory(baseline/elf_star_g)
+add_subdirectory(baseline/ALP-G)
+
+message(STATUS "✓ ALP-G library added: alpg_lib target is available")
 
 # 查找依赖包
 find_package(GTest REQUIRED)
@@ -37,6 +43,19 @@ include_directories(${CUDA_INCLUDE_DIRS})
 
 # 设置 CUDA 架构
 # set(CMAKE_CUDA_ARCHITECTURES 70)
+
+# CPU源文件库
+add_library(Falcon_cpu_lib STATIC
+    ${CMAKE_SOURCE_DIR}/src/cpu/Falcon_basic_compressor.cpp
+    ${CMAKE_SOURCE_DIR}/src/cpu/Falcon_basic_decompressor.cpp
+    ${CMAKE_SOURCE_DIR}/src/utils/output_bit_stream.cc
+    ${CMAKE_SOURCE_DIR}/src/utils/input_bit_stream.cc
+)
+
+target_include_directories(Falcon_cpu_lib PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/src/utils
+)
 
 # ==================== 重要修复：创建共享的CUDA对象库 ====================
 # 这避免了多个目标重复编译相同的CUDA文件
@@ -59,6 +78,15 @@ target_include_directories(Falcon_gpu_lib PUBLIC
     ${CMAKE_SOURCE_DIR}/src/utils
 )
 
+# 为 Falcon_gpu_lib 设置编译选项以降低内存使用
+target_compile_options(Falcon_gpu_lib PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:
+        -Xcompiler=-O2
+        -lineinfo
+        --dopt=on
+    >
+)
+
 # 数据工具库
 add_library(dataset_utils_lib STATIC
     data/dataset_utils.cpp
@@ -79,8 +107,20 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/test/baseline/elf_star
     ${CMAKE_SOURCE_DIR}/test/baseline/elf_star_g
     ${CMAKE_SOURCE_DIR}/test/baseline/ALP_g/include
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src
 )
 
+# ==================== CPU测试目标 ====================
+add_executable(test_Falcon_cpu 
+    Falcon_basic_test.cpp
+)
+target_link_libraries(test_Falcon_cpu PRIVATE 
+    Falcon_cpu_lib
+    dataset_utils_lib
+    GTest::GTest 
+    GTest::Main 
+    pthread 
+)
 
 # ==================== GPU测试目标（使用共享库） ====================
 
@@ -179,6 +219,68 @@ target_link_libraries(test_ALP PRIVATE
     GTest::Main 
     pthread 
     ALP
+)
+
+cuda_add_executable(test_ALP_GPU 
+    test_ALP_GPU.cu
+)
+target_link_libraries(test_ALP_GPU 
+    alpg_lib
+    alpg_headers
+    dataset_utils_lib
+    ${CUDA_LIBRARIES}
+    GTest::GTest 
+    GTest::Main 
+    pthread
+    # ALP
+)
+
+# 新版本：使用ALP-G GPU接口的测试
+cuda_add_executable(test_ALP_GPU_v2 
+    test_ALP_GPU_v2.cu
+)
+target_link_libraries(test_ALP_GPU_v2 
+    alpg_lib
+    alpg_headers
+    dataset_utils_lib
+    ${CUDA_LIBRARIES}
+    GTest::GTest 
+    GTest::Main 
+    pthread
+)
+
+# 添加 ALP-G 包含目录到 test_ALP_GPU_v2
+target_include_directories(test_ALP_GPU_v2 PRIVATE
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/alp
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/engine
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/flsgpu
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/fls
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/generated-bindings
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/nvcomp
+)
+
+# 设置CUDA编译属性
+set_target_properties(test_ALP_GPU_v2 PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_RESOLVE_DEVICE_SYMBOLS ON
+)
+
+# 添加 ALP-G 包含目录到 test_ALP_GPU
+target_include_directories(test_ALP_GPU PRIVATE
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/alp
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/engine
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/flsgpu
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/fls
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/generated-bindings
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/nvcomp
+)
+
+# 设置CUDA编译属性
+set_target_properties(test_ALP_GPU PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_RESOLVE_DEVICE_SYMBOLS ON
 )
 
 # ndzip测试
@@ -507,6 +609,7 @@ add_custom_target(clean-all
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/CMakeFiles
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/lib
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/test
     COMMENT "Cleaning all build files..."
 )
 
