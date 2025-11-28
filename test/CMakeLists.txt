@@ -29,6 +29,8 @@ add_subdirectory(baseline/elf)
 add_subdirectory(baseline/elf_star)
 add_subdirectory(baseline/elf_star_g)
 add_subdirectory(baseline/ALP-G)
+add_subdirectory(baseline/gorilla)
+add_subdirectory(baseline/chimp128)
 
 message(STATUS "✓ ALP-G library added: alpg_lib target is available")
 
@@ -353,6 +355,32 @@ target_link_libraries(test_elf_star_g
     GTest::Main 
     pthread 
     elf_star_g
+)
+
+# Gorilla 测试
+add_executable(test_gorilla
+    test_gorilla.cpp
+)
+target_link_libraries(test_gorilla PRIVATE
+    dataset_utils_lib
+    pthread
+    gorilla
+)
+target_include_directories(test_gorilla PRIVATE
+    ${CMAKE_SOURCE_DIR}/test/baseline/gorilla
+)
+
+# Chimp128 测试
+add_executable(test_chimp
+    test_chimp.cpp
+)
+target_link_libraries(test_chimp PRIVATE
+    dataset_utils_lib
+    pthread
+    chimp
+)
+target_include_directories(test_chimp PRIVATE
+    ${CMAKE_SOURCE_DIR}/test/baseline/chimp128
 )
 #=====================float=============================
 # test_float_muti_stream
