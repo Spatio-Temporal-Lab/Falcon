@@ -32,6 +32,8 @@ add_subdirectory(baseline/ALP-G)
 add_subdirectory(baseline/gorilla)
 add_subdirectory(baseline/chimp128)
 
+add_subdirectory(baseline/patas)
+
 message(STATUS "✓ ALP-G library added: alpg_lib target is available")
 
 # 查找依赖包
@@ -237,6 +239,23 @@ target_link_libraries(test_ALP_GPU
     # ALP
 )
 
+# 添加 ALP-G 包含目录到 test_ALP_GPU
+target_include_directories(test_ALP_GPU PRIVATE
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/alp
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/engine
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/flsgpu
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/fls
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/generated-bindings
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/nvcomp
+)
+
+# 设置CUDA编译属性
+set_target_properties(test_ALP_GPU PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_RESOLVE_DEVICE_SYMBOLS ON
+)
+
 # 新版本：使用ALP-G GPU接口的测试
 cuda_add_executable(test_ALP_GPU_v2 
     test_ALP_GPU_v2.cu
@@ -268,22 +287,7 @@ set_target_properties(test_ALP_GPU_v2 PROPERTIES
     CUDA_RESOLVE_DEVICE_SYMBOLS ON
 )
 
-# 添加 ALP-G 包含目录到 test_ALP_GPU
-target_include_directories(test_ALP_GPU PRIVATE
-    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src
-    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/alp
-    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/engine
-    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/flsgpu
-    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/fls
-    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/generated-bindings
-    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/nvcomp
-)
 
-# 设置CUDA编译属性
-set_target_properties(test_ALP_GPU PROPERTIES
-    CUDA_SEPARABLE_COMPILATION ON
-    CUDA_RESOLVE_DEVICE_SYMBOLS ON
-)
 
 # ndzip测试
 cuda_add_executable(test_ndzip 
@@ -382,6 +386,19 @@ target_link_libraries(test_chimp PRIVATE
 target_include_directories(test_chimp PRIVATE
     ${CMAKE_SOURCE_DIR}/test/baseline/chimp128
 )
+
+    # Patas 测试
+    add_executable(test_patas
+        test_patas.cpp
+    )
+    target_link_libraries(test_patas PRIVATE
+        dataset_utils_lib
+        pthread
+    )
+    target_include_directories(test_patas PRIVATE
+        ${CMAKE_SOURCE_DIR}/test/baseline/patas
+    )
+
 #=====================float=============================
 # test_float_muti_stream
 cuda_add_executable(test_muti_stream
@@ -435,6 +452,36 @@ target_link_libraries(test_float_ALP_g
     ALP
 )
 
+cuda_add_executable(test_float_ALP_GPU 
+    test_float_ALP_GPU.cu
+)
+target_link_libraries(test_float_ALP_GPU 
+    alpg_lib
+    alpg_headers
+    dataset_utils_lib
+    ${CUDA_LIBRARIES}
+    GTest::GTest 
+    GTest::Main 
+    pthread
+    # ALP
+)
+
+# 添加 ALP-G 包含目录到 test_float_ALP_GPU
+target_include_directories(test_float_ALP_GPU PRIVATE
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/alp
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/engine
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/flsgpu
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/fls
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/generated-bindings
+    ${CMAKE_SOURCE_DIR}/test/baseline/ALP-G/src/nvcomp
+)
+
+# 设置CUDA编译属性
+set_target_properties(test_float_ALP_GPU PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_RESOLVE_DEVICE_SYMBOLS ON
+)
 
 # test_float_muti_stream
 cuda_add_executable(test_float_Lz4 
